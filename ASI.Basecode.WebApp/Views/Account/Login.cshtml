@@ -10,6 +10,9 @@
 <div>
     @Html.AntiForgeryToken()
 </div>
+<label class="bg-red-300 text-6xl">
+    Hello world!
+</label>
 <div class="container py-5" style="display:flex; align-content:center;height:calc(100vh - 64px)">
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
@@ -34,7 +37,7 @@
                                            asp-for="Password" placeholder="Enter password" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
-                                <div class="text-center pt-1 mb-5 pb-1 d-flex flex-column align-items-center">
+                                <div class="d-flex flex-column align-items-center mb-5 pb-1 pt-1 text-center">
                                     <button class="btn btn-primary btn-block login-btn gradient-custom-2 mb-3" type="submit">
                                         @Login
                                     </button>
