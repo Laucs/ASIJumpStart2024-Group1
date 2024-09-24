@@ -39,4 +39,11 @@
   <ItemGroup>
     <Folder Include="wwwroot\img\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Analytics\Summary.cshtml" />
+    <None Include="Views\Category\Details.cshtml" />
+    <None Include="Views\Expense\Details.cshtml" />
+    <None Include="Views\Pref\Settings.cshtml" />
+  </ItemGroup>
 </Project>
