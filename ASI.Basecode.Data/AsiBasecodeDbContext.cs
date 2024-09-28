@@ -24,7 +24,6 @@ namespace ASI.Basecode.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-
                 optionsBuilder.UseSqlServer("Addr=(LocalDB)\\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
             }
         }
