@@ -117,22 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ExpenseSummary" xml:space="preserve">
-    <value>Expense Summary</value>
+  <data name="PassManagement" xml:space="preserve">
+    <value>Password Management</value>
   </data>
-  <data name="ExpenseTrends" xml:space="preserve">
-    <value>Expense Trends</value>
+  <data name="Preference" xml:space="preserve">
+    <value>Preference</value>
   </data>
-  <data name="FilteredSum" xml:space="preserve">
-    <value>Filtered Summary</value>
+  <data name="ProfileHeader" xml:space="preserve">
+    <value>Profile Picture</value>
   </data>
-  <data name="ReportGeneration" xml:space="preserve">
-    <value>Report Generation</value>
+  <data name="SettingsHeader" xml:space="preserve">
+    <value>Settings and Preference</value>
   </data>
-  <data name="Total" xml:space="preserve">
-    <value>Total</value>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
   </data>
-  <data name="TotalExpense" xml:space="preserve">
-    <value>Total Expense</value>
+  <data name="Upload" xml:space="preserve">
+    <value>Upload Profile Picture</value>
+  </data>
+  <data name="UserInfo" xml:space="preserve">
+    <value>User Information</value>
   </data>
 </root>

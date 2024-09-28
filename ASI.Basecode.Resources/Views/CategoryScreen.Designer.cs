@@ -22,14 +22,14 @@ namespace ASI.Basecode.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AnalyticsScreen {
+    public class CategoryScreen {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AnalyticsScreen() {
+        internal CategoryScreen() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace ASI.Basecode.Resources.Views {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.AnalyticsScreen", typeof(AnalyticsScreen).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.CategoryScreen", typeof(CategoryScreen).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,20 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Summary.
+        ///   Looks up a localized string similar to Add Category.
         /// </summary>
-        public static string ExpenseSummary {
+        public static string AddCategory {
             get {
-                return ResourceManager.GetString("ExpenseSummary", resourceCulture);
+                return ResourceManager.GetString("AddCategory", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Trends.
+        ///   Looks up a localized string similar to Your Categories.
         /// </summary>
-        public static string ExpenseTrends {
+        public static string YourCategories {
             get {
-                return ResourceManager.GetString("ExpenseTrends", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Filtered Summary.
-        /// </summary>
-        public static string FilteredSum {
-            get {
-                return ResourceManager.GetString("FilteredSum", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Report Generation.
-        /// </summary>
-        public static string ReportGeneration {
-            get {
-                return ResourceManager.GetString("ReportGeneration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total.
-        /// </summary>
-        public static string Total {
-            get {
-                return ResourceManager.GetString("Total", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total Expense.
-        /// </summary>
-        public static string TotalExpense {
-            get {
-                return ResourceManager.GetString("TotalExpense", resourceCulture);
+                return ResourceManager.GetString("YourCategories", resourceCulture);
             }
         }
     }
