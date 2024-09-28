@@ -1,4 +1,6 @@
-﻿@{
+﻿@using static ASI.Basecode.Resources.Views.AnalyticsScreen
+@using static ASI.Basecode.Resources.Views.ReportGenerationTable
+@{
     ViewData["Title"] = "Summary";
     var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
 
@@ -19,23 +21,24 @@
                 <div class="credential-gradient flex h-full w-full flex-col rounded-lg py-8 shadow-sm shadow-black dark:shadow-lg md:flex-row">
                     <div class="flex h-1/2 w-full flex-col px-8 md:w-1/2 md:h-full">
                         <div class="flex h-8 w-full justify-end">
-                            <button type="button" class="rounded-full bg-white px-6 py-1 shadow-sm shadow-black">Total</button>
+                            <button type="button" class="rounded-full bg-white px-6 py-1 shadow-sm shadow-black">@Total</button>
                         </div>
                         <div class="mt-2 flex h-auto min-h-44 flex-col gap-1">
-                            <label class="text-lg font-bold text-white">Expense Summary</label>
+                            <label class="text-lg font-bold text-white">@ExpenseSummary</label>
                             <div class="flex h-10 flex-row items-center gap-2">
                                 <svg width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9 0L17.6603 15H0.339746L9 0Z" fill="#00FD87" />
                                 </svg>
-                                <label class="text-lg font-bold text-green-400">10.45%</label>
+                                <label class="text-lg font-bold text-green-400">10.45%</label> <!--Sample Data For UI-->
                             </div>
                             <label class="text-nowrap text-center text-4xl font-bold tracking-wider text-white drop-shadow-md md:text-6xl">₱ 401,542.44</label>
                             <div class="mt-2 flex flex-row items-center justify-center gap-3 text-center md:mt-5">
-                                <label class="text-lg font-bold text-white">Total Expense</label>
+                                <label class="text-lg font-bold text-white">@TotalExpense</label>
                                 <button type="button"><img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" /></button>
                             </div>
                         </div>
                     </div>
+                    <!--Sample Data For UI-->
                     <div class="mt-5 flex w-full flex-row flex-wrap items-center justify-center gap-5 md:mt-0 md:w-1/2">
                         <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
                             <label class="font-bold tracking-wide text-white">Food Expenses</label>
@@ -73,7 +76,8 @@
         </div>
         <div class="h-auto bg-gray-100 px-8 dark:bg-slate-950">
             <div class="flex flex-col gap-5 pt-5 md:pt-0">
-                <label class="text-2xl font-bold text-violet-500 dark:text-white">Report Generation</label>
+                <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
+                <!--Sample Buttons These Should Be Dynamic Based On User's Expenses and By Dates-->
                 <div class="flex flex-row gap-5">
                     <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">This Week</button>
                     <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">Food Expense</button>
@@ -84,26 +88,27 @@
                     <thead>
                         <tr class="text-xs sm:text-base">
                             <th class="w-1/5 rounded-s-md bg-violet-500 py-2 text-center font-bold text-white">
-                                Expense Name
+                                @ExpenseName
                             </th>
                             <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                                Amount
+                                @Amount
                             </th>
                             <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                                Date
+                                @Date
                             </th>
                             <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                                Category
+                                @Category
                             </th>
                             <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                                Description
+                                @Description
                             </th>
                             <th class="w-1/5 rounded-e-md bg-violet-500 py-2 text-center font-bold text-white">
-                                Actions
+                                @Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody> 
+                        <!--Sample Data For Report Generation Based On User Entries-->
                         <tr class="text-xs sm:text-base">
                             <td class="py-2 text-center dark:text-white">Sample Expense</td>
                             <td class="py-2 text-center dark:text-white">$100</td>
@@ -129,9 +134,9 @@
                 </table>
             </div>
             <div class="mt-5 flex justify-end">
-                <div class="flex h-16 w-44 flex-col justify-center rounded-2xl bg-violet-500 px-6 shadow-black drop-shadow-lg">
-                    <label class="text-sm font-bold tracking-wide text-white">Filtered Sum</label>
-                    <label class="font-bold text-white">₱ 100,000.00</label>
+                <div class="flex h-20 w-52 flex-col justify-center gap-0 rounded-2xl bg-violet-500 px-6 py-2 shadow-black drop-shadow-lg">
+                    <label class="text-nowrap text-sm font-bold tracking-wide text-white">@FilteredSum</label>
+                    <label class="text-xs font-bold text-white">₱ 100,000.00</label> <!--Sample Data For UI-->
                 </div>
             </div>
         </div>
