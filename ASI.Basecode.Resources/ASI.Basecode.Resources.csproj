@@ -17,15 +17,40 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Common.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Login.Designer.cs">
+    <Compile Update="Views\AnalyticsScreen.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Login.resx</DependentUpon>
+      <DependentUpon>AnalyticsScreen.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ForgotPassword.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ForgotPassword.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\LoginScreen.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LoginScreen.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegisterScreen.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RegisterScreen.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ReportGenerationTable.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReportGenerationTable.resx</DependentUpon>
     </Compile>
     <Compile Update="Views\RibbonProfile.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>RibbonProfile.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SidebarView.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SidebarView.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -38,13 +63,33 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\Login.resx">
+    <EmbeddedResource Update="Views\AnalyticsScreen.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Login.Designer.cs</LastGenOutput>
+      <LastGenOutput>AnalyticsScreen.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ForgotPassword.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ForgotPassword.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\LoginScreen.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LoginScreen.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\RegisterScreen.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>RegisterScreen.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ReportGenerationTable.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ReportGenerationTable.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\RibbonProfile.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>RibbonProfile.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\SidebarView.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SidebarView.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

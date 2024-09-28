@@ -22,14 +22,14 @@ namespace ASI.Basecode.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Login {
+    public class ReportGenerationTable {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Login() {
+        internal ReportGenerationTable() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace ASI.Basecode.Resources.Views {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.Login", typeof(Login).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.ReportGenerationTable", typeof(ReportGenerationTable).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,56 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Click Here.
+        ///   Looks up a localized string similar to Actions.
         /// </summary>
-        public static string ClickHere {
+        public static string Actions {
             get {
-                return ResourceManager.GetString("ClickHere", resourceCulture);
+                return ResourceManager.GetString("Actions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Forgot Password?.
+        ///   Looks up a localized string similar to Amount.
         /// </summary>
-        public static string ForgotPassword {
+        public static string Amount {
             get {
-                return ResourceManager.GetString("ForgotPassword", resourceCulture);
+                return ResourceManager.GetString("Amount", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Login.
+        ///   Looks up a localized string similar to Category.
         /// </summary>
-        public static string Login {
+        public static string Category {
             get {
-                return ResourceManager.GetString("Login", resourceCulture);
+                return ResourceManager.GetString("Category", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dont Have an Account?.
+        ///   Looks up a localized string similar to Date.
         /// </summary>
-        public static string NoAccount {
+        public static string Date {
             get {
-                return ResourceManager.GetString("NoAccount", resourceCulture);
+                return ResourceManager.GetString("Date", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Or.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        public static string Or {
+        public static string Description {
             get {
-                return ResourceManager.GetString("Or", resourceCulture);
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Register Here!.
+        ///   Looks up a localized string similar to Expense Name.
         /// </summary>
-        public static string Register {
+        public static string ExpenseName {
             get {
-                return ResourceManager.GetString("Register", resourceCulture);
+                return ResourceManager.GetString("ExpenseName", resourceCulture);
             }
         }
     }

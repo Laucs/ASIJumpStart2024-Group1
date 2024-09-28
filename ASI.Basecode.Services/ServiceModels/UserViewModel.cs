@@ -34,7 +34,7 @@ namespace ASI.Basecode.Services.ServiceModels
         [DisplayName("ID")]
         public string IdFilter { get; set; }
 
-        [Display(Name = "FirstName", ResourceType = typeof(Resources.Views.Screen))]
+        [Display(Name = "FirstName")]
         public string FirstNameFilter { get; set; }
 
         public IEnumerable<UserViewModel> dataList { get; set; }
