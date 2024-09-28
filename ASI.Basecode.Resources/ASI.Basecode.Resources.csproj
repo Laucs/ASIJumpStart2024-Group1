@@ -22,6 +22,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AnalyticsScreen.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\CategoryScreen.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CategoryScreen.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ExpenseScreen.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExpenseScreen.resx</DependentUpon>
+    </Compile>
     <Compile Update="Views\ForgotPassword.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -66,6 +76,14 @@
     <EmbeddedResource Update="Views\AnalyticsScreen.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AnalyticsScreen.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\CategoryScreen.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CategoryScreen.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ExpenseScreen.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExpenseScreen.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\ForgotPassword.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
