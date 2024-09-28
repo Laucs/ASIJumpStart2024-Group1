@@ -22,14 +22,14 @@ namespace ASI.Basecode.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AnalyticsScreen {
+    public class ExpenseScreen {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AnalyticsScreen() {
+        internal ExpenseScreen() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace ASI.Basecode.Resources.Views {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.AnalyticsScreen", typeof(AnalyticsScreen).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.ExpenseScreen", typeof(ExpenseScreen).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,65 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Summary.
+        ///   Looks up a localized string similar to Amount.
         /// </summary>
-        public static string ExpenseSummary {
+        public static string Amount {
             get {
-                return ResourceManager.GetString("ExpenseSummary", resourceCulture);
+                return ResourceManager.GetString("Amount", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Trends.
+        ///   Looks up a localized string similar to Category.
         /// </summary>
-        public static string ExpenseTrends {
+        public static string Category {
             get {
-                return ResourceManager.GetString("ExpenseTrends", resourceCulture);
+                return ResourceManager.GetString("Category", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filtered Summary.
+        ///   Looks up a localized string similar to Date.
         /// </summary>
-        public static string FilteredSum {
+        public static string Date {
             get {
-                return ResourceManager.GetString("FilteredSum", resourceCulture);
+                return ResourceManager.GetString("Date", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Report Generation.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        public static string ReportGeneration {
+        public static string Description {
             get {
-                return ResourceManager.GetString("ReportGeneration", resourceCulture);
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total.
+        ///   Looks up a localized string similar to Expense Management.
         /// </summary>
-        public static string Total {
+        public static string ExpenseManagement {
             get {
-                return ResourceManager.GetString("Total", resourceCulture);
+                return ResourceManager.GetString("ExpenseManagement", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total Expense.
+        ///   Looks up a localized string similar to Title/Name of Expense.
         /// </summary>
-        public static string TotalExpense {
+        public static string ExpenseName {
             get {
-                return ResourceManager.GetString("TotalExpense", resourceCulture);
+                return ResourceManager.GetString("ExpenseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        public static string Submit {
+            get {
+                return ResourceManager.GetString("Submit", resourceCulture);
             }
         }
     }

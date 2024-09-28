@@ -22,14 +22,14 @@ namespace ASI.Basecode.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AnalyticsScreen {
+    public class SettingsScreen {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AnalyticsScreen() {
+        internal SettingsScreen() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace ASI.Basecode.Resources.Views {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.AnalyticsScreen", typeof(AnalyticsScreen).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ASI.Basecode.Resources.Views.SettingsScreen", typeof(SettingsScreen).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,65 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Summary.
+        ///   Looks up a localized string similar to Password Management.
         /// </summary>
-        public static string ExpenseSummary {
+        public static string PassManagement {
             get {
-                return ResourceManager.GetString("ExpenseSummary", resourceCulture);
+                return ResourceManager.GetString("PassManagement", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expense Trends.
+        ///   Looks up a localized string similar to Preference.
         /// </summary>
-        public static string ExpenseTrends {
+        public static string Preference {
             get {
-                return ResourceManager.GetString("ExpenseTrends", resourceCulture);
+                return ResourceManager.GetString("Preference", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filtered Summary.
+        ///   Looks up a localized string similar to Profile Picture.
         /// </summary>
-        public static string FilteredSum {
+        public static string ProfileHeader {
             get {
-                return ResourceManager.GetString("FilteredSum", resourceCulture);
+                return ResourceManager.GetString("ProfileHeader", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Report Generation.
+        ///   Looks up a localized string similar to Settings and Preference.
         /// </summary>
-        public static string ReportGeneration {
+        public static string SettingsHeader {
             get {
-                return ResourceManager.GetString("ReportGeneration", resourceCulture);
+                return ResourceManager.GetString("SettingsHeader", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total.
+        ///   Looks up a localized string similar to Submit.
         /// </summary>
-        public static string Total {
+        public static string Submit {
             get {
-                return ResourceManager.GetString("Total", resourceCulture);
+                return ResourceManager.GetString("Submit", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total Expense.
+        ///   Looks up a localized string similar to Upload Profile Picture.
         /// </summary>
-        public static string TotalExpense {
+        public static string Upload {
             get {
-                return ResourceManager.GetString("TotalExpense", resourceCulture);
+                return ResourceManager.GetString("Upload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User Information.
+        /// </summary>
+        public static string UserInfo {
+            get {
+                return ResourceManager.GetString("UserInfo", resourceCulture);
             }
         }
     }
