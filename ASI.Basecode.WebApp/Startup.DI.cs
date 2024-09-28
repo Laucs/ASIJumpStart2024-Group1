@@ -41,6 +41,8 @@ namespace ASI.Basecode.WebApp
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddSingleton<ISampleCrudRepository, SampleCrudRepository>();
+            this._services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            this._services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             // Manager Class
             this._services.AddScoped<SignInManager>();
