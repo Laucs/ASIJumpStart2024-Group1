@@ -9,10 +9,9 @@ namespace ASI.Basecode.Data.Interfaces
 {
     public interface ICategoryRepository
     {
-        IQueryable<MExpense> GetCategories();
-
-        void AddCategory(MExpense expense);
-        void UpdateCategory(MExpense expense);
-        void DeleteCategory(int expenseId);
+        IEnumerable<MCategory> GetCategories();
+        void AddCategory(MCategory model);
+        void UpdateCategory(MCategory model);
+        void DeleteCategory(int categoryId);
     }
 }
