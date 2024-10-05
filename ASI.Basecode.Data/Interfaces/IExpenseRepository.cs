@@ -9,7 +9,7 @@ namespace ASI.Basecode.Data.Interfaces
 {
     public interface IExpenseRepository
     {
-        IEnumerable<MExpense> GetExpenses();
+        IQueryable<MExpense> GetExpenses();
         void AddExpense(MExpense expense);
         void UpdateExpense(MExpense expense);
         void DeleteExpense(int expenseId);

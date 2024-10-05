@@ -11,39 +11,38 @@ namespace ASI.Basecode.Data.Repositories
 {
     public class CategoryRepository : BaseRepository, ICategoryRepository
     {
-        private readonly List<MCategory> _data = new List<MCategory>();
-        private int _nextId = 1;
-
         public CategoryRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
 
         }
-        public IEnumerable<MCategory> GetCategories()
+        public IQueryable<MCategory> GetCategories()
         {
-            return _data;
+            return this.GetDbSet<MCategory>();
         }
 
         public void AddCategory(MCategory model)
         {
-            model.CategoryId = _nextId++;
-            _data.Add(model);
+            var maxId = this.GetDbSet<MCategory>().Max(x => x.CategoryId) + 1;
+            model.CategoryId = maxId;
+            UnitOfWork.SaveChanges();
         }
 
         public void UpdateCategory(MCategory model)
         {
-            var existingData = _data.Where(x => x.CategoryId == model.CategoryId).FirstOrDefault();
+            var existingData = this.GetDbSet<MCategory>().Where(x => x.CategoryId == model.CategoryId).FirstOrDefault();
             if (existingData != null)
             {
-                existingData = model;
+                this.GetDbSet<MCategory>().Update(model);
+                UnitOfWork.SaveChanges();
             }
         }
 
         public void DeleteCategory(int categoryId)
         {
-            var existingData = _data.Where(x => x.CategoryId == categoryId).FirstOrDefault();
+            var existingData = this.GetDbSet<MCategory>().Where(x => x.CategoryId == categoryId).FirstOrDefault();
             if (existingData != null)
             {
-                _data.Remove(existingData);
+                this.GetDbSet<MCategory>().Remove(existingData);
             }
         }
 

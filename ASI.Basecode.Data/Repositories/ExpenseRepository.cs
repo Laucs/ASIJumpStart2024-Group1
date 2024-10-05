@@ -11,23 +11,23 @@ namespace ASI.Basecode.Data.Repositories
 {
     public class ExpenseRepository : BaseRepository, IExpenseRepository
     {
-        private readonly List<MExpense> _data = new List<MExpense>();
-        private int _nextId = 1;
         public ExpenseRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
 
         }
 
-        public IEnumerable<MExpense> GetExpenses()
+        public IQueryable<MExpense> GetExpenses()
         {
             return this.GetDbSet<MExpense>();
         }
+
+        
 
         public void AddExpense(MExpense model)
         {
             var maxId = this.GetDbSet<MUser>().Max(x => x.UserId) + 1;
             model.ExpenseId = maxId;
-            model.DateCreated = DateTime.Now;
+            model.DateCreated = DateTime.Today;
             this.GetDbSet<MExpense>().Add(model);
             UnitOfWork.SaveChanges();
         }
@@ -36,7 +36,6 @@ namespace ASI.Basecode.Data.Repositories
         {
             this.GetDbSet<MExpense>().Update(model);
             UnitOfWork.SaveChanges();
-
         }
 
         public void DeleteExpense(int expenseId)

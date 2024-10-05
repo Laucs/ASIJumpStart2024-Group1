@@ -1,4 +1,5 @@
 ﻿using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace ASI.Basecode.Services.Interfaces
 {
     public interface IExpenseService
     {
-        
+        public IEnumerable<ExpenseViewModel> RetrieveAll();
     }
 }

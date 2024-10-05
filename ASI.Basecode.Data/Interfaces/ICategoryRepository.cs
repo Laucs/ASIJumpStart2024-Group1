@@ -9,7 +9,7 @@ namespace ASI.Basecode.Data.Interfaces
 {
     public interface ICategoryRepository
     {
-        IEnumerable<MCategory> GetCategories();
+        IQueryable<MCategory> GetCategories();
         void AddCategory(MCategory model);
         void UpdateCategory(MCategory model);
         void DeleteCategory(int categoryId);

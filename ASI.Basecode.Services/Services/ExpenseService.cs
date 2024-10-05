@@ -9,20 +9,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
 
 namespace ASI.Basecode.Services.Services
 {
     public class ExpenseService : IExpenseService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IExpenseService _expenseRepository;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IMapper mapper, IUserRepository userRepository)
+        public ExpenseService(IMapper mapper, IExpenseService expenseRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _expenseRepository = expenseRepository;
         }
-
 
 
 
@@ -31,18 +31,18 @@ namespace ASI.Basecode.Services.Services
         ///// Retrieves all.
         ///// </summary>
         ///// <returns></returns>
-        //public IEnumerable<UserViewModel> RetrieveAll(int? id = null, string firstName = null)
+        //public IEnumerable<ExpenseViewModel> RetrieveAll(int? id = null)
         //{
-        //    var data = _userRepository.GetUsers()
+        //    var data = _expenseRepository.
         //        .Where(x => x.Deleted != true
         //                && (!id.HasValue || x.UserId == id)
         //                && (string.IsNullOrEmpty(firstName) || x.FirstName.Contains(firstName)))
         //        .Select(s => new UserViewModel
-        //    {
-        //        Id = s.UserId,
-        //        Name = string.Concat(s.FirstName, " ", s.LastName),
-        //        Description = s.Remarks,
-        //    });
+        //        {
+        //            Id = s.UserId,
+        //            Name = string.Concat(s.FirstName, " ", s.LastName),
+        //            Description = s.Remarks,
+        //        });
         //    return data;
         //}
 
