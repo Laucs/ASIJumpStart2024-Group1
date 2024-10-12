@@ -10,6 +10,6 @@ namespace ASI.Basecode.Services.Interfaces
 {
     public interface IExpenseService
     {
-        public IEnumerable<ExpenseViewModel> RetrieveAll();
+        //public IEnumerable<ExpenseViewModel> RetrieveAll();
     }
 }
