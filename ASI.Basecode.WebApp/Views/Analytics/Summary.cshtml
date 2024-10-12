@@ -21,7 +21,7 @@
                 <div class="credential-gradient flex h-full w-full flex-col rounded-lg py-8 shadow-sm shadow-black dark:shadow-lg md:flex-row">
                     <div class="flex h-1/2 w-full flex-col px-8 md:w-1/2 md:h-full">
                         <div class="flex h-8 w-full justify-end">
-                            <button type="button" class="rounded-full bg-white px-6 py-1 shadow-sm shadow-black">@Total</button>
+                            <button type="button" class="rounded-full bg-white px-6 py-2 shadow-sm shadow-black">@Total</button>
                         </div>
                         <div class="mt-2 flex h-auto min-h-44 flex-col gap-1">
                             <label class="text-lg font-bold text-white">@ExpenseSummary</label>
@@ -79,8 +79,8 @@
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
                 <!--Sample Buttons These Should Be Dynamic Based On User's Expenses and By Dates-->
                 <div class="flex flex-row gap-5">
-                    <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">This Week</button>
-                    <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">Food Expense</button>
+                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white">This Week</button>
+                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white">Food Expense</button>
                 </div>
             </div>
             <div class="mt-5 h-3/6 overflow-x-auto shadow-black drop-shadow-md">
@@ -134,9 +134,9 @@
                 </table>
             </div>
             <div class="mt-5 flex justify-end">
-                <div class="flex h-20 w-52 flex-col justify-center gap-0 rounded-2xl bg-violet-500 px-6 py-2 shadow-black drop-shadow-lg">
-                    <label class="text-nowrap text-sm font-bold tracking-wide text-white">@FilteredSum</label>
-                    <label class="text-xs font-bold text-white">₱ 100,000.00</label> <!--Sample Data For UI-->
+                <div class="flex h-28 w-64 flex-col justify-center gap-0 rounded-2xl bg-violet-500 px-6 py-2 shadow-black drop-shadow-lg">
+                    <label class="text-nowrap text-lg font-bold tracking-wide text-white">@FilteredSum</label>
+                    <label class="text-3xl font-bold text-white">₱ 100,000.00</label> <!--Sample Data For UI-->
                 </div>
             </div>
         </div>
@@ -144,8 +144,8 @@
             <div class="flex flex-col gap-5">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@ExpenseTrends</label>
                 <div class="flex flex-row gap-5">
-                    <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">Food Expense</button>
-                    <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md">Jan 1 - Jan 7</button>
+                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md">Food Expense</button>
+                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md">Jan 1 - Jan 7</button>
                 </div>
             </div>
             <canvas class="mt-5" id="myLineChart" width="400" height="200"></canvas>
