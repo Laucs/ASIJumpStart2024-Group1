@@ -5,12 +5,6 @@ namespace ASI.Basecode.Data.Models
 {
     public partial class MUser
     {
-        public MUser()
-        {
-            MCategories = new HashSet<MCategory>();
-            MExpenses = new HashSet<MExpense>();
-        }
-
         public int UserId { get; set; }
         public string InsBy { get; set; }
         public DateTime InsDt { get; set; }
@@ -27,8 +21,5 @@ namespace ASI.Basecode.Data.Models
         public string Mail { get; set; }
         public int? UserRole { get; set; }
         public string Remarks { get; set; }
-
-        public virtual ICollection<MCategory> MCategories { get; set; }
-        public virtual ICollection<MExpense> MExpenses { get; set; }
     }
 }
