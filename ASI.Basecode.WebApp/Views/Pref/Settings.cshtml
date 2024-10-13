@@ -6,6 +6,8 @@
 }
 
 @await Html.PartialAsync("Sidebar")
+<script src="~/js/ImagePreview/imageprev.js" asp-append-version="true"></script>
+<script src="~/js/DarkMode/darkmode.js" asp-append-version="true"></script>
 
 <div class="flex h-screen w-screen flex-row dark:bg-black">
     <div class="hidden h-full w-1/6 md:flex">
@@ -25,7 +27,7 @@
                     <input type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="New Password" />
                     <input type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Confirm Password" />
                     <div class="mt-2 flex w-full items-center justify-center">
-                        <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg">
+                        <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                             @Submit
                         </button>
                     </div>
@@ -36,7 +38,7 @@
                     <label class="text-xl font-bold text-black dark:text-white">@ProfileHeader</label>
                     <input type="file" accept="image/*" class="hidden" id="imgFile" onchange="setImagePreview(event)" />
                     <img id="profileImage" src="/img/SampleProfile.jpg" class="h-32 w-32 rounded-full bg-transparent drop-shadow-lg" />
-                    <label for="imgFile" class="mt-4 inline-block cursor-pointer rounded bg-violet-500 px-4 py-2 text-white">
+                    <label for="imgFile" class="mt-4 inline-block cursor-pointer rounded bg-violet-500 px-4 py-2 text-white duration-300 hover:bg-violet-800">
                         @Upload
                     </label>
                 </div>
@@ -48,71 +50,9 @@
                             <input id="darkModeToggle" type="checkbox" class="peer sr-only drop-shadow-sm"  onclick="setDarkModePreference(this.checked)">
                             <div class="relative drop-shadow-sm w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-500 dark:peer-focus:ring-green-500 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-violet-500 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-violet-500 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
                         </label>
-                        <div class="mt-5 flex flex-row items-center gap-3">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_94_278)">
-                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#EE2E2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M12 7V11" stroke="#EE2E2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M12 16H12.01" stroke="#EE2E2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_94_278">
-                                        <rect width="24" height="24" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    const setImagePreview = (event) => {
-        const file = event.target.files[0];
-
-        // Check if a file is selected and is an image
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-
-            // When file is loaded, set the image preview
-            reader.onloadend = () => {
-                document.getElementById("profileImage").src = reader.result;
-            };
-
-            // Read the image file as a data URL
-            reader.readAsDataURL(file);
-        }
-    }
-</script>
-
-<script>
-    function setDarkModePreference(isDarkMode) {
-        document.cookie = `darkMode=${isDarkMode}; path=/; expires=${new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000).toUTCString()}`;
-
-        document.body.classList.toggle('dark', isDarkMode);
-
-        window.location.reload();
-    }
-
-    function getCookie(name) {
-        let matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([.$?*|{}()[]\\\/+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-        console.log("triggered")
-    }
-
-    window.onload = function () {
-        const darkModeCookie = getCookie('darkMode');
-        const isDarkMode = darkModeCookie === 'true';
-
-        if (isDarkMode) {
-            document.body.classList.add('dark');
-            document.getElementById('darkModeToggle').checked = true;
-        }
-    };
-
-</script>

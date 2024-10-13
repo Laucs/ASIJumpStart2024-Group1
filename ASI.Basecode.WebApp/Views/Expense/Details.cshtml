@@ -9,16 +9,16 @@
 
 <div class="flex h-screen w-screen flex-row dark:bg-black">
     <div class="hidden h-full w-1/6 md:flex"></div>
-    <div class="h-screen w-full md:w-5/6">
-        <div class="flex h-screen w-full flex-row rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-8 dark:bg-gradient-to-b">
+    <div class="h-auto w-full md:w-5/6">
+        <div class="flex h-auto w-full flex-row rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-8 dark:bg-gradient-to-b">
             <div class="w-full md:w-1/2">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@ExpenseManagement</label>
                 <form method="post" action="/Expense/AddExpense" class="mt-5 flex flex-col gap-3">
                     <!-- Category Dropdown -->
                     <div class="flex flex-col gap-2">
                         <label class="text-lg font-bold text-black dark:text-white">@Category</label>
-                        <select name="categoryName" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" required>
-                            <option class="text-white placeholder:text-white dark:placeholder:text-white" value="">Select a Category</option>
+                        <select name="categoryName" class="rounded-lg border-zinc-600 px-4 py-2 text-black dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" required>
+                            <option class="text-white placeholder:text-white dark:text-white dark:placeholder:text-white">Select a Category</option>'
                             @* @foreach (var category in categories)
                             {
                                 <option value="@category">@category</option>
@@ -45,7 +45,7 @@
                     <!-- Date -->
                     <div class="flex flex-col gap-2">
                         <label class="text-lg font-bold text-black dark:text-white">@Date</label>
-                        <input name="date" type="date" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" required />
+                        <input name="date" type="date" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white dark:[color-scheme:dark]" required />
                     </div>
 
                     <!-- Description -->
@@ -56,7 +56,7 @@
 
                     <!-- Submit Button -->
                     <div class="mt-2 flex w-full items-center justify-center">
-                        <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg">
+                        <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                             @Submit
                         </button>
                     </div>
