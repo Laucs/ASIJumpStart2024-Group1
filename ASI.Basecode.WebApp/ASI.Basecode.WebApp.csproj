@@ -38,6 +38,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\js\ImagePreview\" />
+    <Folder Include="wwwroot\js\DarkMode\" />
   </ItemGroup>
 
   <ItemGroup>
