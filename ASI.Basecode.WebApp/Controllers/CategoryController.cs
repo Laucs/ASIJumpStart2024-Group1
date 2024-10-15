@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -26,6 +28,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly ICategoryService _categoryService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -45,6 +48,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             ILoggerFactory loggerFactory,
                             IConfiguration configuration,
                             IMapper mapper,
+                            ICategoryService categoryService,
                             IUserService userService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
@@ -55,18 +59,36 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._categoryService = categoryService;
         }
 
         /// <summary>
         /// Summary Method
         /// </summary>
         /// <returns>Analytics Dashboard</returns>
-        [AllowAnonymous]
         [HttpGet]
         public IActionResult Details()
         {
             ViewData["ActivePage"] = "Category";
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult PostCategory(CategoryViewModel model)
+        {
+            var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = Convert.ToInt32(claimsUserId);
+
+            var category = new CategoryViewModel
+            {
+                CategoryTitle = model.CategoryTitle,
+                UserId = userId,
+            };
+
+
+            _categoryService.Add(category);
+
+            return RedirectToAction("Details", "Category");
         }
     }
 }

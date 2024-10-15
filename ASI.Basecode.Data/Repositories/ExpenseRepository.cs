@@ -21,7 +21,10 @@ namespace ASI.Basecode.Data.Repositories
             return this.GetDbSet<MExpense>();
         }
 
-        
+        public bool ExpenseExists(int expenseId)
+        {
+            return this.GetDbSet<MExpense>().Any(x => x.ExpenseId == expenseId);
+        }
 
         public void AddExpense(MExpense model)
         {
@@ -44,12 +47,8 @@ namespace ASI.Basecode.Data.Repositories
             if (expenseToDelete != null)
             {
                 this.GetDbSet<MExpense>().Remove(expenseToDelete);
+                UnitOfWork.SaveChanges(); 
             }
-            
         }
-
-
-
-
     }
 }

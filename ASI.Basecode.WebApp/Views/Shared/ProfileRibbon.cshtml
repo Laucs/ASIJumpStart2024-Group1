@@ -5,7 +5,7 @@
         <img class="h-8 w-8 rounded-full" src="/img/SampleProfile.jpg" />
         <label class="text-sm font-bold text-white">@Username</label>
     </div>
-    <form asp-controller="Credentials" asp-action="Logout" method="post" style="display: inline;">
+    <form asp-controller="Credentials" asp-action="SignOutUser" method="post" style="display: inline;">
         @Html.AntiForgeryToken()
         <button type="submit" class="h-full rounded-lg bg-violet-500 px-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-800">
             <svg width="20" height="20" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">

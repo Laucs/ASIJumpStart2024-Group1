@@ -22,10 +22,14 @@ namespace ASI.Basecode.Data.Repositories
 
         public void AddCategory(MCategory model)
         {
-            var maxId = this.GetDbSet<MCategory>().Max(x => x.CategoryId) + 1;
-            model.CategoryId = maxId;
+            var maxId = this.GetDbSet<MCategory>().Any()
+                ? this.GetDbSet<MCategory>().Max(x => x.CategoryId) + 1
+                : 1;
+
+            this.GetDbSet<MCategory>().Add(model);
             UnitOfWork.SaveChanges();
         }
+
 
         public void UpdateCategory(MCategory model)
         {
@@ -45,10 +49,5 @@ namespace ASI.Basecode.Data.Repositories
                 this.GetDbSet<MCategory>().Remove(existingData);
             }
         }
-
-
-
-       
-
     }
 }

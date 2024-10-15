@@ -10,6 +10,7 @@ namespace ASI.Basecode.Data.Interfaces
     public interface IExpenseRepository
     {
         IQueryable<MExpense> GetExpenses();
+        public bool ExpenseExists(int expenseId);
         void AddExpense(MExpense expense);
         void UpdateExpense(MExpense expense);
         void DeleteExpense(int expenseId);

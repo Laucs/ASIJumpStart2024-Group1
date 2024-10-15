@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.13 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.14 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -550,7 +550,7 @@ video {
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
 
-[hidden] {
+[hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
 
@@ -732,10 +732,6 @@ video {
   margin-top: 1.5rem;
 }
 
-.mb-96 {
-  margin-bottom: 24rem;
-}
-
 .block {
   display: block;
 }
@@ -862,19 +858,6 @@ video {
 
 .min-h-full {
   min-height: 100%;
-}
-
-.min-h-screen {
-  min-height: 100vh;
-}
-
-.min-h-max {
-  min-height: -moz-max-content;
-  min-height: max-content;
-}
-
-.min-h-\[1080px\] {
-  min-height: 1080px;
 }
 
 .w-1\/2 {
@@ -1119,6 +1102,11 @@ video {
   border-inline-start-color: rgb(139 92 246 / var(--tw-border-opacity));
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
 .bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
@@ -1176,11 +1164,6 @@ video {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
-}
-
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
 .from-violet-950 {
@@ -1254,11 +1237,6 @@ video {
   padding-bottom: 2rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .pb-20 {
   padding-bottom: 5rem;
 }
@@ -1269,14 +1247,6 @@ video {
 
 .pt-8 {
   padding-top: 2rem;
-}
-
-.pb-52 {
-  padding-bottom: 13rem;
-}
-
-.pb-96 {
-  padding-bottom: 24rem;
 }
 
 .text-center {
@@ -3151,11 +3121,6 @@ img, video {
   background-color: rgb(139 92 246 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-violet-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(109 40 217 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-violet-800:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(91 33 182 / var(--tw-bg-opacity));
@@ -3263,10 +3228,6 @@ img, video {
 
 .dark\:\[color-scheme\:dark\]:is(.dark *) {
   color-scheme: dark;
-}
-
-.dark\:\[color-scheme\:text-white\]:is(.dark *) {
-  color-scheme: text-white;
 }
 
 .dark\:placeholder\:text-white:is(.dark *)::-moz-placeholder {

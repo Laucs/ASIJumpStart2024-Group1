@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -82,31 +83,32 @@ namespace ASI.Basecode.WebApp.Controllers
         public async Task<IActionResult> Login(Models.LoginViewModel model, string returnUrl)
         {
             this._session.SetString("HasSession", "Exist");
+            
+            MUser user = new()
+            {
+                UserCode = model.UserCode,
+                Password = model.Password,
+            };
 
-            MUser user = null;
-
-            //User user = new() { Id = 0, UserId = "0", Name = "Name", Password = "Password" };
-
-            //await this._signInManager.SignInAsync(user);
-            //this._session.SetString("UserName", model.UserId);
-
-            //return RedirectToAction("Index", "Home");
+            // Authenticate user
             var loginResult = _userService.AuthenticateUser(model.UserCode, model.Password, ref user);
+
+            // Check if authentication was successful and user object was populated
             if (loginResult == LoginResult.Success)
             {
-                // 認証OK
+                // Authentication successful
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("UserName", string.Join(" ", user.FirstName, user.LastName));
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Summary", "Analytics");
             }
             else
             {
-                // 認証NG
+                // Authentication failed, user is null or credentials are wrong
                 TempData["ErrorMessage"] = "Incorrect UserId or Password";
                 return View();
             }
-            //return View();
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -117,12 +119,28 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Register(Services.ServiceModels.LoginViewModel model)
+        public IActionResult Register(UserViewModel model)
         {
             try
             {
-                //_userService.AddUser(model);
-                return RedirectToAction("Login", "Account");
+                var userModel = new UserViewModel
+                {
+                    UserCode = model.UserCode,
+                    FirstName = model.FirstName,
+                    LastName = "Test",
+                    Password = model.Password
+                    
+                };
+
+                bool checkExistingUser = _userService.RetrieveAll().Any(data => data.UserCode == userModel.UserCode);
+                if(checkExistingUser)
+                {
+                    TempData["DuplicateErr"] = "Duplicate Data";
+                    return View();
+
+                }
+                _userService.Add(model);
+                return RedirectToAction("Login", "Credentials");
             }
             catch(InvalidDataException ex)
             {
@@ -150,7 +168,7 @@ namespace ASI.Basecode.WebApp.Controllers
         public async Task<IActionResult> SignOutUser()
         {
             await this._signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Credentials");
         }
     }
 }
