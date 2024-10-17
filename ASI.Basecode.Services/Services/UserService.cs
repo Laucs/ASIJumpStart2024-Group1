@@ -59,15 +59,22 @@ namespace ASI.Basecode.Services.Services
         /// <param name="model">The model.</param>
         public void Add(UserViewModel model)
         {
-            var newModel = new MUser();
-            newModel.UserCode = model.UserCode;
-            newModel.FirstName = model.FirstName;
-            newModel.LastName = model.LastName;
-            newModel.Password = PasswordManager.EncryptPassword(model.Password);
-            newModel.UserRole = 1;
+            var newModel = new MUser
+            {
+                UserCode = model.UserCode,
+                FirstName = model.FirstName ?? null,
+                LastName = model.LastName ?? null,
+                Password = PasswordManager.EncryptPassword(model.Password),
+                Mail = model.Mail,
+                UserRole = 1,
+                EmailVerificationToken = model.EmailVerificationToken,
+                VerificationTokenExpiration = model.VerificationTokenExpiration,
+                IsEmailVerified = false
+            };
 
             _userRepository.AddUser(newModel);
         }
+
 
         /// <summary>
         /// Updates the specified model.
@@ -80,7 +87,9 @@ namespace ASI.Basecode.Services.Services
             existingData.FirstName = model.FirstName;
             existingData.LastName = model.LastName;
             existingData.Password = PasswordManager.EncryptPassword(model.Password);
-
+            existingData.EmailVerificationToken = model.EmailVerificationToken;
+            existingData.VerificationTokenExpiration = model.VerificationTokenExpiration;
+            existingData.IsEmailVerified = true;
             _userRepository.UpdateUser(existingData);
         }
 
@@ -93,14 +102,57 @@ namespace ASI.Basecode.Services.Services
             _userRepository.DeleteUser(id);
         }
 
+        /*        public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
+                {
+                    var passwordKey = PasswordManager.EncryptPassword(password);
+                    user = _userRepository.GetUsers()
+                        .FirstOrDefault(x => x.UserCode == userCode &&
+                                             x.Password == passwordKey &&
+                                             x.IsEmailVerified == true);
+
+                    return user != null ? LoginResult.Success : LoginResult.Failed;
+                }*/
+
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
-            user = new MUser();
-            var passwordKey = PasswordManager.EncryptPassword(password);
-            user = _userRepository.GetUsers().Where(x => x.UserCode == userCode &&
-                                                     x.Password == passwordKey).FirstOrDefault();
+            // Hardcoded test user credentials
+            string hardcodedUserCode = "arya"; // Replace with your test user code
+            string hardcodedPassword = "alvin1"; // Replace with the actual password you want to test
 
-            return user != null ? LoginResult.Success : LoginResult.Failed;
+            // For testing, compare against hardcoded values instead of fetching from the repository
+            if (userCode == hardcodedUserCode && password == hardcodedPassword)
+            {
+                // Create a new user object for testing
+                user = new MUser
+                {
+                    UserCode = hardcodedUserCode,
+                    Password = PasswordManager.EncryptPassword(hardcodedPassword),
+                    IsEmailVerified = true // Set to true for testing
+                };
+
+                return LoginResult.Success; // Simulate successful login
+            }
+
+            return LoginResult.Failed; // If the hardcoded values don't match
         }
+
+        public bool IsUsernameTaken(string username)
+        {
+            return _userRepository.GetUsers()
+                .Any(x => x.UserCode.ToUpper() == username.ToUpper() && x.Deleted != true);
+        }
+
+        public bool IsEmailTaken(string email)
+        {
+            return _userRepository.GetUsers()
+                .Any(x => x.Mail.ToLower() == email.ToLower() && x.Deleted != true);
+        }
+
+        public MUser GetUserByVerificationToken(string token)
+        {
+            return _userRepository.GetUsers().SingleOrDefault(u => u.EmailVerificationToken == token && u.VerificationTokenExpiration > DateTime.Now && !u.Deleted);
+        }
+
+
     }
 }

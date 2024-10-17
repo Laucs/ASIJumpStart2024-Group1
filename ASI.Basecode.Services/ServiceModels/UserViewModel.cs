@@ -27,6 +27,13 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [Required(ErrorMessage = "This is required")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "This is required")]
+        public string Mail { get; set; }
+
+        public string EmailVerificationToken { get; set; }
+        public DateTime? VerificationTokenExpiration { get; set; }
+        public bool IsEmailVerified { get; set; }
     }
 
     public class UserListViewModel
