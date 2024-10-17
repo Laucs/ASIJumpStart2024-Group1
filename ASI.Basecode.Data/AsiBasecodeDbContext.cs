@@ -37,6 +37,8 @@ namespace ASI.Basecode.Data
 
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
+                entity.Property(e => e.EmailVerificationToken).HasMaxLength(255);
+
                 entity.Property(e => e.FirstName).HasMaxLength(50);
 
                 entity.Property(e => e.FirstNameKana).HasMaxLength(50);
@@ -79,6 +81,8 @@ namespace ASI.Basecode.Data
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.VerificationTokenExpiration).HasColumnType("datetime");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Data.Models;
 using ASI.Basecode.Services.ServiceModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
 namespace ASI.Basecode.Services.Interfaces
@@ -13,6 +14,8 @@ namespace ASI.Basecode.Services.Interfaces
         void Update(UserViewModel model);
         void Delete(int id);
         LoginResult AuthenticateUser(string userCode, string password, ref MUser user);
-        //void AddUser(UserViewModel model);
+        bool IsUsernameTaken(string username);
+        bool IsEmailTaken(string email);
+        MUser GetUserByVerificationToken(string token);
     }
 }

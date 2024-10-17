@@ -3,7 +3,6 @@ using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Authentication;
-using ASI.Basecode.WebApp.Models;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +25,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -47,6 +47,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IMapper mapper,
                             IUserService userService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
+                             IEmailService emailService,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
@@ -55,6 +56,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._emailService = emailService;
         }
 
         /// <summary>
@@ -79,34 +81,30 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Created response view </returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(Models.LoginViewModel model, string returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             this._session.SetString("HasSession", "Exist");
 
             MUser user = null;
 
-            //User user = new() { Id = 0, UserId = "0", Name = "Name", Password = "Password" };
-
-            //await this._signInManager.SignInAsync(user);
-            //this._session.SetString("UserName", model.UserId);
-
-            //return RedirectToAction("Index", "Home");
+            // Call the AuthenticateUser method which checks both password and email verification
             var loginResult = _userService.AuthenticateUser(model.UserCode, model.Password, ref user);
+
             if (loginResult == LoginResult.Success)
             {
-                // 認証OK
+                // If authentication is successful and email is verified, sign the user in
                 await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", string.Join(" ", user.FirstName, user.LastName));
-                return RedirectToAction("Index", "Home");
+                this._session.SetString("UserName", user.UserCode);
+                return RedirectToAction("Summary", "Analytics");
             }
             else
             {
-                // 認証NG
-                TempData["ErrorMessage"] = "Incorrect UserId or Password";
+                // If login fails, return an error message
+                TempData["ErrorMessage"] = "Invalid credentials or email not verified.";
                 return View();
             }
-            //return View();
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -117,23 +115,86 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Register(Services.ServiceModels.LoginViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             try
             {
-                //_userService.AddUser(model);
-                return RedirectToAction("Login", "Account");
+                Console.WriteLine("Starting Registration");
+
+                // Check if username is taken
+                if (_userService.IsUsernameTaken(model.Username))
+                {
+                    Console.WriteLine($"Username {model.Username} is already taken.");
+                    ModelState.AddModelError("Username", "This username is already taken.");
+                }
+
+                // Check if email is taken
+                if (_userService.IsEmailTaken(model.Mail))
+                {
+                    Console.WriteLine($"Email {model.Mail} is already registered.");
+                    ModelState.AddModelError("Mail", "This email is already registered.");
+                }
+
+                // If no validation errors
+                if (ModelState.IsValid)
+                {
+                    Console.WriteLine("Model is valid, creating user.");
+
+                    // Create user from model
+                    var user = CreateUserFromModel(model);
+                    user.EmailVerificationToken = Guid.NewGuid().ToString(); // Generate token
+                    user.VerificationTokenExpiration = DateTime.Now.AddMinutes(5); // Set expiration
+
+                    // Log the generated token and expiration time
+                    Console.WriteLine($"Generated Token: {user.EmailVerificationToken}");
+                    Console.WriteLine($"Token Expiration: {user.VerificationTokenExpiration}");
+
+                    // Add user to the database
+                    _userService.Add(new UserViewModel
+                    {
+                        UserCode = model.Username,
+                        Mail = model.Mail,
+                        FirstName = null,
+                        LastName = null,
+                        Password = model.Password,
+                        EmailVerificationToken = user.EmailVerificationToken, // Store token
+                        VerificationTokenExpiration = user.VerificationTokenExpiration // Store expiration
+                    });
+
+                    // Log email sending attempt
+                    Console.WriteLine($"Sending verification email to {model.Mail}.");
+
+                    // Send verification email
+                    await _emailService.SendEmailAsync(model.Mail, "Verify your email",
+                        $"Please verify your email by clicking this link: " +
+                        $"{Url.Action("VerifyEmail", "Credentials", new { token = user.EmailVerificationToken }, Request.Scheme)}");
+
+                    // Log success
+                    Console.WriteLine("Registration successful, verification email sent.");
+                    TempData["SuccessMessage"] = "Successfully registered! Please check your email to verify your account.";
+
+                    return RedirectToAction("Login", "Credentials");
+                }
+                else
+                {
+                    Console.WriteLine("Model validation failed.");
+                }
             }
-            catch(InvalidDataException ex)
+            catch (InvalidDataException ex)
             {
+                Console.WriteLine($"Invalid data exception: {ex.Message}");
                 TempData["ErrorMessage"] = ex.Message;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+                Console.WriteLine($"Server error: {ex.Message}");
+                TempData["ErrorMessage"] = "Server Error";
             }
-            return View();
+
+            Console.WriteLine("Returning to registration view due to error.");
+            return View(model);
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -152,5 +213,65 @@ namespace ASI.Basecode.WebApp.Controllers
             await this._signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+
+        // Method to create a new user
+        private MUser CreateUserFromModel(RegisterViewModel model)
+        {
+            return new MUser
+            {
+                Mail = model.Mail,
+                UserCode = model.Username,
+                Password = PasswordManager.EncryptPassword(model.Password),
+                FirstName = null,
+                LastName = null,
+                InsBy = null,
+                InsDt = DateTime.Now,
+                UpdBy = null,
+                UpdDt = DateTime.Now,
+                Deleted = false,
+                Remarks = "USER",
+                TemporaryPassword = null
+            };
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult VerifyEmail(string token)
+        {
+            Console.WriteLine($"Verifying email with token: {token}");
+
+            var user = _userService.GetUserByVerificationToken(token);
+
+            if (user != null)
+            {
+                Console.WriteLine($"Token valid, verifying user with ID: {user.UserId}");
+
+                // Mark email as verified
+                user.IsEmailVerified = true;
+                user.VerificationTokenExpiration = null;
+
+                _userService.Update(new UserViewModel
+                {
+                    Id = user.UserId,
+                    UserCode = user.UserCode,
+                    IsEmailVerified = true
+                });
+
+                TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
+                Console.WriteLine("Email verified successfully.");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid or expired token.";
+                Console.WriteLine("Invalid or expired token.");
+            }
+
+            return RedirectToAction("Login", "Credentials");
+        }
+
+
+
+
     }
+
 }

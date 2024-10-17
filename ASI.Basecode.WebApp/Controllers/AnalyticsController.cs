@@ -61,7 +61,6 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Summary Method
         /// </summary>
         /// <returns>Analytics Dashboard</returns>
-        [AllowAnonymous]
         [HttpGet]
         public IActionResult Summary()
         {

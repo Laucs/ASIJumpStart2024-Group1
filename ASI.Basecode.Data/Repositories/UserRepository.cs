@@ -37,8 +37,8 @@ namespace ASI.Basecode.Data.Repositories
 
         public void UpdateUser(MUser user)
         {
-            this.GetDbSet<MUser>().Update(user);
             user.UpdDt = DateTime.Now;
+            this.GetDbSet<MUser>().Update(user);
             UnitOfWork.SaveChanges();
         }
 
