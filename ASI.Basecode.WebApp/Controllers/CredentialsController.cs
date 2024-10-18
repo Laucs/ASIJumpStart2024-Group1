@@ -83,7 +83,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(Models.LoginViewModel model, string returnUrl)
+        public async Task<IActionResult> Login(SigninViewModel model, string returnUrl)
         {
             this._session.SetString("HasSession", "Exist");
 
@@ -97,16 +97,24 @@ namespace ASI.Basecode.WebApp.Controllers
 
             if (loginResult == LoginResult.Success)
             {
+                // Check if the user's email is verified
+                if (!user.IsEmailVerified) // Assuming you have a property for email verification
+                {
+                    TempData["EmailNotVerified"] = "Your email address is not verified. Please check your inbox for the verification link.";
+                    return View(); // Return to the login view or wherever you want
+                }
+
                 await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", string.Join(" ", user.FirstName, user.LastName));
+                TempData["LoginSuccess"] = $"Successfully logged in as {user.UserCode}";
                 return RedirectToAction("Summary", "Analytics");
             }
             else
             {
-                TempData["ErrorMessage"] = "Incorrect UserId or Password";
+                TempData["InvalidCred"] = "Incorrect Username or Password. Please Try Again!";
                 return View();
             }
         }
+
 
 
 
@@ -123,35 +131,26 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                Console.WriteLine("Starting Registration");
-
                 // Check if username is taken
                 if (_userService.IsUsernameTaken(model.Username))
                 {
-                    Console.WriteLine($"Username {model.Username} is already taken.");
                     ModelState.AddModelError("Username", "This username is already taken.");
                 }
 
                 // Check if email is taken
                 if (_userService.IsEmailTaken(model.Mail))
                 {
-                    Console.WriteLine($"Email {model.Mail} is already registered.");
                     ModelState.AddModelError("Mail", "This email is already registered.");
                 }
 
                 // If no validation errors
                 if (ModelState.IsValid)
                 {
-                    Console.WriteLine("Model is valid, creating user.");
 
                     // Create user from model
                     var user = CreateUserFromModel(model);
                     user.EmailVerificationToken = Guid.NewGuid().ToString(); // Generate token
                     user.VerificationTokenExpiration = DateTime.Now.AddMinutes(5); // Set expiration
-
-                    // Log the generated token and expiration time
-                    Console.WriteLine($"Generated Token: {user.EmailVerificationToken}");
-                    Console.WriteLine($"Token Expiration: {user.VerificationTokenExpiration}");
 
                     // Add user to the database
                     _userService.Add(new UserViewModel
@@ -161,21 +160,14 @@ namespace ASI.Basecode.WebApp.Controllers
                         FirstName = null,
                         LastName = null,
                         Password = model.Password,
-                        EmailVerificationToken = user.EmailVerificationToken, // Store token
-                        VerificationTokenExpiration = user.VerificationTokenExpiration // Store expiration
+                        EmailVerificationToken = user.EmailVerificationToken,
+                        VerificationTokenExpiration = user.VerificationTokenExpiration
                     });
 
-                    // Log email sending attempt
-                    Console.WriteLine($"Sending verification email to {model.Mail}.");
 
                     // Send verification email
-                    await _emailService.SendEmailAsync(model.Mail, "Verify your email",
-                        $"Please verify your email by clicking this link: " +
-                        $"{Url.Action("VerifyEmail", "Credentials", new { token = user.EmailVerificationToken }, Request.Scheme)}");
-
-                    // Log success
-                    Console.WriteLine("Registration successful, verification email sent.");
-                    TempData["SuccessMessage"] = "Successfully registered! Please check your email to verify your account.";
+                    await SendVerificationEmail(model.Mail, user.EmailVerificationToken);
+                    TempData["RegSuccess"] = "Successfully registered! Please check your email to verify your account.";
 
                     return RedirectToAction("Login", "Credentials");
                 }
@@ -186,19 +178,14 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             catch (InvalidDataException ex)
             {
-                Console.WriteLine($"Invalid data exception: {ex.Message}");
                 TempData["ErrorMessage"] = ex.Message;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Server error: {ex.Message}");
                 TempData["ErrorMessage"] = "Server Error";
             }
-
-            Console.WriteLine("Returning to registration view due to error.");
             return View(model);
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -207,16 +194,118 @@ namespace ASI.Basecode.WebApp.Controllers
             return View();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); // Re-render form if model validation fails
+            }
+
+            // Check if the email exists
+            var user = _userService.GetUserByEmail(model.Email);
+
+            if (user != null)
+            {
+                // Generate reset token and expiration
+                var resetToken = Guid.NewGuid().ToString();
+                user.PasswordResetToken = resetToken;
+                user.ResetTokenExpiration = DateTime.Now.AddHours(1); // Token valid for 1 hour
+
+                // Update user details with reset token
+                _userService.Update(new UserViewModel
+                {
+                    Id = user.UserId,
+                    UserCode = user.UserCode,
+                    PasswordResetToken = resetToken,
+                    ResetTokenExpiration = user.ResetTokenExpiration
+                });
+
+                // Send reset password email
+                await SendResetPasswordEmail(model.Email, resetToken);
+            }
+
+            TempData["SendPassToken"] = "Please check your email a password reset link will be sent.";
+            return RedirectToAction("Login", "Credentials");
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["InvalidResetToken"] = "Invalid or expired password reset token.";
+                return View();
+            }
+
+            // Initialize the ResetPasswordViewModel with the token
+            var model = new ResetPasswordViewModel
+            {
+                Token = token
+            };
+
+            return View(model); // Pass the model with the token to the view
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Get the user by the token
+                var user = _userService.GetUserByPasswordResetToken(model.Token);
+                if (user == null || user.ResetTokenExpiration < DateTime.Now)
+                {
+                    TempData["InvalidResetToken"] = "Invalid or expired password reset token.";
+                    return View(model); // Pass the model back so the token is retained
+                }
+
+                // Update user's password
+                user.Password = PasswordManager.EncryptPassword(model.NewPassword);
+                user.PasswordResetToken = null; // Clear the reset token
+                user.ResetTokenExpiration = null;
+
+                // Update user information in the database
+                _userService.Update(new UserViewModel
+                {
+                    Id = user.UserId,
+                    Password = user.Password,
+                   UserCode = user.UserCode
+                });
+
+                TempData["ResetSuccess"] = "Password successfully reset. You can now log in with your new password.";
+                return RedirectToAction("Login", "Credentials");
+            }
+
+            return View(model); // Return the view with validation errors if model is not valid
+        }
+
+
+        /// <summary>
+        /// Sign Out current account and return login view.
+        /// </summary>
+        /// <returns>Created response view</returns>
         /// <summary>
         /// Sign Out current account and return login view.
         /// </summary>
         /// <returns>Created response view</returns>
         [AllowAnonymous]
-        public async Task<IActionResult> SignOutUser()
+        [HttpPost]
+        public async Task<IActionResult> Logout()
         {
             await this._signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+
+            // Set a success message in TempData
+            TempData["LogoutSuccess"] = "You have logged out successfully.";
+
+            return RedirectToAction("Login", "Credentials");
         }
+
 
         // Method to create a new user
         private MUser CreateUserFromModel(RegisterViewModel model)
@@ -238,18 +327,34 @@ namespace ASI.Basecode.WebApp.Controllers
             };
         }
 
+        private async Task SendVerificationEmail(string email, string token)
+        {
+            var verificationLink = Url.Action("VerifyEmail", "Credentials", new { token = token }, Request.Scheme);
+            var emailBody = $"Please verify your email by clicking <a href='{verificationLink}'>here</a>. You have 5 minutes to verify your account.";
+
+            await _emailService.SendEmailAsync(email, "EXTR - Email Verification", emailBody);
+        }
+
+        private async Task SendResetPasswordEmail(string email, string resetToken)
+        {
+            // Generate reset link
+            var resetLink = Url.Action("ResetPassword", "Credentials", new { token = resetToken }, Request.Scheme);
+
+            // Send reset email
+            var emailBody = $"Please reset your password by clicking <a href='{resetLink}'>here</a>. If you did not make this request, please do not click this link.";
+            await _emailService.SendEmailAsync(email, "EXTR - Password Reset Verification", emailBody);
+        }
+
+
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult VerifyEmail(string token)
         {
-            Console.WriteLine($"Verifying email with token: {token}");
-
             var user = _userService.GetUserByVerificationToken(token);
 
             if (user != null)
             {
-                Console.WriteLine($"Token valid, verifying user with ID: {user.UserId}");
-
                 // Mark email as verified
                 user.IsEmailVerified = true;
                 user.VerificationTokenExpiration = null;
@@ -260,21 +365,15 @@ namespace ASI.Basecode.WebApp.Controllers
                     UserCode = user.UserCode,
                     IsEmailVerified = true
                 });
-
-                TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
-                Console.WriteLine("Email verified successfully.");
+                TempData["EmailVerified"] = "Email verified successfully! You can now log in.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Invalid or expired token.";
-                Console.WriteLine("Invalid or expired token.");
+                TempData["TokenExpired"] = "Invalid or expired token.";
             }
 
             return RedirectToAction("Login", "Credentials");
         }
-
-
-
 
     }
 

@@ -89,6 +89,8 @@ namespace ASI.Basecode.Services.Services
             existingData.LastName = model.LastName;
             existingData.EmailVerificationToken = model.EmailVerificationToken;
             existingData.VerificationTokenExpiration = model.VerificationTokenExpiration;
+            existingData.PasswordResetToken = model.PasswordResetToken;
+            existingData.ResetTokenExpiration = model.ResetTokenExpiration;
             existingData.IsEmailVerified = true;
             _userRepository.UpdateUser(existingData);
         }
@@ -101,17 +103,6 @@ namespace ASI.Basecode.Services.Services
         {
             _userRepository.DeleteUser(id);
         }
-
-        /*        public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
-                {
-                    var passwordKey = PasswordManager.EncryptPassword(password);
-                    user = _userRepository.GetUsers()
-                        .FirstOrDefault(x => x.UserCode == userCode &&
-                                             x.Password == passwordKey &&
-                                             x.IsEmailVerified == true);
-
-                    return user != null ? LoginResult.Success : LoginResult.Failed;
-                }*/
 
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
@@ -141,6 +132,17 @@ namespace ASI.Basecode.Services.Services
         {
             return _userRepository.GetUsers().SingleOrDefault(u => u.EmailVerificationToken == token && u.VerificationTokenExpiration > DateTime.Now && !u.Deleted);
         }
+
+        public MUser GetUserByEmail(string email)
+        {
+            return _userRepository.GetUsers().FirstOrDefault(u => u.Mail == email && !u.Deleted);
+        }
+
+        public MUser GetUserByPasswordResetToken(string token)
+        {
+            return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
+        }
+
 
 
     }

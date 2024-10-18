@@ -24,5 +24,7 @@ namespace ASI.Basecode.Data.Models
         public bool IsEmailVerified { get; set; }
         public string EmailVerificationToken { get; set; }
         public DateTime? VerificationTokenExpiration { get; set; }
+        public string PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpiration { get; set; }
     }
 }
