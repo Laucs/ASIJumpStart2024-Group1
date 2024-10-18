@@ -34,6 +34,8 @@ namespace ASI.Basecode.Services.ServiceModels
         public string EmailVerificationToken { get; set; }
         public DateTime? VerificationTokenExpiration { get; set; }
         public bool IsEmailVerified { get; set; }
+        public string PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpiration { get; set; }
     }
 
     public class UserListViewModel

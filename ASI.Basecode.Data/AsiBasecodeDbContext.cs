@@ -63,7 +63,13 @@ namespace ASI.Basecode.Data
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.PasswordResetToken)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Remarks).HasMaxLength(500);
+
+                entity.Property(e => e.ResetTokenExpiration).HasColumnType("datetime");
 
                 entity.Property(e => e.TemporaryPassword)
                     .HasMaxLength(50)

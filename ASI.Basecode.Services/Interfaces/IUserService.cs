@@ -17,5 +17,7 @@ namespace ASI.Basecode.Services.Interfaces
         bool IsUsernameTaken(string username);
         bool IsEmailTaken(string email);
         MUser GetUserByVerificationToken(string token);
+        MUser GetUserByEmail(string email);
+        MUser GetUserByPasswordResetToken(string token);
     }
 }
