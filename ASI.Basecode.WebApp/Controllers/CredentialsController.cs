@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -81,29 +82,34 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Created response view </returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(Models.LoginViewModel model, string returnUrl)
         {
+
             this._session.SetString("HasSession", "Exist");
 
-            MUser user = null;
+            MUser user = new()
+            {
+                UserCode = model.UserCode,
+                Password = model.Password,
+            };
 
-            // Call the AuthenticateUser method which checks both password and email verification
+            // Authenticate user
             var loginResult = _userService.AuthenticateUser(model.UserCode, model.Password, ref user);
 
             if (loginResult == LoginResult.Success)
             {
-                // If authentication is successful and email is verified, sign the user in
                 await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", user.UserCode);
+                this._session.SetString("UserName", string.Join(" ", user.FirstName, user.LastName));
+                TempData["SuccessMessage"] = "Successfully Logged In";
                 return RedirectToAction("Summary", "Analytics");
             }
             else
             {
-                // If login fails, return an error message
-                TempData["ErrorMessage"] = "Invalid credentials or email not verified.";
+                TempData["ErrorMessage"] = "Incorrect UserId or Password";
                 return View();
             }
         }
+
 
 
         [HttpGet]
