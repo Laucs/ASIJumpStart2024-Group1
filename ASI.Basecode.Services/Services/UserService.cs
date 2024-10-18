@@ -7,6 +7,7 @@ using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -115,28 +116,15 @@ namespace ASI.Basecode.Services.Services
 
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
-            // Hardcoded test user credentials
-            string hardcodedUserCode = "arya"; // Replace with your test user code
-            string hardcodedPassword = "alvin1"; // Replace with the actual password you want to test
+            user = new MUser();
+            var passwordKey = PasswordManager.EncryptPassword(password);
+            user = _userRepository.GetUsers().Where(x => x.UserCode == userCode &&
+                                                     x.Password == passwordKey).FirstOrDefault();
 
-            // For testing, compare against hardcoded values instead of fetching from the repository
-            if (userCode == hardcodedUserCode && password == hardcodedPassword)
-            {
-                // Create a new user object for testing
-                user = new MUser
-                {
-                    UserCode = hardcodedUserCode,
-                    Password = PasswordManager.EncryptPassword(hardcodedPassword),
-                    IsEmailVerified = true // Set to true for testing
-                };
-
-                return LoginResult.Success; // Simulate successful login
-            }
-
-            return LoginResult.Failed; // If the hardcoded values don't match
+            return user != null ? LoginResult.Success : LoginResult.Failed;
         }
 
-        public bool IsUsernameTaken(string username)
+        public bool IsUsernameTaken(string username)    
         {
             return _userRepository.GetUsers()
                 .Any(x => x.UserCode.ToUpper() == username.ToUpper() && x.Deleted != true);
