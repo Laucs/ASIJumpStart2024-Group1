@@ -87,7 +87,6 @@ namespace ASI.Basecode.Services.Services
             existingData.UserCode = model.UserCode;
             existingData.FirstName = model.FirstName;
             existingData.LastName = model.LastName;
-            existingData.Password = PasswordManager.EncryptPassword(model.Password);
             existingData.EmailVerificationToken = model.EmailVerificationToken;
             existingData.VerificationTokenExpiration = model.VerificationTokenExpiration;
             existingData.IsEmailVerified = true;
@@ -116,10 +115,12 @@ namespace ASI.Basecode.Services.Services
 
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
+           
             user = new MUser();
-            var passwordKey = PasswordManager.EncryptPassword(password);
-            user = _userRepository.GetUsers().Where(x => x.UserCode == userCode &&
-                                                     x.Password == passwordKey).FirstOrDefault();
+            var passwordKey = PasswordManager.EncryptPassword(password.Trim());
+            user = _userRepository.GetUsers().Where(x => x.UserCode.Trim() == userCode.Trim() &&
+                                                          x.Password == passwordKey &&
+                                                          x.IsEmailVerified).FirstOrDefault();
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }

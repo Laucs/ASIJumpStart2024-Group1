@@ -80,11 +80,11 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="model">The model.</param>
         /// <param name="returnUrl">The return URL.</param>
         /// <returns> Created response view </returns>
+        /// 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(Models.LoginViewModel model, string returnUrl)
         {
-
             this._session.SetString("HasSession", "Exist");
 
             MUser user = new()
@@ -93,14 +93,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 Password = model.Password,
             };
 
-            // Authenticate user
             var loginResult = _userService.AuthenticateUser(model.UserCode, model.Password, ref user);
 
             if (loginResult == LoginResult.Success)
             {
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("UserName", string.Join(" ", user.FirstName, user.LastName));
-                TempData["SuccessMessage"] = "Successfully Logged In";
                 return RedirectToAction("Summary", "Analytics");
             }
             else
