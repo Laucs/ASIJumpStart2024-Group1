@@ -15,17 +15,19 @@ namespace ASI.Basecode.Data.Repositories
         {
 
         }
-        public IQueryable<MCategory> GetCategories()
+        public IQueryable<MCategory> GetCategories(int? userId)
         {
-            return this.GetDbSet<MCategory>();
+            return this.GetDbSet<MCategory>().Where(x => x.UserId == userId);
         }
+
 
         public void AddCategory(MCategory model)
         {
-            var maxId = this.GetDbSet<MCategory>().Max(x => x.CategoryId) + 1;
-            model.CategoryId = maxId;
-            UnitOfWork.SaveChanges();
+       
+            this.GetDbSet<MCategory>().Add(model);
+            UnitOfWork.SaveChanges(); 
         }
+
 
         public void UpdateCategory(MCategory model)
         {
@@ -46,9 +48,6 @@ namespace ASI.Basecode.Data.Repositories
             }
         }
 
-
-
-       
 
     }
 }

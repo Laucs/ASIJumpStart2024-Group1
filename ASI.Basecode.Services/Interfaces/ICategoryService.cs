@@ -2,18 +2,21 @@
 using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.Interfaces
 {
-    public interface IExpenseService
+    public interface ICategoryService
     {
-        public IEnumerable<ExpenseViewModel> RetrieveAll(int? id = null, int? userId = null);
-        ExpenseViewModel RetrieveExpense(int id);
-        void Add(ExpenseViewModel model);
-        void Update(ExpenseViewModel model);
+        public IEnumerable<CategoryViewModel> RetrieveAll(int? userId);
+        CategoryViewModel RetreiveCategory(int id);
+        void Add(CategoryPageViewModel model);
+       /* void Update(CategoryViewModel model);*/
         void Delete(int id);
     }
+
+  
 }

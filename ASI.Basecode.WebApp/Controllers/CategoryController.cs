@@ -2,6 +2,8 @@
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp.Authentication;
 using ASI.Basecode.WebApp.Models;
 using ASI.Basecode.WebApp.Mvc;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -26,6 +29,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly ICategoryService _categoryService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -46,6 +50,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            ICategoryService categoryService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -55,18 +60,56 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._categoryService = categoryService;
         }
 
         /// <summary>
         /// Summary Method
         /// </summary>
         /// <returns>Analytics Dashboard</returns>
-        [AllowAnonymous]
         [HttpGet]
         public IActionResult Details()
         {
+            var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = Convert.ToInt32(claimsUserId);
+
+            var categories = _categoryService.RetrieveAll(userId);
+
+            var viewModel = new CategoryPageViewModel
+            {
+                Categories = categories,
+                NewCategory = new CategoryViewModel() // Initialize for any new category logic
+            };
+
             ViewData["ActivePage"] = "Category";
-            return View();
+            return View(viewModel);
         }
+
+
+
+        [HttpPost]
+        public IActionResult PostCategory(CategoryPageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Get the logged-in user's ID
+                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int userId = Convert.ToInt32(claimsUserId);
+
+                // Assign the userId to the new category
+                model.NewCategory.UserId = userId;
+
+                // Call the service to add the new category
+                _categoryService.Add(model);
+                TempData["AddSuccess"] = "Category added successfully!";
+                // Redirect after successful category creation
+                return RedirectToAction("Details", "Category");
+            }
+
+            return View(model); // Return the view if model state is invalid
+        }
+
     }
+
 }
+

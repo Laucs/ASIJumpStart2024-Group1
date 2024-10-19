@@ -1,3 +1,4 @@
+using ASI.Basecode.Data.Models;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -9,25 +10,25 @@ using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
-    namespace ASI.Basecode.Services.ServiceModels
-    {
-        public class ExpenseViewModel
+    
+        public class CategoryViewModel
         {
-            [Required(ErrorMessage = "Amount is required.")]
-            public int Amount { get; set; }
-
-            public int ExpenseId { get; set; }
+            [Required(ErrorMessage = "Category title is required.")]
+            public string CategoryTitle { get; set; }
 
             public int CategoryId { get; set; }
 
-            [Required(ErrorMessage = "Description is required.")]
-            public string Description { get; set; }
+            [Required(ErrorMessage = "User is required.")]
+            public int UserId { get; set; }
 
             [DataType(DataType.Date)]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime CreatedDate { get; set; }
 
-        } 
+            public virtual MUser User { get; set; }
 
-    }
+            public virtual ICollection<MExpense> MExpenses { get; set; }
+    } 
+
+    
 }
