@@ -1,8 +1,8 @@
 ﻿@using static ASI.Basecode.Resources.Views.SettingsScreen
+@model ASI.Basecode.Services.ServiceModels.ChangePassEmailViewModel
 @{
     ViewData["Title"] = "Settings";
     var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
-
 }
 
 @await Html.PartialAsync("Sidebar")
@@ -16,16 +16,16 @@
         <div class="flex h-auto min-h-full w-full flex-col rounded-lg bg-gray-100 from-violet-950 to-slate-950 dark:bg-gradient-to-b md:flex-row">
             <div class="order-2 flex h-full w-full flex-col px-8 py-8 pb-20 md:w-1/2 md:order-1">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@SettingsHeader</label>
-                <div class="mt-6 flex flex-col gap-5">
+                <form class="mt-6 flex flex-col gap-5">
                     <label class="text-xl font-bold text-black dark:text-white">@UserInfo</label>
-                    <input type="text" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white" placeholder="Username" />
-                    <input type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white" placeholder="Email" />
-                </div>
+                    <input asp-for="UserCode" type="text" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white" placeholder="Username" />
+                    <input asp-for="Mail" type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white" placeholder="Email" />
+                </form>
                 <form class="mt-6 flex flex-col gap-5">
                     <label class="text-xl font-bold text-black dark:text-white">@PassManagement</label>
-                    <input type="text" class="place rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" placeholder="Old Password" />
-                    <input type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="New Password" />
-                    <input type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Confirm Password" />
+                    <input asp-for="OldPassword" type="text" class="place rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" placeholder="Old Password" />
+                    <input asp-for ="NewPassword" type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="New Password" />
+                    <input asp-for="ConfirmPassword" type="email" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Confirm Password" />
                     <div class="mt-2 flex w-full items-center justify-center">
                         <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                             @Submit
