@@ -40,6 +40,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ICategoryRepository, CategoryRepository>();
             this._services.AddScoped<IEmailService, EmailService>();
             this._services.AddScoped<ICategoryService, CategoryService>();
+            this._services.AddScoped<IExpenseService, ExpenseService>();
 
 
             // Repositories
