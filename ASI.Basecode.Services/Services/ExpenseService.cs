@@ -15,89 +15,88 @@ namespace ASI.Basecode.Services.Services
 {
     public class ExpenseService : IExpenseService
     {
-        private readonly IExpenseService _expenseRepository;
+        private readonly IExpenseRepository _expenseRepository;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IMapper mapper, IExpenseService expenseRepository)
+        public ExpenseService(IMapper mapper, IExpenseRepository expenseRepository)
         {
             _mapper = mapper;
             _expenseRepository = expenseRepository;
         }
 
 
-
-
         ///// <summary>
         ///// Retrieves all.
         ///// </summary>
         ///// <returns></returns>
-        //public IEnumerable<ExpenseViewModel> RetrieveAll(int? id = null)
-        //{
-        //    var data = _expenseRepository.
-        //        .Where(x => x.Deleted != true
-        //                && (!id.HasValue || x.UserId == id)
-        //                && (string.IsNullOrEmpty(firstName) || x.FirstName.Contains(firstName)))
-        //        .Select(s => new UserViewModel
-        //        {
-        //            Id = s.UserId,
-        //            Name = string.Concat(s.FirstName, " ", s.LastName),
-        //            Description = s.Remarks,
-        //        });
-        //    return data;
-        //}
 
-        //public UserViewModel RetrieveUser(int id)
-        //{
-        //    var data = _userRepository.GetUsers().FirstOrDefault(x => x.Deleted != true &&  x.UserId == id);
-        //    var model = new UserViewModel
-        //    {
-        //        Id = data.UserId,
-        //        UserCode = data.UserCode,
-        //        FirstName = data.FirstName,
-        //        LastName = data.LastName,
-        //        Password = PasswordManager.DecryptPassword(data.Password)
-        //};
-        //    return model;
-        //}
+        public IEnumerable<ExpenseViewModel> RetrieveAll(int? id = null, int? userId = null)
+        {
+            var data = _expenseRepository.GetExpenses()
+                .Where(x => x.UserId == userId);
+
+            var model = data.Select(expense => new ExpenseViewModel
+            {
+                CategoryId = expense.CategoryId,
+                Amount = expense.Amount,
+                CreatedDate = expense.DateCreated ?? DateTime.MinValue,
+                Description = expense.ExpenseDescription,
+            }).ToList();
+
+            return model;
+        }
+
+        public ExpenseViewModel RetrieveExpense(int id)
+        {
+            var data = _expenseRepository.GetExpenses().FirstOrDefault(x => x.ExpenseId == id);
+            var model = new ExpenseViewModel
+            {
+                CategoryId = data.CategoryId,
+                Amount = data.Amount,
+                CreatedDate = data.DateCreated ?? DateTime.MinValue,
+                Description = data.ExpenseDescription,
+            };
+            return model;
+        }
 
         ///// <summary>
         ///// Adds the specified model.
         ///// </summary>
         ///// <param name="model">The model.</param>
-        //public void Add(UserViewModel model)
-        //{
-        //    var newModel = new MUser();
-        //    newModel.UserCode = model.UserCode;
-        //    newModel.FirstName = model.FirstName;
-        //    newModel.LastName = model.LastName;
-        //    newModel.Password = PasswordManager.EncryptPassword(model.Password);
-        //    newModel.UserRole = 1;
+        public void Add(ExpenseViewModel model)
+        {
+            var newModel = new MExpense();
+            newModel.CategoryId = model.CategoryId;
+            newModel.Amount = model.Amount;
+            newModel.ExpenseDescription = model.Description;
+            newModel.DateCreated = model.CreatedDate;
 
-        //    _userRepository.AddUser(newModel);
-        //}
+            _expenseRepository.AddExpense(newModel);
+        }
 
         ///// <summary>
         ///// Updates the specified model.
         ///// </summary>
         ///// <param name="model">The model.</param>
-        //public void Update(UserViewModel model)
-        //{
-        //    var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserId == model.Id).FirstOrDefault();
-        //    existingData.UserCode = model.UserCode;
-        //    existingData.FirstName = model.FirstName;
-        //    existingData.LastName = model.LastName;
-        //    existingData.Password = PasswordManager.EncryptPassword(model.Password);
+        public void Update(ExpenseViewModel model)
+        {
+            var existingData = _expenseRepository.GetExpenses().Where(s => s.ExpenseId == model.ExpenseId).FirstOrDefault();
+            existingData.CategoryId = model.CategoryId;
+            existingData.Amount = model.Amount;
+            existingData.ExpenseDescription = model.Description;
+            existingData.DateCreated = model.CreatedDate;
 
-        //    _userRepository.UpdateUser(existingData);
-        //}
+            _expenseRepository.UpdateExpense(existingData);
+
+        }
 
         ///// <summary>
         ///// Deletes the specified identifier.
         ///// </summary>
         ///// <param name="id">The identifier.</param>
-        //public void Delete(int id)
-        //{
-        //    _userRepository.DeleteUser(id);
-        //}
+        public void Delete(int id)
+        {
+            _expenseRepository.DeleteExpense(id);
+        }
     }
 }
