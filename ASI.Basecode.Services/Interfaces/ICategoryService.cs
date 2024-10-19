@@ -1,5 +1,4 @@
 ﻿using ASI.Basecode.Services.ServiceModels;
-using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

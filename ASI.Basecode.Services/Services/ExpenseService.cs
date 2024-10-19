@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ASI.Basecode.Services.ServiceModels.ASI.Basecode.Services.ServiceModels;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -65,14 +64,21 @@ namespace ASI.Basecode.Services.Services
         ///// <param name="model">The model.</param>
         public void Add(ExpenseViewModel model)
         {
-            var newModel = new MExpense();
-            newModel.CategoryId = model.CategoryId;
-            newModel.Amount = model.Amount;
-            newModel.ExpenseDescription = model.Description;
-            newModel.DateCreated = model.CreatedDate;
+            // Create a new MExpense object to map the data from the view model
+            var newModel = new MExpense
+            {
+                CategoryId = model.CategoryId,
+                Amount = model.Amount,
+                ExpenseDescription = model.Description,
+                DateCreated = model.CreatedDate,
+                UserId = model.UserId,  // Ensure this is correctly assigned
+                ExpenseName = model.ExpenseName // Newly added field
+            };
 
+            // Call the repository method to save the expense to the database
             _expenseRepository.AddExpense(newModel);
         }
+
 
         ///// <summary>
         ///// Updates the specified model.

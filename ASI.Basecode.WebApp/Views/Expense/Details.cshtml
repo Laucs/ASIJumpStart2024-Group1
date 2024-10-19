@@ -1,4 +1,5 @@
 ﻿@using static ASI.Basecode.Resources.Views.ExpenseScreen
+@model ASI.Basecode.Services.ServiceModels.ExpenseViewModel
 @{
     ViewData["Title"] = "Expense";
     var categories = ViewData["Categories"] as List<string>;
@@ -12,17 +13,19 @@
     <div class="h-auto w-full md:w-5/6">
         <div class="flex h-auto w-full flex-row rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-8 dark:bg-gradient-to-b">
             <div class="w-full md:w-1/2">
-                <label class="text-2xl font-bold text-violet-500 dark:text-white">@ExpenseManagement</label>
-                <form method="post" action="/Expense/AddExpense" class="mt-5 flex flex-col gap-3">
+                <label class="text-2xl font-bold text-violet-500 dark:text-white">Expense Management</label>
+
+                <!-- Form begins here -->
+                <form asp-action="PostExpense" asp-controller="Expense" method="post" class="mt-5 flex flex-col gap-3">
                     <!-- Category Dropdown -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">@Category</label>
-                        <select name="categoryName" class="rounded-lg border-zinc-600 px-4 py-2 text-black dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" required>
-                            <option class="text-white placeholder:text-white dark:text-white dark:placeholder:text-white">Select a Category</option>'
-                            @* @foreach (var category in categories)
+                        <label class="text-lg font-bold text-black dark:text-white">Category</label>
+                        <select asp-for="CategoryId" class="rounded-lg border-zinc-600 px-4 py-2 text-black dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" required>
+                            <option value="">Select a Category</option>
+                            @foreach (var category in Model.Categories)
                             {
-                                <option value="@category">@category</option>
-                            } *@
+                                <option value="@category.CategoryId">@category.CategoryTitle</option>
+                            }
                         </select>
                         @if (ViewData["CategoryError"] != null)
                         {
@@ -32,36 +35,42 @@
 
                     <!-- Title/Name of Expense -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">@ExpenseName</label>
-                        <input name="title" type="text" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Title" required />
+                        <label class="text-lg font-bold text-black dark:text-white">Expense Name</label>
+                        <input asp-for="ExpenseName" type="text" class="rounded-lg border-zinc-600 px-4 py-2 dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Title" required />
+                        <span asp-validation-for="ExpenseName" class="text-red-500"></span>
                     </div>
 
                     <!-- Amount -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">@Amount</label>
-                        <input name="amount" type="number" step="0.01" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" min="0" placeholder="10000" required />
+                        <label class="text-lg font-bold text-black dark:text-white">Amount</label>
+                        <input asp-for="Amount" type="number" step="0.01" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="10000" required />
+                        <span asp-validation-for="Amount" class="text-red-500"></span>
                     </div>
 
                     <!-- Date -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">@Date</label>
-                        <input name="date" type="date" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white dark:[color-scheme:dark]" required />
+                        <label class="text-lg font-bold text-black dark:text-white">Date</label>
+                        <input asp-for="CreatedDate" type="date" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" required />
+                        <span asp-validation-for="CreatedDate" class="text-red-500"></span>
                     </div>
 
                     <!-- Description -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">@Description</label>
-                        <textarea name="description" class="min-h-32 resize-none rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Description" required></textarea>
+                        <label class="text-lg font-bold text-black dark:text-white">Description</label>
+                        <textarea asp-for="Description" class="min-h-32 resize-none rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Description" required></textarea>
+                        <span asp-validation-for="Description" class="text-red-500"></span>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="mt-2 flex w-full items-center justify-center">
                         <button type="submit" class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
-                            @Submit
+                            Submit
                         </button>
                     </div>
                 </form>
             </div>
+
+            <!-- Design elements (optional) -->
             <div class="opacity-10 absolute right-0 w-1/2 md:relative md:z-0 md:opacity-100">
                 <div class="opacity-80 relative top-40 h-64 w-64 rounded-full bg-violet-300 dark:bg-violet-800 md:right-0.5 md:absolute"></div>
                 <div class="opacity-80 relative right-32 h-64 w-64 rounded-full bg-violet-300 dark:bg-violet-800 md:bottom-28 md:absolute"></div>
@@ -70,4 +79,17 @@
     </div>
 </div>
 
+
+@section Scripts {
+    <script>
+        var errMessage = '@TempData["ErrorMessage"]';
+        var addSuccess = '@TempData["AddSuccess"]';
+        if (errMessage) {
+            toastr.error(errMessage);
+        }
+        if (addSuccess) {
+            toastr.success(addSuccess);
+        }
+    </script>
+}
 

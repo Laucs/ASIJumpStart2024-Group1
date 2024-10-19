@@ -21,16 +21,17 @@ namespace ASI.Basecode.Data.Repositories
             return this.GetDbSet<MExpense>();
         }
 
-        
+
 
         public void AddExpense(MExpense model)
         {
-            var maxId = this.GetDbSet<MUser>().Max(x => x.UserId) + 1;
-            model.ExpenseId = maxId;
-            model.DateCreated = DateTime.Today;
+
+            model.DateCreated = DateTime.Now; 
             this.GetDbSet<MExpense>().Add(model);
+            // Save changes to persist the new expense in the database
             UnitOfWork.SaveChanges();
         }
+
 
         public void UpdateExpense(MExpense model)
         {

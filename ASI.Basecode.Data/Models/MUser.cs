@@ -32,6 +32,7 @@ namespace ASI.Basecode.Data.Models
         public DateTime? VerificationTokenExpiration { get; set; }
         public string PasswordResetToken { get; set; }
         public DateTime? ResetTokenExpiration { get; set; }
+        public string ProfileImg { get; set; }
 
         public virtual ICollection<MCategory> MCategories { get; set; }
         public virtual ICollection<MExpense> MExpenses { get; set; }

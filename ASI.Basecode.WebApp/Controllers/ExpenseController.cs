@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -26,6 +28,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IExpenseService _expenseService;
+        private readonly ICategoryService _categoryService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -46,6 +50,8 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            ICategoryService categoryService,
+                            IExpenseService expenseService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -55,18 +61,55 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._expenseService = expenseService;
+            this._categoryService = categoryService;
         }
 
         /// <summary>
         /// Summary Method
         /// </summary>      
         /// <returns>Analytics Dashboard</returns>
-        [AllowAnonymous]
         [HttpGet]
         public IActionResult Details()
         {
+            // Assuming you have a way to get the current logged-in user's ID
+            var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = Convert.ToInt32(claimsUserId);
+
+            // Retrieve categories for the current user
+            var categories = _categoryService.RetrieveAll(userId: userId);
+
+            // Create the view model and pass the categories
+            var model = new ExpenseViewModel
+            {
+                Categories = categories.ToList() // Assuming the categories are fetched as IEnumerable<CategoryViewModel>
+            };
+
             ViewData["ActivePage"] = "Expense";
-            return View();
+            return View(model);
         }
+
+
+        [HttpPost]
+        public IActionResult PostExpense(ExpenseViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int userId = Convert.ToInt32(claimsUserId);
+
+                model.UserId = userId;
+
+                // Call the service to add the expense
+                _expenseService.Add(model);
+
+                TempData["AddSuccess"] = "Expense added successfully!";
+                return RedirectToAction("Details", "Expense");
+            }
+
+            return View(model); // Return the view with validation errors if the model state is invalid
+        }
+
+
     }
 }
