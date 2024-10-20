@@ -54,13 +54,16 @@ namespace ASI.Basecode.Services.Services
             return model;
         }
 
-        public ChangePassEmailViewModel RetrieveUser(string userCode)
+        public UserViewModel RetrieveUserByUsername(string userCode)
         {
             var data = _userRepository.GetUsers().FirstOrDefault(x => x.Deleted != true && x.UserCode == userCode);
-            var user = new ChangePassEmailViewModel()
+            var user = new UserViewModel()
             {
-                Mail = data.Mail,
-                OldPassword = PasswordManager.DecryptPassword(data.Password)
+                Id = data.UserId,
+                UserCode = data.UserCode,
+                FirstName = data.FirstName,
+                LastName = data.LastName,
+                Password = PasswordManager.DecryptPassword(data.Password)
             };
 
             return user;
@@ -155,9 +158,9 @@ namespace ASI.Basecode.Services.Services
             return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
         }
 
-        public void UpdatePassword(ChangePassEmailViewModel model)
+        public void UpdatePassword(ChangePasswordViewModel model, string userCode)
         {
-            var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == model.UserCode).FirstOrDefault();
+            var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == userCode).FirstOrDefault();
             if (existingData != null)
             {
                 var oldPassword = PasswordManager.DecryptPassword(existingData.Password);
