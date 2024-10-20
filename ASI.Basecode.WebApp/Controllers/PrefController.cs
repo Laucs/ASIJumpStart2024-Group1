@@ -63,10 +63,13 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns>Analytics Dashboard</returns>
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult Settings(ChangePassEmailViewModel model)
+        public IActionResult Settings(ProfileViewModel model)
         {
-            var data = _userService.RetrieveUser(model.UserCode);
-            model = data;
+            var userCode = HttpContext.User.FindFirst("UserCode").Value;
+            var data = _userService.RetrieveUserByUsername(userCode);
+            model.UserCode = data.UserCode;
+            model.Email = data.Mail;
+
             ViewData["ActivePage"] = "Settings";
             return View(model);
         }

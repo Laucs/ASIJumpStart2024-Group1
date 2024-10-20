@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
-    public class ChangePassEmailViewModel
+    public class ChangePasswordViewModel
     {
-        public int UserId { get; set; }
-
+        [Required]
+        [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
         [Required]
@@ -23,10 +23,7 @@ namespace ASI.Basecode.Services.ServiceModels
         [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Mail { get; set; }
-
-        public string UserCode { get; set; }
+        
 
     }
 }

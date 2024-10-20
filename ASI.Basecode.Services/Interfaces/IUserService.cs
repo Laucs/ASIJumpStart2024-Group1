@@ -10,10 +10,10 @@ namespace ASI.Basecode.Services.Interfaces
     {
         IEnumerable<UserViewModel> RetrieveAll(int? id = null, string firstName = null);
         UserViewModel RetrieveUser(int id);
-        public ChangePassEmailViewModel RetrieveUser(string userCode);
+        UserViewModel RetrieveUserByUsername(string userCode);
         void Add(UserViewModel model);
         void Update(UserViewModel model);
-        void UpdatePassword(ChangePassEmailViewModel model);
+        void UpdatePassword(ChangePasswordViewModel model);
         void Delete(int id);
         LoginResult AuthenticateUser(string userCode, string password, ref MUser user);
         bool IsUsernameTaken(string username);

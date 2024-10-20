@@ -286,7 +286,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangePassword(ChangePassEmailViewModel changePasswordViewModel)
+        public IActionResult ChangePassword(ChangePasswordViewModel changePasswordViewModel)
         {
 
 
