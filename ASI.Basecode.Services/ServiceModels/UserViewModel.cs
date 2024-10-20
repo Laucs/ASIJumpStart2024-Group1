@@ -27,6 +27,15 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [Required(ErrorMessage = "This is required")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "This is required")]
+        public string Mail { get; set; }
+
+        public string EmailVerificationToken { get; set; }
+        public DateTime? VerificationTokenExpiration { get; set; }
+        public bool IsEmailVerified { get; set; }
+        public string PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpiration { get; set; }
     }
 
     public class UserListViewModel
@@ -34,7 +43,7 @@ namespace ASI.Basecode.Services.ServiceModels
         [DisplayName("ID")]
         public string IdFilter { get; set; }
 
-        [Display(Name = "FirstName", ResourceType = typeof(Resources.Views.Screen))]
+        [Display(Name = "FirstName")]
         public string FirstNameFilter { get; set; }
 
         public IEnumerable<UserViewModel> dataList { get; set; }
