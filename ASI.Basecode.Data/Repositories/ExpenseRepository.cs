@@ -45,6 +45,7 @@ namespace ASI.Basecode.Data.Repositories
             if (expenseToDelete != null)
             {
                 this.GetDbSet<MExpense>().Remove(expenseToDelete);
+                UnitOfWork.SaveChanges();
             }
             
         }

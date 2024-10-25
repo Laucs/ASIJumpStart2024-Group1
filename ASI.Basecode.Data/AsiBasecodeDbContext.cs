@@ -26,7 +26,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Addr=(LocalDB)\\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
+                optionsBuilder.UseSqlServer("Addr=DESKTOP-IN89L3I\\SQLEXPRESS;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
             }
         }
 
@@ -35,7 +35,7 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MCategory>(entity =>
             {
                 entity.HasKey(e => e.CategoryId)
-                    .HasName("PK__M_Catego__23CAF1D86F87D63D");
+                    .HasName("PK__M_Catego__23CAF1D8F386D794");
 
                 entity.ToTable("M_Category");
 
@@ -59,7 +59,7 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MExpense>(entity =>
             {
                 entity.HasKey(e => e.ExpenseId)
-                    .HasName("PK__M_Expens__3672732EB87EDE19");
+                    .HasName("PK__M_Expens__3672732E75E41DF4");
 
                 entity.ToTable("M_Expenses");
 

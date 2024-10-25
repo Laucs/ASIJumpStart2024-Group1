@@ -31,6 +31,16 @@ namespace ASI.Basecode.Services.Services
                 CategoryId = category.CategoryId,
                 CategoryTitle = category.CategoryTitle,
                 UserId = category.UserId,
+                MExpenses = category.MExpenses.Select(expense => new MExpense
+                {
+                    ExpenseId = expense.ExpenseId,
+                    ExpenseName = expense.ExpenseName,
+                    Amount = expense.Amount,
+                    ExpenseDescription = expense.ExpenseDescription,
+                    DateCreated = expense.DateCreated,
+                    CategoryId = expense.CategoryId,
+                    UserId = expense.UserId
+                }).ToList()
             }).ToList();
 
             return model;
