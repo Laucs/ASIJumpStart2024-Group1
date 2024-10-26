@@ -109,15 +109,5 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return View(model); // Return the view with validation errors if the model state is invalid
         }
-
-        [HttpPost]
-        public IActionResult DeleteExpense(int expenseId)
-        {
-            _expenseService.Delete(expenseId);
-            return RedirectToAction("Details", "Category", new { id = expenseId });
-
-        }
-
-
     }
 }
