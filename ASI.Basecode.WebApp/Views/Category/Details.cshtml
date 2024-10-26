@@ -90,7 +90,7 @@
                                placeholder="New Category" required />
                         <span asp-validation-for="NewCategory.CategoryTitle" class="text-xs text-red-500"></span>
                     </div>
-                    <button type="submit" class="rounded-full bg-violet-500 px-8 py-2 h-10 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
+                    <button type="submit" class="h-10 rounded-full bg-violet-500 px-8 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                         Add Category
                     </button>
                 </form>
@@ -133,11 +133,15 @@
     <script>
         var errMessage = '@TempData["ErrorMessage"]';
         var addSuccess = '@TempData["AddSuccess"]';
+        var delSuccess = '@TempData["DeleteSuccess"]';
         if (errMessage) {
             toastr.error(errMessage);
         }
         if (addSuccess) {
             toastr.success(addSuccess);
+        }
+        if (delSuccess) {
+            toastr.success(delSuccess);
         }
     </script>
 }

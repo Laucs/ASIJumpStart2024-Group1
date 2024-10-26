@@ -112,10 +112,12 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return View(model); // Return the view if model state is invalid
         }
+       
         [HttpPost]
         public IActionResult DeleteExpense(int expenseId)
         {
             _expenseService.Delete(expenseId);
+            TempData["DeleteSuccess"] = "Expense deleted successfully!";
             return RedirectToAction("Details", "Category");
 
         }
