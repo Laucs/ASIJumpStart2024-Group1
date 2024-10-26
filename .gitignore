@@ -9,6 +9,9 @@
 *.svclog
 .vs/
 .vscode/settings.json
+ASI.Basecode.WebApp\appsettings.json
+ASI.Basecode.WebApp\styles\app.tailwind.css
+
 
 # Build results
 [Aa]rtifacts/

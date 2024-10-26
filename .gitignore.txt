@@ -1,2 +1,0 @@
-\ASI.Basecode.WebApp\appsettings.json
-\ASI.Basecode.WebApp\styles\app.tailwind.css
