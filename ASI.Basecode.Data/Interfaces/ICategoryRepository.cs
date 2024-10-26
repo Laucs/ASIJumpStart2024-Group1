@@ -10,8 +10,11 @@ namespace ASI.Basecode.Data.Interfaces
     public interface ICategoryRepository
     {
         IQueryable<MCategory> GetCategories(int? userID);
+
+        MCategory RetrieveCategory(int categoryId); // Corrected spelling
         void AddCategory(MCategory model);
         void UpdateCategory(MCategory model);
-        void DeleteCategory(int categoryId);
+        void DeleteCategory(int categoryId); // Pass the categoryId, not the object
+
     }
 }

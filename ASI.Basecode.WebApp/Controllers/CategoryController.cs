@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -107,6 +108,50 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return View(model); // Return the view if model state is invalid
         }
+
+        [HttpPost]
+        public IActionResult EditCategory(CategoryPageViewModel categoryDto)
+        {
+            try
+            {
+                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int userId = Convert.ToInt32(claimsUserId);
+
+                // Ensure NewCategory is not null
+                if (categoryDto.NewCategory == null)
+                {
+                    TempData["ErrorMessage"] = "Category data is missing.";
+                    return View("Details");
+                }
+
+                categoryDto.NewCategory.UserId = userId;
+
+                _categoryService.Update(categoryDto);
+                return RedirectToAction("Details");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Details");
+            }
+        }
+
+
+        [HttpPost]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            try
+            {
+                _categoryService.Delete(categoryId);
+                return RedirectToAction("Details");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Details");
+            }
+        }
+
 
     }
 

@@ -11,10 +11,10 @@ namespace ASI.Basecode.Services.Interfaces
     public interface ICategoryService
     {
         public IEnumerable<CategoryViewModel> RetrieveAll(int? userId);
-        CategoryViewModel RetreiveCategory(int id);
+        CategoryViewModel RetrieveCategory(int id);
         void Add(CategoryPageViewModel model);
-       /* void Update(CategoryViewModel model);*/
-        void Delete(int id);
+        void Update(CategoryPageViewModel model);
+        void Delete(int categoryId);
     }
 
   

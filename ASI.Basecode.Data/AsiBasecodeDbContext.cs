@@ -19,6 +19,7 @@ namespace ASI.Basecode.Data
 
         public virtual DbSet<MCategory> MCategories { get; set; }
         public virtual DbSet<MExpense> MExpenses { get; set; }
+        public virtual DbSet<MRole> MRoles { get; set; }
         public virtual DbSet<MUser> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -35,7 +36,10 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MCategory>(entity =>
             {
                 entity.HasKey(e => e.CategoryId)
+
                     .HasName("PK__M_Catego__23CAF1D86F87D63D");
+
+
 
                 entity.ToTable("M_Category");
 
@@ -59,7 +63,9 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MExpense>(entity =>
             {
                 entity.HasKey(e => e.ExpenseId)
+
                     .HasName("PK__M_Expens__3672732EB87EDE19");
+
 
                 entity.ToTable("M_Expenses");
 
@@ -95,6 +101,20 @@ namespace ASI.Basecode.Data
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User");
+            });
+
+            modelBuilder.Entity<MRole>(entity =>
+            {
+                entity.HasKey(e => e.RoleId);
+
+                entity.ToTable("M_ROLE");
+
+                entity.Property(e => e.RoleId).ValueGeneratedNever();
+
+                entity.Property(e => e.RoleName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<MUser>(entity =>

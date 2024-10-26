@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ASI.Basecode.Data;
+using System.Diagnostics;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -31,24 +33,21 @@ namespace ASI.Basecode.Services.Services
                 CategoryId = category.CategoryId,
                 CategoryTitle = category.CategoryTitle,
                 UserId = category.UserId,
+                MExpenses = category.MExpenses.Select(expense => new MExpense
+                {
+                    ExpenseId = expense.ExpenseId,
+                    ExpenseName = expense.ExpenseName,
+                    Amount = expense.Amount,
+                    ExpenseDescription = expense.ExpenseDescription,
+                    DateCreated = expense.DateCreated,
+                    CategoryId = expense.CategoryId,
+                    UserId = expense.UserId
+                }).ToList()
             }).ToList();
 
             return model;
         }
 
-
-
-        public CategoryViewModel RetreiveCategory(int id)
-        {
-            var data = _categoryRepository.GetCategories(id).FirstOrDefault(x => x.CategoryId == id);
-            var model = new CategoryViewModel
-            {
-                CategoryId = data.CategoryId,
-                CategoryTitle = data.CategoryTitle,
-                UserId = data.UserId
-            };
-            return model;
-        }
 
         public void Add(CategoryPageViewModel model)
         {
@@ -61,19 +60,53 @@ namespace ASI.Basecode.Services.Services
             _categoryRepository.AddCategory(newCategory);
         }
 
-        /*public void Update(CategoryViewModel model)
-        {
-            var existingData = _categoryRepository.GetCategories().Where(c => c.CategoryId == model.CategoryId).FirstOrDefault();
-            existingData.CategoryId = model.CategoryId;
-            existingData.UserId = model.UserId;
-            existingData.CategoryTitle = model.CategoryTitle;
 
-            _categoryRepository.AddCategory(existingData);
-        }*/
-
-        public void Delete(int id)
+        public CategoryViewModel RetrieveCategory(int id)
         {
-            _categoryRepository.DeleteCategory(id);
+            var data = _categoryRepository.RetrieveCategory(id); // Corrected spelling
+            if (data == null) throw new KeyNotFoundException("Category not found.");
+
+            return new CategoryViewModel
+            {
+                CategoryId = data.CategoryId,
+                CategoryTitle = data.CategoryTitle,
+                UserId = data.UserId
+            };
         }
+
+        public void Delete(int categoryId)
+        {
+            var category = _categoryRepository.RetrieveCategory(categoryId);
+            if (category != null)
+            {
+                _categoryRepository.DeleteCategory(categoryId); // Pass categoryId directly
+            }
+            else
+            {
+                throw new KeyNotFoundException("Category not found for deletion.");
+            }
+        }
+
+        public void Update(CategoryPageViewModel model)
+        {
+
+            Debug.WriteLine("Service" + model.NewCategory.CategoryId);
+            Debug.WriteLine("Service" + model.NewCategory.CategoryTitle);
+
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Model cannot be null.");
+            }
+
+            var existingCategory = _categoryRepository.RetrieveCategory(model.NewCategory.CategoryId);
+            if (existingCategory == null)
+            {
+                throw new KeyNotFoundException($"Category with ID {model.NewCategory.CategoryId} not found.");
+            }
+
+            existingCategory.CategoryTitle = model.NewCategory.CategoryTitle;
+            _categoryRepository.UpdateCategory(existingCategory);
+        }
+
     }
 }
