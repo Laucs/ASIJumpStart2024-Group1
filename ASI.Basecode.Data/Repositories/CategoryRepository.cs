@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
 using Basecode.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace ASI.Basecode.Data.Repositories
         // Get categories by user ID
         public IQueryable<MCategory> GetCategories(int? userId)
         {
-            return this.GetDbSet<MCategory>().Where(x => x.UserId == userId);
+            return this.GetDbSet<MCategory>().Where(x => x.UserId == userId).Include(x => x.MExpenses);   
         }
 
         public void AddCategory(MCategory model)

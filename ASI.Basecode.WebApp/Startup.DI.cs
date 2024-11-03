@@ -35,7 +35,6 @@ namespace ASI.Basecode.WebApp
             // Services
             this._services.TryAddSingleton<TokenValidationParametersFactory>();
             this._services.AddScoped<IUserService, UserService>();
-            this._services.AddScoped<ISampleCrudService, SampleCrudService>();
             this._services.AddScoped<IExpenseRepository, ExpenseRepository>();
             this._services.AddScoped<ICategoryRepository, CategoryRepository>();
             this._services.AddScoped<IEmailService, EmailService>();
@@ -45,7 +44,6 @@ namespace ASI.Basecode.WebApp
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
-            this._services.AddSingleton<ISampleCrudRepository, SampleCrudRepository>();
             this._services.AddScoped<IExpenseRepository, ExpenseRepository>();
             this._services.AddScoped<ICategoryRepository, CategoryRepository>();
 

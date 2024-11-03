@@ -10,6 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -29,6 +30,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
 
         /// <summary>
@@ -50,7 +52,9 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            IExpenseService expenseService,
                             ICategoryService categoryService,
+                         
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -61,6 +65,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._appConfiguration = configuration;
             this._userService = userService;
             this._categoryService = categoryService;
+            this._expenseService = expenseService;
         }
 
         /// <summary>
@@ -124,6 +129,15 @@ namespace ASI.Basecode.WebApp.Controllers
 
             // Return the view if model state is invalid
             return View(model);
+        }
+       
+        [HttpPost]
+        public IActionResult DeleteExpense(int expenseId)
+        {
+            _expenseService.Delete(expenseId);
+            TempData["DeleteSuccess"] = "Expense deleted successfully!";
+            return RedirectToAction("Details", "Category");
+
         }
 
 
