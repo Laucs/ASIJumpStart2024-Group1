@@ -9,8 +9,9 @@ namespace ASI.Basecode.Data.Interfaces
 {
     public interface ICategoryRepository
     {
+        IEnumerable<MCategory> RetrieveAllCategories();
         IQueryable<MCategory> GetCategories(int? userID);
-
+     
         MCategory RetrieveCategory(int categoryId); // Corrected spelling
         void AddCategory(MCategory model);
         void UpdateCategory(MCategory model);

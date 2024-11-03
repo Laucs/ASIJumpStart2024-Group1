@@ -16,6 +16,13 @@ namespace ASI.Basecode.Data.Repositories
         {
 
         }
+
+        public IEnumerable<MCategory> RetrieveAllCategories()
+        {
+            return GetDbSet<MCategory>().ToList();
+        }
+
+
         // Get categories by user ID
         public IQueryable<MCategory> GetCategories(int? userId)
         {
@@ -35,11 +42,9 @@ namespace ASI.Basecode.Data.Repositories
 
         public void UpdateCategory(MCategory category)
         {
-
-
             var existingCategory = GetDbSet<MCategory>().Find(category.CategoryId);
-            Debug.WriteLine("Repo" + category.CategoryId);
-            Debug.WriteLine("Repo" + category.CategoryTitle);
+   
+
             if (existingCategory != null)
             {
                 existingCategory.CategoryTitle = category.CategoryTitle;
@@ -50,6 +55,7 @@ namespace ASI.Basecode.Data.Repositories
                 throw new KeyNotFoundException("Category not found for update.");
             }
         }
+
 
         public void DeleteCategory(int categoryId) // Changed parameter to categoryId
         {

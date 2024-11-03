@@ -51,6 +51,20 @@ namespace ASI.Basecode.Services.Services
 
         public void Add(CategoryPageViewModel model)
         {
+            if (model == null || model.NewCategory == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Model cannot be null.");
+            }
+
+            var newCategoryTitle = model.NewCategory.CategoryTitle?.ToLower();
+            var existingCategories = _categoryRepository.RetrieveAllCategories();
+
+            // Check if category title already exists (case-insensitive)
+            if (existingCategories.Any(c => c.CategoryTitle.ToLower() == newCategoryTitle))
+            {
+                throw new InvalidOperationException("A category with this title already exists.");
+            }
+
             var newCategory = new MCategory
             {
                 UserId = model.NewCategory.UserId,
@@ -74,6 +88,38 @@ namespace ASI.Basecode.Services.Services
             };
         }
 
+        public void Update(CategoryPageViewModel model)
+        {
+            if (model == null || model.NewCategory == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Model cannot be null.");
+            }
+
+            var categoryId = model.NewCategory.CategoryId;
+            var categoryTitle = model.NewCategory.CategoryTitle?.ToLower();
+
+            Debug.WriteLine("Service Layer - Category ID: " + categoryId);
+            Debug.WriteLine("Service Layer - Category Title: " + categoryTitle);
+
+            var existingCategory = _categoryRepository.RetrieveCategory(categoryId);
+            if (existingCategory == null)
+            {
+                throw new KeyNotFoundException($"Category with ID {categoryId} not found.");
+            }
+
+            // Check if another category with the same title already exists
+            var otherCategories = _categoryRepository.RetrieveAllCategories()
+                                .Where(c => c.CategoryId != categoryId);
+
+            if (otherCategories.Any(c => c.CategoryTitle.ToLower() == categoryTitle))
+            {
+                throw new InvalidOperationException("A category with this title already exists.");
+            }
+
+            existingCategory.CategoryTitle = model.NewCategory.CategoryTitle;
+            _categoryRepository.UpdateCategory(existingCategory);
+        }
+
         public void Delete(int categoryId)
         {
             var category = _categoryRepository.RetrieveCategory(categoryId);
@@ -87,26 +133,8 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-        public void Update(CategoryPageViewModel model)
-        {
+       
 
-            Debug.WriteLine("Service" + model.NewCategory.CategoryId);
-            Debug.WriteLine("Service" + model.NewCategory.CategoryTitle);
-
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model), "Model cannot be null.");
-            }
-
-            var existingCategory = _categoryRepository.RetrieveCategory(model.NewCategory.CategoryId);
-            if (existingCategory == null)
-            {
-                throw new KeyNotFoundException($"Category with ID {model.NewCategory.CategoryId} not found.");
-            }
-
-            existingCategory.CategoryTitle = model.NewCategory.CategoryTitle;
-            _categoryRepository.UpdateCategory(existingCategory);
-        }
 
     }
 }

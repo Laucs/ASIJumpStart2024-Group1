@@ -159,7 +159,7 @@
                         Swal.showValidationMessage('Please enter a category title');
                         return false;
                     }
-                    editCategory(categoryId, newTitle); // Call editCategory with the new title
+                    editCategory(categoryId, newTitle);
                 }
             }).then((result) => {
                 if (result.isDenied) {
@@ -169,18 +169,19 @@
         }
 
 
-        function editCategory(categoryId, newTitle) {
+         function editCategory(categoryId, newTitle) {
             // Create a form programmatically for submission
             const form = document.createElement('form');
             form.method = 'post';
             form.action = '/Category/EditCategory';
             form.innerHTML = `
-                <input type="hidden" name="CategoryId" value="${categoryId}" />
-                <input type="hidden" name="CategoryTitle" value="${newTitle}" />
+                <input type="hidden" name="NewCategory.CategoryId" value="${categoryId}" />
+                <input type="hidden" name="NewCategory.CategoryTitle" value="${newTitle}" />
             `;
             document.body.appendChild(form);
             form.submit();
         }
+
 
         function deleteCategory(categoryId) {
             // Confirmation before deleting the category

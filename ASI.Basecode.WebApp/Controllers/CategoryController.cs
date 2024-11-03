@@ -92,48 +92,74 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Get the logged-in user's ID
-                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int userId = Convert.ToInt32(claimsUserId);
+                try
+                {
+                    // Get the logged-in user's ID
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
 
-                // Assign the userId to the new category
-                model.NewCategory.UserId = userId;
+                    // Assign the userId to the new category
+                    model.NewCategory.UserId = userId;
 
-                // Call the service to add the new category
-                _categoryService.Add(model);
-                TempData["AddSuccess"] = "Category added successfully!";
-                // Redirect after successful category creation
-                return RedirectToAction("Details", "Category");
+                    // Call the service to add the new category
+                    _categoryService.Add(model);
+                    TempData["AddSuccess"] = "Category added successfully!";
+
+                    // Redirect after successful category creation
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Catch duplicate category error and set error message
+                    TempData["ErrorMessage"] = ex.Message;
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (Exception ex)
+                {
+                    // Handle any other unexpected exceptions
+                    TempData["ErrorMessage"] = "An unexpected error occurred: " + ex.Message;
+                    return RedirectToAction("Details", "Category");
+                }
             }
 
-            return View(model); // Return the view if model state is invalid
+            // Return the view if model state is invalid
+            return View(model);
         }
+
 
         [HttpPost]
         public IActionResult EditCategory(CategoryPageViewModel categoryDto)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int userId = Convert.ToInt32(claimsUserId);
-
-                // Ensure NewCategory is not null
-                if (categoryDto.NewCategory == null)
+                try
                 {
-                    TempData["ErrorMessage"] = "Category data is missing.";
-                    return View("Details");
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
+
+                    categoryDto.NewCategory.UserId = userId;
+
+                    _categoryService.Update(categoryDto);
+                    TempData["AddSuccess"] = "Category updated successfully!";
+                    return RedirectToAction("Details");
                 }
-
-                categoryDto.NewCategory.UserId = userId;
-
-                _categoryService.Update(categoryDto);
-                return RedirectToAction("Details");
+                catch (InvalidOperationException ex)
+                {
+                    // Add custom error message to ModelState if duplicate category
+                    ModelState.AddModelError("", ex.Message);
+                    TempData["ErrorMessage"] = ex.Message;
+                    return RedirectToAction("Details");
+                }
+                catch (Exception ex)
+                {
+                    // General exception message
+                    ModelState.AddModelError("", "An unexpected error occurred: " + ex.Message);
+                    TempData["ErrorMessage"] = ex.Message;
+                    return View("Details", categoryDto);
+                }
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return View("Details");
-            }
+
+            return View("Details", categoryDto);
         }
 
 
