@@ -8,7 +8,9 @@ namespace ASI.Basecode.Services.ServiceModels
 {
     public class SummaryViewModel
     {
-        public List<CategoryViewModel> CategoryAnalytics { get; set; }
+        public List<CategoryViewModel> SummaryAnalytics { get; set; }
+        public CategoryPageViewModel CategoryAnalytics { get; set; }
+
         public List<ExpenseViewModel> ExpenseAnalytics { get; set; }
         public int TotalExpenses { get; set; }
     }

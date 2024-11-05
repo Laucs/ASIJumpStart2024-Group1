@@ -70,13 +70,44 @@ namespace ASI.Basecode.WebApp.Controllers
         /// </summary>
         /// <returns>Analytics Dashboard</returns>
         [HttpGet]
-        public IActionResult Summary()
+        public IActionResult Summary(string filter = "all", string categoryFilter = "all")
         {
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
             var expenses = _expenseService.RetrieveAll(userId: userId);
             var categories = _categoryService.RetrieveAll(userId: userId);
+
+            // Apply filters
+            DateTime? startDate = null;
+            DateTime? endDate = null;
+
+            switch (filter.ToLower())
+            {
+                case "today":
+                    startDate = DateTime.Today;
+                    endDate = DateTime.Today.AddDays(1).AddTicks(-1);
+                    break;
+                case "thisweek":
+                    startDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+                    endDate = startDate.Value.AddDays(7).AddTicks(-1);
+                    break;
+                case "thismonth":
+                    startDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                    endDate = startDate.Value.AddMonths(1).AddTicks(-1);
+                    break;
+            }
+
+            // Filter expenses based on date range and category
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                expenses = expenses.Where(e => e.CreatedDate >= startDate && e.CreatedDate <= endDate).ToList();
+            }
+
+            if (categoryFilter.ToLower() != "all")
+            {
+                expenses = expenses.Where(e => categories.Any(c => c.CategoryTitle.ToLower() == categoryFilter.ToLower() && c.CategoryId == e.CategoryId)).ToList();
+            }
 
             var groupedCategories = expenses
                 .Join(categories,
@@ -92,9 +123,36 @@ namespace ASI.Basecode.WebApp.Controllers
                 })
                 .ToList();
 
+            foreach (var category in categories)
+            {
+                category.MExpenses = expenses.Where(e => e.CategoryId == category.CategoryId)
+                                              .Select(e => new MExpense
+                                              {
+                                                  ExpenseId = e.ExpenseId,
+                                                  Amount = e.Amount,
+                                                  DateCreated = e.CreatedDate,
+                                                  ExpenseDescription = e.Description,
+                                                  CategoryId = e.CategoryId,
+                                                  UserId = e.UserId,
+                                                  ExpenseName = e.ExpenseName
+                                              }).ToList();
+            }
+
+            var categorizedExpenses = new CategoryPageViewModel
+            {
+                Categories = categories.Select(c => new CategoryViewModel
+                {
+                    CategoryId = c.CategoryId,
+                    CategoryTitle = c.CategoryTitle,
+                    MExpenses = c.MExpenses,
+                }),
+                NewCategory = new CategoryViewModel()
+            };
+
             var model = new SummaryViewModel
             {
-                CategoryAnalytics = groupedCategories,
+                SummaryAnalytics = groupedCategories,
+                CategoryAnalytics = categorizedExpenses,
                 ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
                 TotalExpenses = expenses.Sum(e => e.Amount)
             };
@@ -102,5 +160,6 @@ namespace ASI.Basecode.WebApp.Controllers
             ViewData["ActivePage"] = "Analytics";
             return View(model);
         }
+
     }
 }
