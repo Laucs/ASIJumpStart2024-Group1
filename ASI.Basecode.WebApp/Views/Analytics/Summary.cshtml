@@ -1,5 +1,7 @@
 ﻿@using static ASI.Basecode.Resources.Views.AnalyticsScreen
 @using static ASI.Basecode.Resources.Views.ReportGenerationTable
+@model ASI.Basecode.Services.ServiceModels.SummaryViewModel
+
 @{
     ViewData["Title"] = "Summary";
     var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
@@ -23,54 +25,9 @@
                         <div class="flex h-8 w-full justify-end">
                             <button type="button" class="rounded-full bg-white px-6 py-1 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white">@Total</button>
                         </div>
-                        <div class="mt-2 flex h-auto min-h-44 flex-col gap-1">
-                            <label class="text-lg font-bold text-white">@ExpenseSummary</label>
-                            <div class="flex h-10 flex-row items-center gap-2">
-                                <svg width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 0L17.6603 15H0.339746L9 0Z" fill="#00FD87" />
-                                </svg>
-                                <label class="text-lg font-bold text-green-400">10.45%</label> <!--Sample Data For UI-->
-                            </div>
-                            <label class="text-nowrap text-center text-4xl font-bold tracking-wider text-white drop-shadow-md md:text-6xl">₱ 401,542.44</label>
-                            <div class="mt-2 flex flex-row items-center justify-center gap-3 text-center md:mt-5">
-                                <label class="text-lg font-bold text-white">@TotalExpense</label>
-                                <button type="button"><img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" /></button>
-                            </div>
-                        </div>
+                        @await Html.PartialAsync("_TotalExpense")
                     </div>
-                    <!--Sample Data For UI-->
-                    <div class="mt-5 flex w-full flex-row flex-wrap items-center justify-center gap-5 md:mt-0 md:w-1/2">
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Food Expenses</label>
-                            <label class="font-bold text-green-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-green-500"></div>
-                        </div>
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Bills Expenses</label>
-                            <label class="font-bold text-blue-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-blue-500"></div>
-                        </div>
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Vehicle Expenses</label>
-                            <label class="font-bold text-violet-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-violet-500"></div>
-                        </div>
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Travel Expenses</label>
-                            <label class="font-bold text-yellow-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-yellow-500"></div>
-                        </div>
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Hobby Expenses</label>
-                            <label class="font-bold text-red-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-red-500"></div>
-                        </div>
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Other Expenses</label>
-                            <label class="font-bold text-rose-500">₱12,345.77</label>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-rose-500"></div>
-                        </div>
-                    </div>
+                    @await Html.PartialAsync("_CategorySummary", Model.CategoryAnalytics)
                 </div>
             </div>
         </div>
