@@ -38,6 +38,7 @@ namespace ASI.Basecode.Services.Services
             {
                 CategoryId = expense.CategoryId,
                 Amount = expense.Amount,
+                ExpenseName = expense.ExpenseName,
                 CreatedDate = expense.DateCreated ?? DateTime.MinValue,
                 Description = expense.ExpenseDescription,
             }).ToList();

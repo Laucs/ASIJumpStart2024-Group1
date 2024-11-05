@@ -53,8 +53,8 @@
                                     <!--Sample Data Based On User Entries-->
                                     <tr class="text-xs sm:text-base">
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
-                                        <td class="py-2 text-center dark:text-white">@expense.Amount</td>
-                                        <td class="py-2 text-center dark:text-white">@expense.DateCreated</td>
+                                        <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
+                                        <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
                                         <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
                                         <td class="py-2">
@@ -164,7 +164,7 @@
                 title: 'Manage Category',
                 html: `
                     <div>
-                        <label for="editCategoryTitle" class="block font-semibold mb-1">Edit Category Title:</label>
+                        <label for="editCategoryTitle" class="mb-1 block font-semibold">Edit Category Title:</label>
                         <input id="editCategoryTitle" name="CategoryTitle" type="text"
                                class="swal2-input" value="${categoryTitle}" />
                     </div>`,

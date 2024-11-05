@@ -84,7 +84,7 @@ namespace ASI.Basecode.WebApp.Controllers
             var viewModel = new CategoryPageViewModel
             {
                 Categories = categories,
-                NewCategory = new CategoryViewModel() // Initialize for any new category logic
+                NewCategory = new CategoryViewModel()
             };
 
             ViewData["ActivePage"] = "Category";

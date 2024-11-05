@@ -72,17 +72,14 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Details()
         {
-            // Assuming you have a way to get the current logged-in user's ID
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
-            // Retrieve categories for the current user
             var categories = _categoryService.RetrieveAll(userId: userId);
 
-            // Create the view model and pass the categories
             var model = new ExpenseViewModel
             {
-                Categories = categories.ToList() // Assuming the categories are fetched as IEnumerable<CategoryViewModel>
+                Categories = categories.ToList()
             };
 
             ViewData["ActivePage"] = "Expense";
