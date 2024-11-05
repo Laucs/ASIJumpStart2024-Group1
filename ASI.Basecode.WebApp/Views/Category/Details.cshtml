@@ -54,7 +54,7 @@
                                     <tr class="text-xs sm:text-base">
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
                                         <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
-                                        <td class="py-2 text-center dark:text-white">@expense.DateCreated</td>
+                                        <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
                                         <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
                                         <td class="py-2">

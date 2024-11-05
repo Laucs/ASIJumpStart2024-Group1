@@ -21,7 +21,7 @@
         <div class="h-auto w-full rounded-t-lg bg-gray-100 from-violet-950 to-slate-950 dark:bg-gradient-to-b">
             <div class="flex h-full flex-col md:p-8">
                 <div class="credential-gradient flex h-full w-full flex-col rounded-lg py-8 shadow-sm shadow-black dark:shadow-lg md:flex-row">
-                    <div class="flex h-1/2 w-full flex-col px-8 md:w-1/2 md:h-full md:h-full">
+                    <div class="flex h-1/2 w-full flex-col px-8 md:w-1/2 md:h-full">
                         @await Html.PartialAsync("_TotalExpense")
                     </div>
                     @await Html.PartialAsync("_CategorySummary", Model.SummaryAnalytics)
@@ -32,10 +32,6 @@
         <div class="h-auto bg-gray-100 px-8 pb-20 pt-8 dark:bg-slate-950">
             <div class="flex flex-col gap-5">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@ExpenseTrends</label>
-                <div class="flex flex-row gap-5">
-                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white">Food Expense</button>
-                    <button type="button" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white">Jan 1 - Jan 7</button>
-                </div>
             </div>
             <canvas class="mt-5" id="lineChart" width="400" height="200"></canvas>
         </div>
