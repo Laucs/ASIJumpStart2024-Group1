@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
-
         public class ExpenseViewModel
         {
             [Required(ErrorMessage = "Amount is required.")]
