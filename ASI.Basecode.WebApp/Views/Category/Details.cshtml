@@ -59,7 +59,14 @@
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
                                         <td class="py-2">
                                             <div class="flex flex-row items-center justify-center gap-2">
-                                                <button type="button">
+                                                <button type="button" onclick="editExpense(
+                                                      '@expense.ExpenseId',
+                                                      '@expense.ExpenseName',
+                                                      '@expense.Amount',
+                                                      '@expense.DateCreated',
+                                                      '@category.CategoryTitle',
+                                                      '@expense.ExpenseDescription'
+                                                      )">
                                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M17.204 10.7959L19 8.99994C19.5453 8.45469 19.8179 8.18207 19.9636 7.88797C20.2409 7.32842 20.2409 6.67146 19.9636 6.11191C19.8179 5.81782 19.5453 5.54519 19 4.99994C18.4548 4.45469 18.1821 4.18207 17.888 4.03633C17.3285 3.75905 16.6715 3.75905 16.112 4.03633C15.8179 4.18207 15.5453 4.45469 15 4.99994L13.1814 6.8186C14.1452 8.4692 15.5314 9.84476 17.204 10.7959ZM11.7269 8.27305L4.8564 15.1436C4.43134 15.5686 4.21881 15.7812 4.07907 16.0422C3.93934 16.3033 3.88039 16.5981 3.7625 17.1875L3.1471 20.2645C3.08058 20.5971 3.04732 20.7634 3.14193 20.858C3.23654 20.9526 3.40284 20.9194 3.73545 20.8529L6.81243 20.2375C7.40189 20.1196 7.69661 20.0606 7.95771 19.9209C8.21881 19.7812 8.43134 19.5686 8.8564 19.1436L15.7458 12.2542C14.1241 11.2385 12.7524 9.87622 11.7269 8.27305Z" fill="@(isDarkMode ? "#FFFFFF" : "#222222")" />
                                                     </svg>
@@ -220,6 +227,68 @@
 
 
     </script>
+
+
+    <script>
+        function editExpense(expenseId, expenseName, amount, dateCreated, categoryTitle, description) {
+            Swal.fire({
+                title: 'Edit Expense',
+                html: `
+                        <input type="hidden" id="expenseId" value="${expenseId}">
+
+                        <label for="expenseName" style="display:block; text-align:left; margin-top:10px;">Expense Name</label>
+                        <input id="expenseName" class="swal2-input" placeholder="Expense Name" value="${expenseName}">
+
+                        <label for="amount" style="display:block; text-align:left; margin-top:10px;">Amount</label>
+                        <input id="amount" type="number" class="swal2-input" placeholder="Amount" value="${amount}">
+
+                        <label for="dateCreated" style="display:block; text-align:left; margin-top:10px;">Date Created</label>
+                        <input id="dateCreated" type="date" class="swal2-input" placeholder="Date Created" value="${dateCreated}">
+
+                        <label for="categoryTitle" style="display:block; text-align:left; margin-top:10px;">Category</label>
+                        <input id="categoryTitle" class="swal2-input" placeholder="Category" value="${categoryTitle}" readonly>
+
+                        <label for="description" style="display:block; text-align:left; margin-top:10px;">Description</label>
+                        <input id="description" class="swal2-input" placeholder="Description" value="${description}">
+                    `,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: () => {
+                    return {
+                        expenseId: document.getElementById('expenseId').value,
+                        expenseName: document.getElementById('expenseName').value,
+                        amount: document.getElementById('amount').value,
+                        dateCreated: document.getElementById('dateCreated').value,
+                        categoryTitle: document.getElementById('categoryTitle').value,
+                        description: document.getElementById('description').value
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { expenseId, expenseName, amount, dateCreated,categoryTitle, description } = result.value;
+
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Category/EditExpense';
+                    form.innerHTML = `
+                            <input type="hidden" name="ExpenseId" value="${expenseId}" />
+                            <input type="hidden" name="ExpenseName" value="${expenseName}" />
+                            <input type="hidden" name="Amount" value="${amount}" />
+                            <input type="hidden" name="CreatedDate" value="${dateCreated}" />
+                            <input type="hidden" name="CategoryTitle" value="${categoryTitle}" />
+                            <input type="hidden" name="Description" value="${description}" />
+                        `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
+
+
+
+
 
 }
 

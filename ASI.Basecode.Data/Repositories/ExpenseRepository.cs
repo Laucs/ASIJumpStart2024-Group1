@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
 using Basecode.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,11 +34,29 @@ namespace ASI.Basecode.Data.Repositories
         }
 
 
-        public void UpdateExpense(MExpense model)
+        public void UpdateExpense(MExpense expense)
         {
-            this.GetDbSet<MExpense>().Update(model);
-            UnitOfWork.SaveChanges();
+            var existingExpense = GetDbSet<MExpense>().Find(expense.ExpenseId);
+
+            if (existingExpense != null)
+            {
+                // Update the fields
+                existingExpense.ExpenseName = expense.ExpenseName;
+                existingExpense.Amount = expense.Amount;
+                existingExpense.DateCreated = expense.DateCreated;
+                existingExpense.CategoryId = expense.CategoryId;
+                existingExpense.ExpenseDescription = expense.ExpenseDescription;
+
+                // Mark entity as modified if necessary and save changes
+                UnitOfWork.SaveChanges();
+            }
+            else
+            {
+                throw new KeyNotFoundException("Expense not found for update.");
+            }
         }
+
+
 
         public void DeleteExpense(int expenseId)
         {

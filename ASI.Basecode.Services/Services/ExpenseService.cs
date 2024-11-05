@@ -48,15 +48,26 @@ namespace ASI.Basecode.Services.Services
         public ExpenseViewModel RetrieveExpense(int id)
         {
             var data = _expenseRepository.GetExpenses().FirstOrDefault(x => x.ExpenseId == id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
             var model = new ExpenseViewModel
             {
-                CategoryId = data.CategoryId,
+                ExpenseId = data.ExpenseId,
+                ExpenseName = data.ExpenseName,
                 Amount = data.Amount,
                 CreatedDate = data.DateCreated ?? DateTime.MinValue,
                 Description = data.ExpenseDescription,
+                CategoryId = data.CategoryId,
+                UserId = data.UserId
             };
+
             return model;
         }
+
 
         ///// <summary>
         ///// Adds the specified model.
@@ -86,15 +97,27 @@ namespace ASI.Basecode.Services.Services
         ///// <param name="model">The model.</param>
         public void Update(ExpenseViewModel model)
         {
-            var existingData = _expenseRepository.GetExpenses().Where(s => s.ExpenseId == model.ExpenseId).FirstOrDefault();
-            existingData.CategoryId = model.CategoryId;
-            existingData.Amount = model.Amount;
-            existingData.ExpenseDescription = model.Description;
-            existingData.DateCreated = model.CreatedDate;
+            var existingData = _expenseRepository.GetExpenses()
+                .FirstOrDefault(s => s.ExpenseId == model.ExpenseId);
 
-            _expenseRepository.UpdateExpense(existingData);
+            if (existingData != null)
+            {
+                existingData.CategoryId = model.CategoryId;
+                existingData.Amount = model.Amount;
+                existingData.ExpenseDescription = model.Description;
+                existingData.DateCreated = model.CreatedDate;
+                existingData.ExpenseName = model.ExpenseName;
 
+                // Save changes to the database
+                _expenseRepository.UpdateExpense(existingData);
+            }
+            else
+            {
+                throw new KeyNotFoundException("Expense not found for update.");
+            }
         }
+
+
 
         ///// <summary>
         ///// Deletes the specified identifier.

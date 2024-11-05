@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -191,6 +192,74 @@ namespace ASI.Basecode.WebApp.Controllers
                 return View("Details");
             }
         }
+
+        //edit Expense
+        [HttpPost]
+        public IActionResult EditExpense(ExpenseViewModel expenseDto)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Retrieve the current logged-in user's ID
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
+
+                    // Fetch the existing expense based on the provided ExpenseId
+                    var existingExpense = _expenseService.RetrieveExpense(expenseDto.ExpenseId);
+
+                    // Check if the expense exists and is owned by the current user
+                    if (existingExpense == null)
+                    {
+                        TempData["ErrorMessage"] = "Expense not found.";
+                        _logger.LogError($"Expense with ID {expenseDto.ExpenseId} not found for user ID {userId}.");
+                        return RedirectToAction("Details", "Category");
+                    }
+
+                    if (existingExpense.UserId != userId)
+                    {
+                        TempData["ErrorMessage"] = "Unauthorized to edit this expense.";
+                        _logger.LogError($"Unauthorized access attempt: Expense UserId {existingExpense.UserId} vs. Current UserId {userId}");
+                        return RedirectToAction("Details", "Category");
+                    }
+
+                    // Update expense properties with the new values from the form
+                    existingExpense.ExpenseName = expenseDto.ExpenseName;
+                    existingExpense.Amount = expenseDto.Amount;
+                    existingExpense.CreatedDate = expenseDto.CreatedDate;
+                    existingExpense.Description = expenseDto.Description;
+
+                    // Update the expense in the database
+                    _expenseService.Update(existingExpense);
+                    TempData["EditSuccess"] = "Expense updated successfully!";
+                    _logger.LogInformation($"Expense ID {expenseDto.ExpenseId} updated successfully by user ID {userId}.");
+
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An unexpected error occurred: " + ex.Message;
+                    _logger.LogError($"Error updating expense ID {expenseDto.ExpenseId}: {ex.Message}");
+                    return RedirectToAction("Details", "Category");
+                }
+            }
+            else
+            {
+                // Capture model state errors to help with debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["ErrorMessage"] = "Invalid data submitted: " + string.Join("; ", errors);
+                _logger.LogError("Model validation failed with errors: " + string.Join("; ", errors));
+
+                return RedirectToAction("Details", "Category");
+            }
+        }
+
+
+
+
+
+
+
 
 
     }
