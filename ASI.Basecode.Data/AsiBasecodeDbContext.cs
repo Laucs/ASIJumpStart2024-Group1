@@ -40,10 +40,6 @@ namespace ASI.Basecode.Data
 
                     .HasName("PK__M_Catego__23CAF1D86F87D63D");
 
-                    .HasName("PK__M_Catego__23CAF1D8F386D794");
-
-
-
 
                 entity.ToTable("M_Category");
 
@@ -69,8 +65,6 @@ namespace ASI.Basecode.Data
                 entity.HasKey(e => e.ExpenseId)
 
                     .HasName("PK__M_Expens__3672732EB87EDE19");
-
-                    .HasName("PK__M_Expens__3672732E75E41DF4");
 
                 entity.ToTable("M_Expenses");
 

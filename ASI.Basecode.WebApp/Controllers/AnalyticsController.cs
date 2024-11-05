@@ -2,6 +2,7 @@
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 using ASI.Basecode.WebApp.Authentication;
 using ASI.Basecode.WebApp.Models;
 using ASI.Basecode.WebApp.Mvc;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -26,7 +29,8 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
-
+        private readonly IExpenseService _expenseService;
+        private readonly ICategoryService _categoryService;
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
@@ -46,6 +50,8 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            ICategoryService categoryService,
+                            IExpenseService expenseService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -55,6 +61,8 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._expenseService = expenseService;
+            this._categoryService = categoryService;
         }
 
         /// <summary>
@@ -64,8 +72,35 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Summary()
         {
+            var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = Convert.ToInt32(claimsUserId);
+
+            var expenses = _expenseService.RetrieveAll(userId: userId);
+            var categories = _categoryService.RetrieveAll(userId: userId);
+
+            var groupedCategories = expenses
+                .Join(categories,
+                    expense => expense.CategoryId,
+                    category => category.CategoryId,
+                    (expense, category) => new { expense, category })
+                .GroupBy(ec => new { ec.category.CategoryId, ec.category.CategoryTitle })
+                .Select(g => new CategoryViewModel
+                {
+                    CategoryId = g.Key.CategoryId,
+                    CategoryTitle = g.Key.CategoryTitle,
+                    TotalAmount = g.Sum(ec => ec.expense.Amount)
+                })
+                .ToList();
+
+            var model = new SummaryViewModel
+            {
+                CategoryAnalytics = groupedCategories,
+                ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
+                TotalExpenses = expenses.Sum(e => e.Amount)
+            };
+
             ViewData["ActivePage"] = "Analytics";
-            return View();
+            return View(model);
         }
     }
 }

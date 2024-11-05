@@ -31,6 +31,4 @@ namespace ASI.Basecode.Services.ServiceModels
             [Required(ErrorMessage = "Expense Name is required.")]
             public string ExpenseName { get; set; }
         } 
-
-   
 }

@@ -1,0 +1,10 @@
+﻿<div class="mt-5 flex w-full flex-row flex-wrap items-center justify-center gap-5 md:mt-0 md:w-1/2">
+    @foreach (var category in Model)
+    {
+        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 shadow-md shadow-black">
+            <label class="font-bold tracking-wide text-white">@category.CategoryTitle</label>
+            <label class="font-bold text-green-500">₱@category.TotalAmount.ToString("N2")</label>
+            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-green-500"></div>
+        </div>
+    }
+</div>
