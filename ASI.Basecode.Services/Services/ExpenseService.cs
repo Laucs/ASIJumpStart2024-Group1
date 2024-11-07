@@ -108,6 +108,7 @@ namespace ASI.Basecode.Services.Services
                 existingData.ExpenseDescription = model.Description;
                 existingData.DateCreated = model.CreatedDate;
                 existingData.ExpenseName = model.ExpenseName;
+                
 
                 // Save changes to the database
                 _expenseRepository.UpdateExpense(existingData);

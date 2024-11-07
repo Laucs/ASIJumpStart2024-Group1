@@ -43,8 +43,8 @@ namespace ASI.Basecode.Data.Repositories
                 // Update the fields
                 existingExpense.ExpenseName = expense.ExpenseName;
                 existingExpense.Amount = expense.Amount;
-                existingExpense.DateCreated = expense.DateCreated;
                 existingExpense.CategoryId = expense.CategoryId;
+                existingExpense.DateCreated = expense.DateCreated;
                 existingExpense.ExpenseDescription = expense.ExpenseDescription;
 
                 // Mark entity as modified if necessary and save changes

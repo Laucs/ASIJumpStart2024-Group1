@@ -226,6 +226,7 @@ namespace ASI.Basecode.WebApp.Controllers
                     // Update expense properties with the new values from the form
                     existingExpense.ExpenseName = expenseDto.ExpenseName;
                     existingExpense.Amount = expenseDto.Amount;
+                    existingExpense.CategoryId = expenseDto.CategoryId;
                     existingExpense.CreatedDate = expenseDto.CreatedDate;
                     existingExpense.Description = expenseDto.Description;
 
