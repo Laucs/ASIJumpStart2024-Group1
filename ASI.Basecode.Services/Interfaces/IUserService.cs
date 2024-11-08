@@ -16,8 +16,6 @@ namespace ASI.Basecode.Services.Interfaces
         void UpdatePassword(ChangePasswordViewModel model);
         void Delete(int id);
         LoginResult AuthenticateUser(string userCode, string password, ref MUser user);
-        public bool UsernameAvailability(string username, int id);
-        public bool EmailAvailability(string email, int id);
         bool IsUsernameTaken(string username);
         bool IsEmailTaken(string email);
         MUser GetUserByVerificationToken(string token);
