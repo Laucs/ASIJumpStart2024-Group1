@@ -1,0 +1,75 @@
+﻿@using static ASI.Basecode.Resources.Views.ReportGenerationTable
+@using static ASI.Basecode.Resources.Views.AnalyticsScreen
+@model ASI.Basecode.Services.ServiceModels.CategoryPageViewModel
+
+@{
+    var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
+    ViewData["Title"] = "Category";
+
+    var selectedCategory = Context.Request.Query["categoryFilter"].ToString() ?? "all";
+    var selectedTimeFilter = Context.Request.Query["filter"].ToString() ?? "all";
+}
+
+<div class="h-auto bg-gray-100 px-8 dark:bg-slate-950">
+    <div class="flex flex-col gap-5 pt-5 md:pt-0">
+        <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
+        <div class="flex flex-row gap-5">
+            <button type="button" onclick="filterData('all')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
+            <button type="button" onclick="filterData('today')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
+            <button type="button" onclick="filterData('thisweek')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
+            <button type="button" onclick="filterData('thismonth')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thismonth") ? "bg-violet-500 text-white" : "bg-white")">This Month</button>
+            <select class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300" id="categoryFilter" onchange="filterData('all', this.value)">
+                <!option value="all" @(selectedCategory == "all" ? "selected" : "")>All Categories</!option>
+                @foreach (var category in Model.Categories)
+                {
+                    <!option value="@category.CategoryTitle" @(selectedCategory == category.CategoryTitle ? "selected" : "")>@category.CategoryTitle</!option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="mt-5 h-3/6 overflow-x-auto shadow-black drop-shadow-md">
+        <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
+            <thead>
+                <tr class="text-xs sm:text-base">
+                    <th class="w-1/5 rounded-s-md bg-violet-500 py-2 text-center font-bold text-white">
+                        @ExpenseName
+                    </th>
+                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                        @Amount
+                    </th>
+                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                        @Date
+                    </th>
+                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                        @Category
+                    </th>
+                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                        @Description
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.Categories)
+                {
+                    @foreach(var expense in category.MExpenses)
+                    {
+                        <tr class="text-xs sm:text-base">
+                            <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
+                            <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
+                            <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
+                            <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
+                            <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
+                        </tr>
+                    } 
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function filterData(timeFilter, categoryFilter = 'all') {
+        const url = `@Url.Action("Summary", "Analytics")?filter=${timeFilter}&categoryFilter=${categoryFilter}`;
+        window.location.href = url;
+    }
+</script>

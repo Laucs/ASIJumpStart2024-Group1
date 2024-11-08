@@ -1,0 +1,50 @@
+﻿@using static ASI.Basecode.Resources.Views.AnalyticsScreen
+@{
+    var testPercent = "10.45%";
+}
+<div class="mt-2 flex h-auto min-h-44 flex-col gap-1">
+    <label class="text-lg font-bold text-white">@ExpenseSummary</label>
+    <div class="flex h-10 flex-row items-center gap-2">
+        <svg id="arrow" class="" width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 0L17.6603 15H0.339746L9 0Z" fill="#00FD87" />
+        </svg>
+        <label id="percentage" class="text-lg font-bold text-green-400">@testPercent</label>
+    </div>
+
+    <label id="totalExpensesLabel" class="text-nowrap text-center text-4xl font-bold tracking-wider text-white drop-shadow-md md:text-6xl">
+        ₱@Model.TotalExpenses.ToString("N2")
+    </label>
+
+    <div class="mt-2 flex flex-row items-center justify-center gap-3 text-center md:mt-5">
+        <label class="text-lg font-bold text-white">@TotalExpense</label>
+        <button type="button" id="toggleButton" onclick="toggleExpenses()">
+            <img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" />
+        </button>
+    </div>
+</div>
+
+<script>
+    let isHidden = false;
+
+    function toggleExpenses() {
+        const totalExpensesLabel = document.getElementById("totalExpensesLabel");
+        const toggleButton = document.getElementById("toggleButton");
+        const percentage = document.getElementById("percentage");
+        const arrow = document.getElementById("arrow");
+
+        if (isHidden) {
+            totalExpensesLabel.innerHTML = `₱@Model.TotalExpenses.ToString("N2")`;
+            percentage.innerHTML = '@testPercent';
+            toggleButton.innerHTML = '<img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" />';
+            arrow.style.display = 'block';
+        } else {
+            totalExpensesLabel.innerHTML = '₱**********';
+            percentage.innerHTML = '<label id="percentage" class="text-lg font-bold text-white">*****</label>';
+            toggleButton.innerHTML = '<img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" />';
+            arrow.style.display = 'none';
+        }
+
+        isHidden = !isHidden;
+    }
+
+</script>

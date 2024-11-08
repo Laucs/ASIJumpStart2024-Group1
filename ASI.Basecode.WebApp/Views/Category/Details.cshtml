@@ -9,6 +9,9 @@
 @await Html.PartialAsync("Sidebar")
 @await Html.PartialAsync("ProfileRibbon")
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
 <div class="flex h-screen w-screen flex-row dark:bg-black">
@@ -43,28 +46,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!--Sample Data Based On User Entries-->
-                            <tr class="text-xs sm:text-base">
-                                <td class="py-2 text-center dark:text-white">Sample Expense</td>
-                                <td class="py-2 text-center dark:text-white">$100</td>
-                                <td class="py-2 text-center dark:text-white">01/09/2024</td>
-                                <td class="py-2 text-center dark:text-white">Travel</td>
-                                <td class="py-2 text-center dark:text-white">Business Trip</td>
-                                <td class="py-2">
-                                    <div class="flex flex-row items-center justify-center gap-2">
-                                        <button type="button">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.204 10.7959L19 8.99994C19.5453 8.45469 19.8179 8.18207 19.9636 7.88797C20.2409 7.32842 20.2409 6.67146 19.9636 6.11191C19.8179 5.81782 19.5453 5.54519 19 4.99994C18.4548 4.45469 18.1821 4.18207 17.888 4.03633C17.3285 3.75905 16.6715 3.75905 16.112 4.03633C15.8179 4.18207 15.5453 4.45469 15 4.99994L13.1814 6.8186C14.1452 8.4692 15.5314 9.84476 17.204 10.7959ZM11.7269 8.27305L4.8564 15.1436C4.43134 15.5686 4.21881 15.7812 4.07907 16.0422C3.93934 16.3033 3.88039 16.5981 3.7625 17.1875L3.1471 20.2645C3.08058 20.5971 3.04732 20.7634 3.14193 20.858C3.23654 20.9526 3.40284 20.9194 3.73545 20.8529L6.81243 20.2375C7.40189 20.1196 7.69661 20.0606 7.95771 19.9209C8.21881 19.7812 8.43134 19.5686 8.8564 19.1436L15.7458 12.2542C14.1241 11.2385 12.7524 9.87622 11.7269 8.27305Z" fill="@(isDarkMode ? "#FFFFFF" : "#222222")" />
-                                            </svg>
-                                        </button>
-                                        <button type="button">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12ZM12 13.4142L8.70711 16.7071L7.29289 15.2929L10.5858 12L7.29289 8.70711L8.70711 7.29289L12 10.5858L15.2929 7.29289L16.7071 8.70711L13.4142 12L16.7071 15.2929L15.2929 16.7071L12 13.4142Z" fill="@(isDarkMode ? "#FFFFFF" : "#222222")" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                             @foreach (var category in Model.Categories)
+                            {
+                                foreach (var expense in category.MExpenses)
+                                {
+                                    <!--Sample Data Based On User Entries-->
+                                    <tr class="text-xs sm:text-base">
+                                        <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
+                                        <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
+                                        <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
+                                        <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
+                                        <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
+                                        <td class="py-2">
+                                            <div class="flex flex-row items-center justify-center gap-2">
+                                                <button type="button" onclick="editExpense(
+                                                       '@expense.ExpenseId',
+    '@expense.ExpenseName',
+    '@expense.Amount',
+    '@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)',
+    '@category.CategoryId',  // Pass the categoryId
+    '@category.CategoryTitle', // Pass the categoryTitle
+    '@expense.ExpenseDescription',
+    categoriesArray  // Pass the categories array here
+                                                      )">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.204 10.7959L19 8.99994C19.5453 8.45469 19.8179 8.18207 19.9636 7.88797C20.2409 7.32842 20.2409 6.67146 19.9636 6.11191C19.8179 5.81782 19.5453 5.54519 19 4.99994C18.4548 4.45469 18.1821 4.18207 17.888 4.03633C17.3285 3.75905 16.6715 3.75905 16.112 4.03633C15.8179 4.18207 15.5453 4.45469 15 4.99994L13.1814 6.8186C14.1452 8.4692 15.5314 9.84476 17.204 10.7959ZM11.7269 8.27305L4.8564 15.1436C4.43134 15.5686 4.21881 15.7812 4.07907 16.0422C3.93934 16.3033 3.88039 16.5981 3.7625 17.1875L3.1471 20.2645C3.08058 20.5971 3.04732 20.7634 3.14193 20.858C3.23654 20.9526 3.40284 20.9194 3.73545 20.8529L6.81243 20.2375C7.40189 20.1196 7.69661 20.0606 7.95771 19.9209C8.21881 19.7812 8.43134 19.5686 8.8564 19.1436L15.7458 12.2542C14.1241 11.2385 12.7524 9.87622 11.7269 8.27305Z" fill="@(isDarkMode ? "#FFFFFF" : "#222222")" />
+                                                    </svg>
+                                                </button>
+                                                <form method="post" action="DeleteExpense">
+                                                    <input type="hidden" name="expenseId" value="@expense.ExpenseId" />
+                                                    <button type="submit" title="Delete">
+                                                        <!-- SVG Icon Here -->
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12ZM12 13.4142L8.70711 16.7071L7.29289 15.2929L10.5858 12L7.29289 8.70711L8.70711 7.29289L12 10.5858L15.2929 7.29289L16.7071 8.70711L13.4142 12L16.7071 15.2929L15.2929 16.7071L12 13.4142Z" fill="@(isDarkMode ? "#FFFFFF" : "#222222")" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -79,7 +102,7 @@
                                placeholder="New Category" required />
                         <span asp-validation-for="NewCategory.CategoryTitle" class="text-xs text-red-500"></span>
                     </div>
-                    <button type="submit" class="rounded-full bg-violet-500 px-8 py-2 h-10 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
+                    <button type="submit" class="h-10 rounded-full bg-violet-500 px-8 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                         Add Category
                     </button>
                 </form>
@@ -106,27 +129,191 @@
                 <div class="mt-2 flex h-2/6 w-full flex-row flex-wrap gap-12">
                     @foreach (var category in Model.Categories)
                     {
-                        <button type="button" class="h-10 w-36 rounded-full bg-blue-500 text-sm font-bold text-white drop-shadow-lg">
+                        <!-- Category Button that opens the modal with edit and delete options -->
+                        <button type="button" class="h-10 w-36 rounded-full bg-blue-500 text-sm font-bold text-white drop-shadow-lg"
+                                onclick="openActionModal(@category.CategoryId, '@category.CategoryTitle')">
                             @category.CategoryTitle
                         </button>
                     }
                 </div>
 
-
+               
             </div>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
     <script>
         var errMessage = '@TempData["ErrorMessage"]';
         var addSuccess = '@TempData["AddSuccess"]';
+        var delSuccess = '@TempData["DeleteSuccess"]';
         if (errMessage) {
             toastr.error(errMessage);
         }
         if (addSuccess) {
             toastr.success(addSuccess);
         }
+        if (delSuccess) {
+            toastr.success(delSuccess);
+        }
     </script>
+
+    <script>
+        function openActionModal(categoryId, categoryTitle) {
+            Swal.fire({
+                title: 'Manage Category',
+                html: `
+                    <div>
+                        <label for="editCategoryTitle" class="mb-1 block font-semibold">Edit Category Title:</label>
+                        <input id="editCategoryTitle" name="CategoryTitle" type="text"
+                               class="swal2-input" value="${categoryTitle}" />
+                    </div>`,
+                showCancelButton: false,
+                confirmButtonText: 'Save Changes',
+                confirmButtonColor: '#3085d6',
+                showDenyButton: true,
+                denyButtonText: 'Delete',
+                denyButtonColor: '#d33',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const newTitle = Swal.getPopup().querySelector('#editCategoryTitle').value;
+                    if (!newTitle) {
+                        Swal.showValidationMessage('Please enter a category title');
+                        return false;
+                    }
+                    editCategory(categoryId, newTitle);
+                }
+            }).then((result) => {
+                if (result.isDenied) {
+                    deleteCategory(categoryId);
+                }
+            });
+        }
+
+
+         function editCategory(categoryId, newTitle) {
+            // Create a form programmatically for submission
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '/Category/EditCategory';
+            form.innerHTML = `
+                <input type="hidden" name="NewCategory.CategoryId" value="${categoryId}" />
+                <input type="hidden" name="NewCategory.CategoryTitle" value="${newTitle}" />
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+
+        function deleteCategory(categoryId) {
+            // Confirmation before deleting the category
+            Swal.fire({
+                title: 'Are you sure you want to delete this category?',
+                icon: 'warning',
+                showCancelButton: false,  // Removed the cancel button
+                confirmButtonText: 'Yes, delete it!',
+                confirmButtonColor: '#d33',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Category/DeleteCategory';
+                    form.innerHTML = `<input type="hidden" name="CategoryId" value="${categoryId}" />`;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+
+    </script>
+
+
+
+
+    <script>
+        // Prepare categoriesArray with CategoryId and CategoryTitle for dropdown
+        const categoriesArray = [
+        @foreach (var category in Model.Categories)
+        {
+            <text>{CategoryId: @category.CategoryId, CategoryTitle: "@category.CategoryTitle" },</text>
+        }
+            ];
+    </script>
+
+    <script>
+        function editExpense(expenseId, expenseName, amount, dateCreated, categoryId, categoryTitle, description, categories) {
+            // Generate category options for the dropdown
+            let categoryOptions = categories.map(category => {
+                return `<option value="${category.CategoryId}" ${category.CategoryId == categoryId ? 'selected' : ''}>${category.CategoryTitle}</option>`;
+            }).join('');
+
+            Swal.fire({
+                title: 'Edit Expense',
+                html: `
+                    <input type="hidden" id="expenseId" value="${expenseId}">
+
+                    <label for="expenseName" style="display:block; text-align:left; margin-top:10px;">Expense Name</label>
+                    <input id="expenseName" class="swal2-input" placeholder="Expense Name" value="${expenseName}">
+
+                    <label for="amount" style="display:block; text-align:left; margin-top:10px;">Amount</label>
+                    <input id="amount" type="number" class="swal2-input" placeholder="Amount" value="${amount}">
+
+                    <label for="dateCreated" style="display:block; text-align:left; margin-top:10px;">Date Created</label>
+                    <input id="dateCreated" type="text" class="swal2-input" placeholder="Date Created" value="${dateCreated}" readonly>
+
+                    <label for="categoryId" style="display:block; text-align:left; margin-top:10px;">Category</label>
+                    <select id="categoryId" class="swal2-input">
+                        ${categoryOptions}
+                    </select>
+
+                    <label for="description" style="display:block; text-align:left; margin-top:10px;">Description</label>
+                    <input id="description" class="swal2-input" placeholder="Description" value="${description}">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: () => {
+                    return {
+                        expenseId: document.getElementById('expenseId').value,
+                        expenseName: document.getElementById('expenseName').value,
+                        amount: document.getElementById('amount').value,
+                        dateCreated: document.getElementById('dateCreated').value,
+                        categoryId: document.getElementById('categoryId').value,
+                        description: document.getElementById('description').value
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { expenseId, expenseName, amount, dateCreated, categoryId, description } = result.value;
+
+                    // Create and submit the form with the necessary data
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Category/EditExpense';
+                    form.innerHTML = `
+                        <input type="hidden" name="ExpenseId" value="${expenseId}" />
+                        <input type="hidden" name="ExpenseName" value="${expenseName}" />
+                        <input type="hidden" name="Amount" value="${amount}" />
+                        <input type="hidden" name="CreatedDate" value="${dateCreated}" />
+                        <input type="hidden" name="CategoryId" value="${categoryId}" />
+                        <input type="hidden" name="Description" value="${description}" />
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+    </script>
+
+
+
+
+
+
 }
+
+
+

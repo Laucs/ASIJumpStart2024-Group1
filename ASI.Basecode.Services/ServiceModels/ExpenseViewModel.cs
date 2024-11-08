@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
-
         public class ExpenseViewModel
         {
             [Required(ErrorMessage = "Amount is required.")]
@@ -30,7 +29,7 @@ namespace ASI.Basecode.Services.ServiceModels
             public int UserId { get; set; }
             [Required(ErrorMessage = "Expense Name is required.")]
             public string ExpenseName { get; set; }
-        } 
 
-   
+
+        } 
 }

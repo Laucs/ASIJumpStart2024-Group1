@@ -14,7 +14,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public class CategoryPageViewModel
     {
         public IEnumerable<CategoryViewModel> Categories { get; set; }
-        public CategoryViewModel NewCategory { get; set; }
+        public CategoryViewModel NewCategory { get; set; } = new CategoryViewModel();
     } 
 
     

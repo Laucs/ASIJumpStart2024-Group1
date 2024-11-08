@@ -27,8 +27,9 @@ namespace ASI.Basecode.Services.ServiceModels
 
             public virtual MUser User { get; set; }
 
-            public virtual ICollection<MExpense> MExpenses { get; set; }
-    } 
+            //public virtual ICollection<MExpense> MExpenses { get; set; }
+            public virtual ICollection<MExpense> MExpenses { get; set; } = new List<MExpense>();
+            public int TotalAmount { get; set; }
 
-    
+    }
 }

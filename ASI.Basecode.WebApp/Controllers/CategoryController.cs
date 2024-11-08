@@ -10,10 +10,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -28,6 +31,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
 
         /// <summary>
@@ -49,7 +53,9 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            IExpenseService expenseService,
                             ICategoryService categoryService,
+                         
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -60,6 +66,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._appConfiguration = configuration;
             this._userService = userService;
             this._categoryService = categoryService;
+            this._expenseService = expenseService;
         }
 
         /// <summary>
@@ -77,7 +84,7 @@ namespace ASI.Basecode.WebApp.Controllers
             var viewModel = new CategoryPageViewModel
             {
                 Categories = categories,
-                NewCategory = new CategoryViewModel() // Initialize for any new category logic
+                NewCategory = new CategoryViewModel()
             };
 
             ViewData["ActivePage"] = "Category";
@@ -91,22 +98,170 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Get the logged-in user's ID
-                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int userId = Convert.ToInt32(claimsUserId);
+                try
+                {
+                    // Get the logged-in user's ID
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
 
-                // Assign the userId to the new category
-                model.NewCategory.UserId = userId;
+                    // Assign the userId to the new category
+                    model.NewCategory.UserId = userId;
 
-                // Call the service to add the new category
-                _categoryService.Add(model);
-                TempData["AddSuccess"] = "Category added successfully!";
-                // Redirect after successful category creation
-                return RedirectToAction("Details", "Category");
+                    // Call the service to add the new category
+                    _categoryService.Add(model);
+                    TempData["AddSuccess"] = "Category added successfully!";
+
+                    // Redirect after successful category creation
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Catch duplicate category error and set error message
+                    TempData["ErrorMessage"] = ex.Message;
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (Exception ex)
+                {
+                    // Handle any other unexpected exceptions
+                    TempData["ErrorMessage"] = "An unexpected error occurred: " + ex.Message;
+                    return RedirectToAction("Details", "Category");
+                }
             }
 
-            return View(model); // Return the view if model state is invalid
+            // Return the view if model state is invalid
+            return View(model);
         }
+       
+        [HttpPost]
+        public IActionResult DeleteExpense(int expenseId)
+        {
+            _expenseService.Delete(expenseId);
+            TempData["DeleteSuccess"] = "Expense deleted successfully!";
+            return RedirectToAction("Details", "Category");
+
+        }
+
+
+        [HttpPost]
+        public IActionResult EditCategory(CategoryPageViewModel categoryDto)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
+
+                    categoryDto.NewCategory.UserId = userId;
+
+                    _categoryService.Update(categoryDto);
+                    TempData["AddSuccess"] = "Category updated successfully!";
+                    return RedirectToAction("Details");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Add custom error message to ModelState if duplicate category
+                    ModelState.AddModelError("", ex.Message);
+                    TempData["ErrorMessage"] = ex.Message;
+                    return RedirectToAction("Details");
+                }
+                catch (Exception ex)
+                {
+                    // General exception message
+                    ModelState.AddModelError("", "An unexpected error occurred: " + ex.Message);
+                    TempData["ErrorMessage"] = ex.Message;
+                    return View("Details", categoryDto);
+                }
+            }
+
+            return View("Details", categoryDto);
+        }
+
+
+        [HttpPost]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            try
+            {
+                _categoryService.Delete(categoryId);
+                return RedirectToAction("Details");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Details");
+            }
+        }
+
+        //edit Expense
+        [HttpPost]
+        public IActionResult EditExpense(ExpenseViewModel expenseDto)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Retrieve the current logged-in user's ID
+                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    int userId = Convert.ToInt32(claimsUserId);
+
+                    // Fetch the existing expense based on the provided ExpenseId
+                    var existingExpense = _expenseService.RetrieveExpense(expenseDto.ExpenseId);
+
+                    // Check if the expense exists and is owned by the current user
+                    if (existingExpense == null)
+                    {
+                        TempData["ErrorMessage"] = "Expense not found.";
+                        _logger.LogError($"Expense with ID {expenseDto.ExpenseId} not found for user ID {userId}.");
+                        return RedirectToAction("Details", "Category");
+                    }
+
+                    if (existingExpense.UserId != userId)
+                    {
+                        TempData["ErrorMessage"] = "Unauthorized to edit this expense.";
+                        _logger.LogError($"Unauthorized access attempt: Expense UserId {existingExpense.UserId} vs. Current UserId {userId}");
+                        return RedirectToAction("Details", "Category");
+                    }
+
+                    // Update expense properties with the new values from the form
+                    existingExpense.ExpenseName = expenseDto.ExpenseName;
+                    existingExpense.Amount = expenseDto.Amount;
+                    existingExpense.CategoryId = expenseDto.CategoryId;
+                    existingExpense.CreatedDate = expenseDto.CreatedDate;
+                    existingExpense.Description = expenseDto.Description;
+
+                    // Update the expense in the database
+                    _expenseService.Update(existingExpense);
+                    TempData["EditSuccess"] = "Expense updated successfully!";
+                    _logger.LogInformation($"Expense ID {expenseDto.ExpenseId} updated successfully by user ID {userId}.");
+
+                    return RedirectToAction("Details", "Category");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An unexpected error occurred: " + ex.Message;
+                    _logger.LogError($"Error updating expense ID {expenseDto.ExpenseId}: {ex.Message}");
+                    return RedirectToAction("Details", "Category");
+                }
+            }
+            else
+            {
+                // Capture model state errors to help with debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["ErrorMessage"] = "Invalid data submitted: " + string.Join("; ", errors);
+                _logger.LogError("Model validation failed with errors: " + string.Join("; ", errors));
+
+                return RedirectToAction("Details", "Category");
+            }
+        }
+
+
+
+
+
+
+
+
 
     }
 
