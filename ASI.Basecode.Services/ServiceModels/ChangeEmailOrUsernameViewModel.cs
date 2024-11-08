@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
     public class ChangeEmailOrUsernameViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Mail { get; set; }
-        [Required]
-        public string UserCode { get; set; }
+        public string NewEmail { get; set; }
+        [Required(ErrorMessage = "Username is required.")]
+        public string NewUsername { get; set; }
+
     }
 }

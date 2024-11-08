@@ -1,14 +1,11 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
-using ASI.Basecode.Data.Repositories;
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using static ASI.Basecode.Resources.Constants.Enums;
 
@@ -56,14 +53,16 @@ namespace ASI.Basecode.Services.Services
 
         public UserViewModel RetrieveUserByUsername(string userCode)
         {
-            var data = _userRepository.GetUsers().FirstOrDefault(x => x.Deleted != true && x.UserCode == userCode);
+            var data = _userRepository.GetUsers().FirstOrDefault(x => x.Deleted != true && x.UserCode.ToLower().Trim() == userCode.ToLower().Trim());
             var user = new UserViewModel()
             {
                 Id = data.UserId,
                 UserCode = data.UserCode,
                 FirstName = data.FirstName,
                 LastName = data.LastName,
-                Password = PasswordManager.DecryptPassword(data.Password)
+                Password = PasswordManager.DecryptPassword(data.Password),
+                ProfilePic = data.ProfileImg,
+                Mail = data.Mail
             };
 
             return user;
@@ -102,6 +101,8 @@ namespace ASI.Basecode.Services.Services
             existingData.UserCode = model.UserCode;
             existingData.FirstName = model.FirstName;
             existingData.LastName = model.LastName;
+            existingData.Mail = model.Mail;
+            existingData.Password = PasswordManager.EncryptPassword(model.Password);
             existingData.EmailVerificationToken = model.EmailVerificationToken;
             existingData.VerificationTokenExpiration = model.VerificationTokenExpiration;
             existingData.PasswordResetToken = model.PasswordResetToken;
@@ -121,7 +122,7 @@ namespace ASI.Basecode.Services.Services
 
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
-           
+
             user = new MUser();
             var passwordKey = PasswordManager.EncryptPassword(password.Trim());
             user = _userRepository.GetUsers().Where(x => x.UserCode.Trim() == userCode.Trim() &&
@@ -131,7 +132,36 @@ namespace ASI.Basecode.Services.Services
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
 
-        public bool IsUsernameTaken(string username)    
+        public bool ValidatePassword(string username, string password)
+        {
+            var currentUser = RetrieveUserByUsername(username);
+            return currentUser.Password.Equals(password);
+        }
+
+        public void UpdateProfile(ProfileViewModel model)
+        {
+            var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode.Trim().ToLower() == model.UserCode.Trim().ToLower()).FirstOrDefault();
+            existingData.ProfileImg = model.ProfilePicture;
+            _userRepository.UpdateUser(existingData);
+        }
+
+        public bool UsernameAvailability(string username, int id)
+        {
+            return _userRepository.GetUsers()
+                .Any(x => x.UserCode.ToUpper() == username.ToUpper() &&
+                            x.UserId != id &&
+                            x.Deleted != true);
+        }
+
+        public bool EmailAvailability(string email, int id)
+        {
+            return _userRepository.GetUsers()
+                .Any(x => x.Mail.ToLower() == email.ToLower() &&
+                            x.UserId != id &&
+                            x.Deleted != true);
+        }
+
+        public bool IsUsernameTaken(string username)
         {
             return _userRepository.GetUsers()
                 .Any(x => x.UserCode.ToUpper() == username.ToUpper() && x.Deleted != true);
@@ -158,17 +188,24 @@ namespace ASI.Basecode.Services.Services
             return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
         }
 
+        public void UpdateEmail(string newEmail, string currentUser)
+        {
+            var existingUser = _userRepository.GetUsers().FirstOrDefault(u => u.UserCode == currentUser);
+            if (existingUser != null)
+            {
+                existingUser.Mail = newEmail;
+                _userRepository.UpdateUser(existingUser);
+            }
+        }
+
         public void UpdatePassword(ChangePasswordViewModel model, string userCode)
         {
             var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == userCode).FirstOrDefault();
             if (existingData != null)
             {
-                var oldPassword = PasswordManager.DecryptPassword(existingData.Password);
-                if (!model.OldPassword.Equals(oldPassword))
-                {
-                    existingData.Password = model.NewPassword;
-                    _userRepository.UpdateUser(existingData);
-                }
+                var currentPassword = PasswordManager.DecryptPassword(existingData.Password);
+                existingData.Password = PasswordManager.EncryptPassword(model.NewPassword);
+                _userRepository.UpdateUser(existingData);
             }
         }
 
