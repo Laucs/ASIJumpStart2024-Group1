@@ -103,23 +103,19 @@ namespace ASI.Basecode.WebApp.Controllers
                     await ProfilePicture.CopyToAsync(stream);
                 }
 
-                var model = new ProfileViewModel
-                {
-                    UserCode = currentUsername,
-                    ProfilePicture = $"/img/profile/{fileName}"
-                };
-
+                var user = _userService.RetrieveUserByUsername(currentUsername);
+                user.ProfilePic = $"/img/profile/{fileName}";
 
                 TempData["ChangeSuccess"] = "Profile Picture changed successfully!";
 
-                _userService.UpdateProfile(model);
+                _userService.Update(user);
 
 
 
-                return Json(new { filePath = model.ProfilePicture });
+                return RedirectToAction("Settings", "Pref");
             }
 
-            return BadRequest(new { message = "File upload failed." });
+            return RedirectToAction("Settings", "Pref");
         }
 
 
