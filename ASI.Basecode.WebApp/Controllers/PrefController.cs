@@ -6,11 +6,15 @@ using ASI.Basecode.WebApp.Authentication;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NuGet.Protocol;
 using System;
+using System.Data;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -64,16 +68,19 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Settings()
         {
-            var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
+            var username = HttpContext.User.FindFirst("UserCode")?.Value;
+            var userData = _userService.RetrieveUserByUsername(username);
 
-            var data = _userService.RetrieveUserByUsername(currentUsername);
+            ViewBag.ProfilePic = userData.ProfilePic;
+            ViewBag.Email = userData.Mail;
+
             var model = new ProfileViewModel()
             {
-                UserCode = data.UserCode,
-                Email = data.Mail,
+                UserCode = userData.UserCode,
+                Email = userData.Mail,
                 UpdateEmailOrUserName = new ChangeEmailOrUsernameViewModel(),
                 UpdatePassword = new ChangePasswordViewModel(),
-                ProfilePicture = data.ProfilePic
+                ProfilePicture = userData.ProfilePic
             };
 
 
@@ -106,16 +113,19 @@ namespace ASI.Basecode.WebApp.Controllers
                 var user = _userService.RetrieveUserByUsername(currentUsername);
                 user.ProfilePic = $"/img/profile/{fileName}";
 
-                TempData["ChangeSuccess"] = "Profile Picture changed successfully!";
+                var userData = new MUser()
+                {
+                    UserCode = user.UserCode,
+                    UserId = user.Id
+                };
+                _signInManager.CreateClaimsIdentity(userData);
+                _userService.UpdateProfile(user);
 
-                _userService.Update(user);
 
-
-
-                return RedirectToAction("Settings", "Pref");
+                return Json(new { filePath = user.ProfilePic });
             }
 
-            return RedirectToAction("Settings", "Pref");
+            return BadRequest(new { message = "File upload failed." });
         }
 
 
@@ -125,19 +135,16 @@ namespace ASI.Basecode.WebApp.Controllers
             var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
             var userData = _userService.RetrieveUserByUsername(currentUsername);
 
-            // Email availability check
             if (_userService.EmailAvailability(model.UpdateEmailOrUserName.NewEmail, userData.Id))
             {
                 ModelState.AddModelError("UpdateEmailOrUserName.NewEmail", "This email is already registered.");
             }
 
-            // Username availability check
             if (_userService.UsernameAvailability(model.UpdateEmailOrUserName.NewUsername, userData.Id))
             {
                 ModelState.AddModelError("UpdateEmailOrUserName.NewUsername", "This username is already taken.");
             }
 
-            // Old password match check
             if (model.IsPasswordChangeRequired)
             {
                 if (model.IsPasswordChangeRequired && !model.UpdatePassword.OldPassword.Equals(userData.Password))
@@ -157,14 +164,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 return View("Settings", model);
             }
 
-            // Update password if it has changed
-            if (model.IsPasswordChangeRequired && !string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword))
-            {
-                userData.Password = model.UpdatePassword.NewPassword;
-            }
 
             // Update username if it has changed
-            if (!model.UpdateEmailOrUserName.NewUsername.Equals(userData.UserCode, StringComparison.OrdinalIgnoreCase))
+            if (!model.UpdateEmailOrUserName.NewUsername.Equals(userData.UserCode))
             {
                 userData.UserCode = model.UpdateEmailOrUserName.NewUsername;
                 var updatedUser = new MUser
@@ -172,26 +174,32 @@ namespace ASI.Basecode.WebApp.Controllers
                     UserCode = userData.UserCode,
                     Password = userData.Password,
                 };
-
+                _userService.UpdateUsername(userData);
                 await _signInManager.SignInAsync(updatedUser);
             }
 
-            // Update email if it has changed and send verification email
-            if (!model.UpdateEmailOrUserName.NewEmail.Equals(userData.Mail, StringComparison.OrdinalIgnoreCase))
+            if (!model.UpdateEmailOrUserName.NewEmail.Trim().ToLower().Equals(userData.Mail.Trim().ToLower()))
             {
-                userData.Mail = model.UpdateEmailOrUserName.NewEmail.Trim();
+                userData.Mail = model.UpdateEmailOrUserName.NewEmail;
                 userData.EmailVerificationToken = Guid.NewGuid().ToString();
                 userData.VerificationTokenExpiration = DateTime.Now.AddMinutes(5);
 
-                _userService.Update(userData);
+                _userService.UpdateEmail(userData);
                 await SendVerificationEmail(userData.Mail, userData.EmailVerificationToken);
 
-                TempData["ChangeEmailSuccess"] = "Email changed successfully! Please verify your new email.";
+                TempData["RegSuccess"] = "Email changed successfully! Please verify your new email.";
                 return RedirectToAction("Login", "Credentials");
             }
 
-            // Update user information and display success message
-            _userService.Update(userData);
+            // Update password if it has changed
+            if (model.IsPasswordChangeRequired && !string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword))
+            {
+                userData.Password = model.UpdatePassword.NewPassword;
+                _userService.UpdatePassword(userData);
+                TempData["ChangeSuccess"] = "Password updated successfully!";
+                return RedirectToAction("Settings");
+            }
+
             TempData["ChangeSuccess"] = "Profile updated successfully!";
             return RedirectToAction("Settings");
         }

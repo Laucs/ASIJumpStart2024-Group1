@@ -21,6 +21,7 @@ const setImagePreview = (event) => {
             })
             .then(data => {
                 console.log("Image file path saved:", data.filePath);
+                toastr.success("Profile Picture Updated successfully");
             })
             .catch(error => console.error('Error:', error));
 

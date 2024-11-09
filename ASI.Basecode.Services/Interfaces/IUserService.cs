@@ -22,5 +22,10 @@ namespace ASI.Basecode.Services.Interfaces
         MUser GetUserByVerificationToken(string token);
         MUser GetUserByEmail(string email);
         MUser GetUserByPasswordResetToken(string token);
+        string GetUserProfilePic(int id);
+        public void UpdatePassword(UserViewModel model);
+        public void UpdateEmail(UserViewModel model);
+        public void UpdateUsername(UserViewModel model);
+        public void UpdateProfile(UserViewModel model);
     }
 }

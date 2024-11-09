@@ -4,7 +4,7 @@
 }
 <div class="z-10 right-5 top-5 hidden flex-row gap-6 md:flex md:fixed">
     <div class="flex min-w-32 flex-row items-center justify-center gap-5 rounded-full bg-violet-500 px-8 py-1 shadow-black drop-shadow-md duration-300 hover:bg-violet-800">
-        <img class="h-8 w-8 rounded-full" src="/img/SampleProfile.jpg" />
+        <img class="h-8 w-8 rounded-full" src="@ViewBag.ProfilePic"/>
         <label class="text-sm font-bold text-white">@userCode</label>
     </div>
     <form asp-controller="Credentials" asp-action="Logout" method="post" style="display: inline;">

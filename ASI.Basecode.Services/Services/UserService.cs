@@ -46,14 +46,16 @@ namespace ASI.Basecode.Services.Services
                 UserCode = data.UserCode,
                 FirstName = data.FirstName,
                 LastName = data.LastName,
-                Password = PasswordManager.DecryptPassword(data.Password)
+                Password = PasswordManager.DecryptPassword(data.Password),
+                ProfilePic = data.ProfileImg,
+                Mail = data.Mail
             };
             return model;
         }
 
         public UserViewModel RetrieveUserByUsername(string userCode)
         {
-            var data = _userRepository.GetUsers().FirstOrDefault(x => x.Deleted != true && x.UserCode.ToLower().Trim() == userCode.ToLower().Trim());
+            var data = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == userCode).FirstOrDefault();
             var user = new UserViewModel()
             {
                 Id = data.UserId,
@@ -101,8 +103,6 @@ namespace ASI.Basecode.Services.Services
             existingData.UserCode = model.UserCode;
             existingData.FirstName = model.FirstName;
             existingData.LastName = model.LastName;
-            existingData.Mail = model.Mail;
-            existingData.Password = PasswordManager.EncryptPassword(model.Password);
             existingData.EmailVerificationToken = model.EmailVerificationToken;
             existingData.VerificationTokenExpiration = model.VerificationTokenExpiration;
             existingData.PasswordResetToken = model.PasswordResetToken;
@@ -138,10 +138,10 @@ namespace ASI.Basecode.Services.Services
             return currentUser.Password.Equals(password);
         }
 
-        public void UpdateProfile(ProfileViewModel model)
+        public void UpdateProfile(UserViewModel model)
         {
             var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode.Trim().ToLower() == model.UserCode.Trim().ToLower()).FirstOrDefault();
-            existingData.ProfileImg = model.ProfilePicture;
+            existingData.ProfileImg = model.ProfilePic;
             _userRepository.UpdateUser(existingData);
         }
 
@@ -186,6 +186,43 @@ namespace ASI.Basecode.Services.Services
         public MUser GetUserByPasswordResetToken(string token)
         {
             return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
+        }
+
+        public string GetUserProfilePic(int id)
+        {
+            return _userRepository.GetUsers().FirstOrDefault(u => u.UserId == id && !u.Deleted).ProfileImg;
+        }
+
+        public void UpdatePassword(UserViewModel model)
+        {
+            var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == model.UserCode).FirstOrDefault();
+            if (existingData != null)
+            {
+                existingData.Password = PasswordManager.EncryptPassword(model.Password);
+                _userRepository.UpdateUser(existingData);
+            }
+        }
+
+        public void UpdateEmail(UserViewModel model)
+        {
+            var existingUser = _userRepository.GetUsers().FirstOrDefault(u => u.UserCode == model.UserCode);
+            if (existingUser != null)
+            {
+                existingUser.Mail = model.Mail;
+                existingUser.EmailVerificationToken = model.EmailVerificationToken;
+                existingUser.VerificationTokenExpiration = model.VerificationTokenExpiration;
+                _userRepository.UpdateUser(existingUser);
+            }
+        }
+
+        public void UpdateUsername(UserViewModel model)
+        {
+            var existingUser = _userRepository.GetUsers().FirstOrDefault(u => u.UserId == model.Id);
+            if (existingUser != null)
+            {
+                existingUser.UserCode = model.UserCode;
+                _userRepository.UpdateUser(existingUser);
+            }
         }
     }
 }
