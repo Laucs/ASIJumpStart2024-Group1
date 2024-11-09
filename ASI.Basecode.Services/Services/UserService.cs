@@ -187,28 +187,5 @@ namespace ASI.Basecode.Services.Services
         {
             return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
         }
-
-        public void UpdateEmail(string newEmail, string currentUser)
-        {
-            var existingUser = _userRepository.GetUsers().FirstOrDefault(u => u.UserCode == currentUser);
-            if (existingUser != null)
-            {
-                existingUser.Mail = newEmail;
-                _userRepository.UpdateUser(existingUser);
-            }
-        }
-
-        public void UpdatePassword(ChangePasswordViewModel model, string userCode)
-        {
-            var existingData = _userRepository.GetUsers().Where(s => s.Deleted != true && s.UserCode == userCode).FirstOrDefault();
-            if (existingData != null)
-            {
-                var currentPassword = PasswordManager.DecryptPassword(existingData.Password);
-                existingData.Password = PasswordManager.EncryptPassword(model.NewPassword);
-                _userRepository.UpdateUser(existingData);
-            }
-        }
-
-
     }
 }

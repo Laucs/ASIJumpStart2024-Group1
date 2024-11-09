@@ -13,7 +13,6 @@ namespace ASI.Basecode.Services.Interfaces
         UserViewModel RetrieveUserByUsername(string userCode);
         void Add(UserViewModel model);
         void Update(UserViewModel model);
-        void UpdatePassword(ChangePasswordViewModel model);
         void Delete(int id);
         LoginResult AuthenticateUser(string userCode, string password, ref MUser user);
         public bool UsernameAvailability(string username, int id);
