@@ -19,6 +19,7 @@ namespace ASI.Basecode.Data
 
         public virtual DbSet<MCategory> MCategories { get; set; }
         public virtual DbSet<MExpense> MExpenses { get; set; }
+        public virtual DbSet<MRole> MRoles { get; set; }
         public virtual DbSet<MUser> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,7 +27,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Addr=DESKTOP-IN89L3I\\SQLEXPRESS;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
+                optionsBuilder.UseSqlServer("Addr=(LocalDB)\\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
             }
         }
 
@@ -35,12 +36,7 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MCategory>(entity =>
             {
                 entity.HasKey(e => e.CategoryId)
-
-
-
-                    .HasName("PK__M_Catego__23CAF1D86F87D63D");
-
-
+                    .HasName("PK__M_Catego__23CAF1D8481EAB43");
 
                 entity.ToTable("M_Category");
 
@@ -64,10 +60,7 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MExpense>(entity =>
             {
                 entity.HasKey(e => e.ExpenseId)
-
-
-                    .HasName("PK__M_Expens__3672732EB87EDE19");
-
+                    .HasName("PK__M_Expens__3672732E960DF9B3");
 
                 entity.ToTable("M_Expenses");
 
@@ -103,6 +96,20 @@ namespace ASI.Basecode.Data
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User");
+            });
+
+            modelBuilder.Entity<MRole>(entity =>
+            {
+                entity.HasKey(e => e.RoleId);
+
+                entity.ToTable("M_ROLE");
+
+                entity.Property(e => e.RoleId).ValueGeneratedNever();
+
+                entity.Property(e => e.RoleName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<MUser>(entity =>
@@ -144,10 +151,11 @@ namespace ASI.Basecode.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.ProfileImg)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("ProfileIMG")
-                    .HasDefaultValueSql("('www.sampleimg.com')");
+                    .HasDefaultValueSql("('https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fvectors%2Fblank-profile-picture-mystery-man-973460%2F&psig=AOvVaw1UZH8X-c3I7U1UqI8-zIhv&ust=1729394874689000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKiz4afAmYkDFQAAAAAdAAAAABAE')");
 
                 entity.Property(e => e.Remarks).HasMaxLength(500);
 

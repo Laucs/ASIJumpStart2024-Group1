@@ -200,3 +200,5 @@ $RECYCLE.BIN/
 node_modules
 */src/*/Scripts/**/*.js
 */src/*/Scripts/**/*.js.map
+/ASI.Basecode.Services/ServiceModels/ChangePassEmailViewModel.cs
+/ASI.Basecode.WebApp/wwwroot/img/profile/SunGoldLogo.png
