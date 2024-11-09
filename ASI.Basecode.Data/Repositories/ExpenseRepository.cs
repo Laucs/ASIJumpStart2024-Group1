@@ -27,7 +27,7 @@ namespace ASI.Basecode.Data.Repositories
         public void AddExpense(MExpense model)
         {
 
-            model.DateCreated = DateTime.Now; 
+            model.DateCreated = model.DateCreated; 
             this.GetDbSet<MExpense>().Add(model);
             // Save changes to persist the new expense in the database
             UnitOfWork.SaveChanges();
