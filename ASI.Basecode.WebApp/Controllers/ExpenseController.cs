@@ -75,6 +75,9 @@ namespace ASI.Basecode.WebApp.Controllers
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
+            var profilePic = _userService.GetUserProfilePic(userId);
+            ViewBag.ProfilePic = profilePic;
+
             var categories = _categoryService.RetrieveAll(userId: userId);
 
             var model = new ExpenseViewModel

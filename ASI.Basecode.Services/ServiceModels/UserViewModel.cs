@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
@@ -36,6 +33,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public bool IsEmailVerified { get; set; }
         public string PasswordResetToken { get; set; }
         public DateTime? ResetTokenExpiration { get; set; }
+        public string ProfilePic { get; set; }
     }
 
     public class UserListViewModel
