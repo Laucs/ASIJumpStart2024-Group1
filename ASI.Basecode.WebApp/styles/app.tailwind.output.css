@@ -708,10 +708,6 @@ video {
   z-index: 10;
 }
 
-.-z-10 {
-  z-index: -10;
-}
-
 .order-1 {
   order: 1;
 }
@@ -726,6 +722,10 @@ video {
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mr-5 {
+  margin-right: 1.25rem;
 }
 
 .ms-5 {
@@ -964,8 +964,8 @@ video {
   table-layout: fixed;
 }
 
-.translate-x-1\/2 {
-  --tw-translate-x: 50%;
+.-translate-y-1\/2 {
+  --tw-translate-y: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1008,10 +1008,6 @@ video {
 
 .flex-nowrap {
   flex-wrap: nowrap;
-}
-
-.items-end {
-  align-items: flex-end;
 }
 
 .items-center {
@@ -1080,6 +1076,10 @@ video {
   border-radius: 0.375rem;
 }
 
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
 .rounded-e-md {
   border-start-end-radius: 0.375rem;
   border-end-end-radius: 0.375rem;
@@ -1101,6 +1101,10 @@ video {
 
 .border-0 {
   border-width: 0px;
+}
+
+.border-2 {
+  border-width: 2px;
 }
 
 .border-b {
@@ -1252,8 +1256,17 @@ video {
   padding-bottom: 2rem;
 }
 
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .pb-20 {
   padding-bottom: 5rem;
+}
+
+.pr-12 {
+  padding-right: 3rem;
 }
 
 .pt-5 {
@@ -1316,10 +1329,6 @@ video {
 
 .font-semibold {
   font-weight: 600;
-}
-
-.font-normal {
-  font-weight: 400;
 }
 
 .uppercase {
@@ -1487,12 +1496,6 @@ video {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-all {
-  transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -3182,10 +3185,6 @@ img, video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.hover\:opacity-100:hover {
-  opacity: 1;
-}
-
 .focus\:border-0:focus {
   border-width: 0px;
 }
@@ -3193,10 +3192,6 @@ img, video {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-.group:hover .group-hover\:hidden {
-  display: none;
 }
 
 .group:hover .group-hover\:opacity-0 {
@@ -3285,6 +3280,11 @@ img, video {
 .dark\:text-white:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.dark\:text-black:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .dark\:shadow-lg:is(.dark *) {
@@ -3420,16 +3420,6 @@ img, video {
     width: 100%;
   }
 
-  .md\:translate-x-3\/4 {
-    --tw-translate-x: 75%;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-  }
-
-  .md\:scale-x-105 {
-    --tw-scale-x: 1.05;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-  }
-
   .md\:flex-row {
     flex-direction: row;
   }
@@ -3475,15 +3465,6 @@ img, video {
     opacity: 1;
   }
 
-  .md\:opacity-80 {
-    opacity: 0.8;
-  }
-
-  .md\:hover\:translate-x-0:hover {
-    --tw-translate-x: 0px;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-  }
-
   .md\:hover\:scale-105:hover {
     --tw-scale-x: 1.05;
     --tw-scale-y: 1.05;
@@ -3493,10 +3474,6 @@ img, video {
   .md\:hover\:border-s-violet-500:hover {
     --tw-border-opacity: 1;
     border-inline-start-color: rgb(139 92 246 / var(--tw-border-opacity));
-  }
-
-  .md\:hover\:opacity-100:hover {
-    opacity: 1;
   }
 }
 

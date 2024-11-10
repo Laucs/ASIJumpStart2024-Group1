@@ -204,3 +204,4 @@ node_modules
 /ASI.Basecode.WebApp/wwwroot/img/profile/SunGoldLogo.png
 */src/*/Scripts/**/*.js.map
 /ASI.Basecode.WebApp/appsettings.json
+/ASI.Basecode.WebApp/wwwroot/img/profile

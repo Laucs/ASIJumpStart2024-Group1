@@ -21,48 +21,48 @@
                     <label class="text-xl font-bold text-black dark:text-white" for="checkboxEmailUserName">@UserInfo</label>
 
                     <div class="relative">
-                        <input asp-for="UpdateEmailOrUserName.NewUsername" type="text"
+                        <input id="userInput" asp-for="UpdateEmailOrUserName.NewUsername" type="text"
                                class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
                                placeholder="Username" value=@Model.UserCode />
                         <span asp-validation-for="UpdateEmailOrUserName.NewUsername"
-                              class="absolute right-5 transform -translate-y-1/2 text-xs text-red-500" style="top:35%"></span>
+                              class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                     </div>
                     <div class="relative">
-                        <input asp-for="UpdateEmailOrUserName.NewEmail" type="email" class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
+                        <input id="emailInput" "UpdateEmailOrUserName.NewEmail" type="email" class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
                                placeholder="Email" value=@Model.Email />
                         <span asp-validation-for="UpdateEmailOrUserName.NewEmail"
-                              class="absolute right-5 transform -translate-y-1/2 text-xs text-red-500" style="top:35%"></span>
+                              class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                     </div>
                 </div>
 
                 <div class="mt-6 flex flex-col gap-6">
                     <div class="inline-flex gap-2">
-                        <label class="text-xl font-bold text-black dark:text-white mr-5">@PassManagement</label>
+                        <label class="mr-5 text-xl font-bold text-black dark:text-white">@PassManagement</label>
                         <input asp-for="IsPasswordChangeRequired" type="checkbox" id="togglePasswordChange" class="mt-2 rounded-lg border border-zinc-600" />
                     </div>
 
                     <!-- Container for password input fields -->
                     <div class="flex flex-col gap-6" id="passwordFields">
                         <div class="relative">
-                            <input asp-for="UpdatePassword.OldPassword" type="password"
+                            <input input="oldInput" asp-for="UpdatePassword.OldPassword" type="password"
                                    class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
                                    placeholder="Old Password" disabled />
                             <span asp-validation-for="UpdatePassword.OldPassword"
-                                  class="absolute right-5 transform -translate-y-1/2 text-xs text-red-500" style="top:35%"></span>
+                                  class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                         </div>
                         <div class="relative">
-                            <input asp-for="UpdatePassword.NewPassword" type="password"
+                            <input id="newInput" asp-for="UpdatePassword.NewPassword" type="password"
                                    class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
                                    placeholder="New Password" disabled />
                             <span asp-validation-for="UpdatePassword.NewPassword"
-                                  class="absolute right-5 transform -translate-y-1/2 text-xs text-red-500" style="top:35%"></span>
+                                  class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                         </div>
                         <div class="relative">
-                            <input asp-for="UpdatePassword.ConfirmPassword" type="password"
+                            <input id="confirmNewInput" asp-for="UpdatePassword.ConfirmPassword" type="password"
                                    class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
                                    placeholder="Confirm Password" disabled />
                             <span asp-validation-for="UpdatePassword.ConfirmPassword"
-                                  class="absolute right-5 transform -translate-y-1/2 text-xs text-red-500" style="top:35%"></span>
+                                  class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                         </div>
                     </div>
                 </div>
