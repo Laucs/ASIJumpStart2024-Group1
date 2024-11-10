@@ -14,11 +14,11 @@
     <div class="flex flex-col gap-5 pt-5 md:pt-0">
         <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
         <div class="flex flex-row gap-5">
-            <button type="button" onclick="filterData('all')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
-            <button type="button" onclick="filterData('today')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
-            <button type="button" onclick="filterData('thisweek')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
-            <button type="button" onclick="filterData('thismonth')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thismonth") ? "bg-violet-500 text-white" : "bg-white")">This Month</button>
-            <select class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300" id="categoryFilter" onchange="filterData('all', this.value)">
+            <button id="allBtn" type="button" onclick="filterData('all')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
+            <button id="todayBtn" type="button" onclick="filterData('today')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
+            <button id="weekBtn" type="button" onclick="filterData('thisweek')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
+            <button id="monthBtn" type="button" onclick="filterData('thismonth')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thismonth") ? "bg-violet-500 text-white" : "bg-white")">This Month</button>
+            <select id="categoryBtn" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300" id="categoryFilter" onchange="filterData('all', this.value)">
                 <!option value="all" @(selectedCategory == "all" ? "selected" : "")>All Categories</!option>
                 @foreach (var category in Model.Categories)
                 {
