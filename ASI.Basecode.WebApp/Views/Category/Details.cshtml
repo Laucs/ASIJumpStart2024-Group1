@@ -103,7 +103,7 @@
                                placeholder="New Category" required />
                         <span asp-validation-for="NewCategory.CategoryTitle" class="text-xs text-red-500"></span>
                     </div>
-                    <button type="submit" class="h-10 rounded-full bg-violet-500 px-8 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
+                    <button id="addCategory" type="submit" class="h-10 rounded-full bg-violet-500 px-8 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                         Add Category
                     </button>
                 </form>
@@ -177,6 +177,15 @@
                 showDenyButton: true,
                 denyButtonText: 'Delete',
                 denyButtonColor: '#d33',
+                didOpen: () => {
+                    // Set an id for the delete button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.id = 'delete-button'; // Assigning id
+
+                    const saveChanges = swal.getConFirmButton();
+                    saveChanges.id = 'save-changes';
+
+                },
                 focusConfirm: false,
                 preConfirm: () => {
                     const newTitle = Swal.getPopup().querySelector('#editCategoryTitle').value;
@@ -200,9 +209,11 @@
             form.method = 'post';
             form.action = '/Category/EditCategory';
             form.innerHTML = `
-                                                        <input type="hidden" name="NewCategory.CategoryId" value="${categoryId}" />
-                                                        <input type="hidden" name="NewCategory.CategoryTitle" value="${newTitle}" />
-                                                    `;
+                  <input type="hidden" name="NewCategory.CategoryId" value="${categoryId}" />
+                  <input type="hidden" name="NewCategory.CategoryTitle" value="${newTitle}" />
+             
+                 `;
+
             document.body.appendChild(form);
             form.submit();
         }
@@ -216,6 +227,11 @@
                 showCancelButton: false,  // Removed the cancel button
                 confirmButtonText: 'Yes, delete it!',
                 confirmButtonColor: '#d33',
+                didOpen: () => {
+                    // Set an id for the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.id = 'confirm-delete-button'; // Assigning id
+                },
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
@@ -254,30 +270,31 @@
             Swal.fire({
                 title: 'Edit Expense',
                 html: `
-                                                                    <input type="hidden" id="expenseId" value="${expenseId}">
-                                                                     <div class="mt-1 flex flex-col">
-                                                                         <label for="expenseName">Expense Name</label>
-                                                                         <input id="expenseName" class="swal2-input" placeholder="Expense Name" value="${expenseName}">
-                                                                      </div>
-                                                                      <div class="mt-1 flex flex-col">
-                                                                         <label for="amount">Amount</label>
-                                                                         <input id="amount" type="number" class="swal2-input" placeholder="Amount" value="${amount}">
-                                                                      </div>
-                                                                      <div class="mt-1 flex flex-col">
-                                                                        <label for="dateCreated">Date Created</label>
-                                                                        <input id="dateCreated" type="text" class="swal2-input" placeholder="Date Created" value="${dateCreated}" readonly>
-                                                                      </div>
-                                                                      <div class="mt-1 flex flex-col">
-                                                                          <label for="categoryId">Category</label>
-                                                                          <select class="mt-4 rounded-md border px-4 py-3" id="categoryId" class="swal2-input">
-                                                                              ${categoryOptions}
-                                                                          </select>
-                                                                      </div>
-                                                                      <div class="mt-1 flex flex-col">
-                                                                          <label for="description">Description</label>
-                                                                          <input id="description" class="swal2-input" placeholder="Description" value="${description}">
-                                                                      </div>
-                                                                `,
+                    <input type="hidden" id="expenseId" value="${expenseId}">
+                    <div class="mt-1 flex flex-col">
+                          <label for="expenseName">Expense Name</label>
+                          <input id="expenseName" class="swal2-input" placeholder="Expense Name" value="${expenseName}">
+                    </div>
+                    <div class="mt-1 flex flex-col">
+                          <label for="amount">Amount</label>
+                          <input id="amount" type="number" class="swal2-input" placeholder="Amount" value="${amount}">
+                    </div>
+                    <div class="mt-1 flex flex-col">
+                          <label for="dateCreated">Date Created</label>
+                          <input id="dateCreated" type="text" class="swal2-input" placeholder="Date Created" value="${dateCreated}" readonly>
+                    </div>
+                    <div class="mt-1 flex flex-col">
+                          <label for="categoryId">Category</label>
+                          <select class="mt-4 rounded-md border px-4 py-3" id="categoryId" class="swal2-input">
+                                ${categoryOptions}
+                          </select>
+                    </div>
+                    <div class="mt-1 flex flex-col">
+                          <label for="description">Description</label>
+                          <input id="description" class="swal2-input" placeholder="Description" value="${description}">
+                    </div>
+                  `,
+
                 showCancelButton: true,
                 confirmButtonText: 'Save',
                 preConfirm: () => {
@@ -299,13 +316,13 @@
                     form.method = 'post';
                     form.action = '/Category/EditExpense';
                     form.innerHTML = `
-                                                                <input type="hidden" name="ExpenseId" value="${expenseId}" />
-                                                                <input type="hidden" name="ExpenseName" value="${expenseName}" />
-                                                                <input type="hidden" name="Amount" value="${amount}" />
-                                                                <input type="hidden" name="CreatedDate" value="${dateCreated}" />
-                                                                <input type="hidden" name="CategoryId" value="${categoryId}" />
-                                                                <input type="hidden" name="Description" value="${description}" />
-                                                            `;
+                          <input type="hidden" name="ExpenseId" value="${expenseId}" />
+                          <input type="hidden" name="ExpenseName" value="${expenseName}" />
+                          <input type="hidden" name="Amount" value="${amount}" />
+                          <input type="hidden" name="CreatedDate" value="${dateCreated}" />
+                          <input type="hidden" name="CategoryId" value="${categoryId}" />
+                          <input type="hidden" name="Description" value="${description}" />
+                     `;
                     document.body.appendChild(form);
                     form.submit();
                 }
