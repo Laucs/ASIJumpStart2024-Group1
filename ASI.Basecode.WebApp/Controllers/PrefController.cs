@@ -71,9 +71,6 @@ namespace ASI.Basecode.WebApp.Controllers
             var username = HttpContext.User.FindFirst("UserCode")?.Value;
             var userData = _userService.RetrieveUserByUsername(username);
 
-            ViewBag.ProfilePic = userData.ProfilePic;
-            ViewBag.Email = userData.Mail;
-
             var model = new ProfileViewModel()
             {
                 UserCode = userData.UserCode,
@@ -158,6 +155,8 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
             }
 
+            
+
             // If ModelState is invalid, return the view with error messages
             if (!ModelState.IsValid)
             {
@@ -175,6 +174,7 @@ namespace ASI.Basecode.WebApp.Controllers
                     Password = userData.Password,
                 };
                 _userService.UpdateUsername(userData);
+                TempData["ChangeSuccess"] = "Username updated successfully!";
                 await _signInManager.SignInAsync(updatedUser);
             }
 
@@ -200,7 +200,6 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("Settings");
             }
 
-            TempData["ChangeSuccess"] = "Profile updated successfully!";
             return RedirectToAction("Settings");
         }
 
