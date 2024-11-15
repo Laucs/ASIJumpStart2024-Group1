@@ -59,7 +59,7 @@
                                         <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
                                         <td class="py-2">
                                             <div class="flex flex-row items-center justify-center gap-2">
-                                                <button type="button" onclick="editExpense(
+                                                <button id="editExpense" type="button" onclick="editExpense(
                                                        '@expense.ExpenseId',
     '@expense.ExpenseName',
     '@expense.Amount',
@@ -150,6 +150,7 @@
         var errMessage = '@TempData["ErrorMessage"]';
         var addSuccess = '@TempData["AddSuccess"]';
         var delSuccess = '@TempData["DeleteSuccess"]';
+   
         if (errMessage) {
             toastr.error(errMessage);
         }
@@ -297,6 +298,11 @@
 
                 showCancelButton: true,
                 confirmButtonText: 'Save',
+                didOpen: () => {
+                    // Set an id for the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.id = 'save-updated-expense'; // Assigning id
+                },
                 preConfirm: () => {
                     return {
                         expenseId: document.getElementById('expenseId').value,
@@ -332,7 +338,7 @@
     </script>
 
     <!-- SweetAlert Script -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
     <script>
         function confirmDelete(event) {
             event.preventDefault(); // Prevent the form from submitting immediately

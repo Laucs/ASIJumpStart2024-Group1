@@ -235,7 +235,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
                     // Update the expense in the database
                     _expenseService.Update(existingExpense);
-                    TempData["EditSuccess"] = "Expense updated successfully!";
+                    TempData["AddSuccess"] = "Expense updated successfully!";
                     _logger.LogInformation($"Expense ID {expenseDto.ExpenseId} updated successfully by user ID {userId}.");
 
                     return RedirectToAction("Details", "Category");
