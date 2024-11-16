@@ -18,3 +18,7 @@ Authors:
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) 
 ![Tailwind CSS](https://img.shields.io/badge/tailwind%20css-%2338B2D8.svg?style=for-the-badge&logo=tailwindcss&logoColor=white) 
 ![Microsoft SQL Server](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white)
+
+
+**LAB**
+Scaffold-DbContext {Addr=(LocalDB)\\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True} Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir . -F
