@@ -188,9 +188,9 @@ namespace ASI.Basecode.Services.Services
             return _userRepository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiration > DateTime.Now && !u.Deleted);
         }
 
-        public string GetUserProfilePic(int id)
+        public string GetUserProfilePic(string userCode)
         {
-            return _userRepository.GetUsers().FirstOrDefault(u => u.UserId == id && !u.Deleted).ProfileImg;
+            return _userRepository.GetUsers().FirstOrDefault(u => u.UserCode == userCode && !u.Deleted).ProfileImg;
         }
 
         public void UpdatePassword(UserViewModel model)
