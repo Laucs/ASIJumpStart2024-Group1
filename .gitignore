@@ -207,3 +207,4 @@ node_modules
 /ASI.Basecode.WebApp/wwwroot/img/profile
 /ASI.Basecode.WebApp/appsettings.json
 /ASI.Basecode.Data/AsiBasecodeDbContext.cs
+/ASI.Basecode.WebApp/appsettings.json
