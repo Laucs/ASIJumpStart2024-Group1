@@ -78,7 +78,8 @@ namespace ASI.Basecode.WebApp.Controllers
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
-            var profilePic = _userService.GetUserProfilePic(userId);
+            var userCode = HttpContext.User.FindFirst("UserCode")?.Value;
+            var profilePic = _userService.GetUserProfilePic(userCode);
             ViewBag.ProfilePic = profilePic;
 
             var expenses = _expenseService.RetrieveAll(userId: userId);
