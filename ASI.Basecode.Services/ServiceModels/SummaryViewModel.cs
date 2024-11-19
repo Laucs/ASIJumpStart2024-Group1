@@ -13,6 +13,10 @@ namespace ASI.Basecode.Services.ServiceModels
 
         public List<ExpenseViewModel> ExpenseAnalytics { get; set; }
         public int TotalExpenses { get; set; }
+
+        public decimal CurrentBalance { get; set; }
+        public decimal TotalExpenseAmount { get; set; }
+        public decimal RemainingBalance { get; set; }
     }
 
 }

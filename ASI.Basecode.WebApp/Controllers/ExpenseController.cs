@@ -30,6 +30,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
+        private readonly IWalletService _walletService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -52,6 +53,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IUserService userService,
                             ICategoryService categoryService,
                             IExpenseService expenseService,
+                            IWalletService walletService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -63,6 +65,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._userService = userService;
             this._expenseService = expenseService;
             this._categoryService = categoryService;
+            this._walletService = walletService;
         }
 
         /// <summary>
@@ -94,21 +97,69 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult PostExpense(ExpenseViewModel model)
         {
+            var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
             if (ModelState.IsValid)
             {
-                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int userId = Convert.ToInt32(claimsUserId);
+                try
+                {
+                    // Get category-specific balance
+                    var categoryBalance = _walletService.GetBalance(userId, model.CategoryId);
 
-                model.UserId = userId;
+                    // Check if category has sufficient balance
+                    if (model.Amount > categoryBalance)
+                    {
+                        TempData["ErrorMessage"] = $"Insufficient budget for {_categoryService.GetById(model.CategoryId).CategoryTitle}. Current budget: ₱{categoryBalance:N2}";
+                        model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
+                        return View("Details", model);
+                    }
 
-                // Call the service to add the expense
-                _expenseService.Add(model);
+                    model.UserId = userId;
+                    _expenseService.Add(model);
 
-                TempData["AddSuccess"] = "Expense added successfully!";
-                return RedirectToAction("Details", "Expense");
+                    // Deduct only from category budget
+                    _walletService.DeductExpense(userId, model.Amount, model.CategoryId);
+
+                    TempData["SuccessMessage"] = "Expense added successfully!";
+                    return RedirectToAction("Details", "Expense");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error adding expense");
+                    TempData["ErrorMessage"] = "An error occurred while adding the expense.";
+                    model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
+                    return View("Details", model);
+                }
             }
 
-            return View(model); // Return the view with validation errors if the model state is invalid
+            model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
+            return View("Details", model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteExpense(int expenseId)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var expense = _expenseService.GetExpenseById(expenseId);
+
+                if (expense != null && expense.UserId == userId)
+                {
+                    // Restore the amount to the category budget
+                    _walletService.UpdateBalanceAfterExpenseRemoval(userId, expense.Amount, expense.CategoryId);
+
+                    _expenseService.Delete(expenseId);
+                    return Json(new { success = true, message = "Expense deleted successfully" });
+                }
+
+                return Json(new { success = false, message = "Expense not found or unauthorized" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting expense");
+                return Json(new { success = false, message = "An error occurred while deleting the expense" });
+            }
         }
     }
 }

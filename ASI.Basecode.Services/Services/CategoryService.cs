@@ -133,8 +133,17 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-       
+        public bool HasExpenses(int categoryId)
+        {
+            var category = _categoryRepository.GetCategoryWithExpenses(categoryId);
+            return category?.MExpenses?.Any() ?? false;
+        }
 
+        public CategoryViewModel GetById(int categoryId)
+        {
+            var category = _categoryRepository.GetById(categoryId);
+            return _mapper.Map<CategoryViewModel>(category);
+        }
 
     }
 }

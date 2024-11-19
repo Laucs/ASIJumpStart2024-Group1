@@ -14,5 +14,7 @@
             void Add(ExpenseViewModel model);
             void Update(ExpenseViewModel model);
             void Delete(int id);
+            void DeleteExpensesByCategoryId(int categoryId);
+            ExpenseViewModel GetExpenseById(int expenseId);
         }
     }

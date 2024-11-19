@@ -16,6 +16,8 @@ namespace ASI.Basecode.Data.Interfaces
         void AddCategory(MCategory model);
         void UpdateCategory(MCategory model);
         void DeleteCategory(int categoryId); // Pass the categoryId, not the object
-
+        bool HasExpenses(int categoryId);
+        MCategory GetCategoryWithExpenses(int categoryId);
+        MCategory GetById(int categoryId);
     }
 }
