@@ -4,8 +4,8 @@
 
 Authors: 
 - [Yancy Louis Luceno - Project Manager/System Analyst](https://github.com/Laucs)
-- [Alvin John Araneta - Tech Lead/Backend Developer](https://github.com/ajiwnl)
-- [Kenneth James Macas - UI/UX Designer/Frontend Developer](https://github.com/soliken1)
+- [Alvin John Araneta - Tech Lead/Developer](https://github.com/ajiwnl)
+- [Kenneth James Macas - UI/UX Designer/Developer](https://github.com/soliken1)
 - [Earl Brando Andrino - QA Tester/Developer](https://github.com/andrino25)
 - [Art James Narboada - QA Tester/Developer](https://github.com/artnarboada)
 # Tech Stack
