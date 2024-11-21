@@ -6,8 +6,8 @@ Authors:
 - [Yancy Louis Luceno - Project Manager/System Analyst](https://github.com/Laucs)
 - [Alvin John Araneta - Tech Lead/Backend Developer](https://github.com/ajiwnl)
 - [Kenneth James Macas - UI/UX Designer/Frontend Developer](https://github.com/soliken1)
-- [Earl Brando Andrino - QA Tester](https://github.com/andrino25)
-- [Art James Narboada - QA Tester](https://github.com/artnarboada)
+- [Earl Brando Andrino - QA Tester](https://github.com/andrino25)/Developer
+- [Art James Narboada - QA Tester](https://github.com/artnarboada)/Developer
 
 # Tech Stack
 ![C#](https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=csharp&logoColor=white) 
