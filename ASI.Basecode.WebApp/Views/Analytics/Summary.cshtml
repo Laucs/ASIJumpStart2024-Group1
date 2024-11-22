@@ -122,12 +122,7 @@
                                class="w-full p-3 border rounded-lg"
                                placeholder="Enter amount"
                                onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
-                               oninput="validateModalNumber(this)">
-                        <button type="button" 
-                                onclick="resetBudget()" 
-                                class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200">
-                            Reset Budget
-                        </button>
+                               oninput="validateModalNumber(this)">                  
                     </div>
                 `,
                 showCancelButton: true,
