@@ -13,5 +13,7 @@ namespace ASI.Basecode.Data.Interfaces
         void AddExpense(MExpense expense);
         void UpdateExpense(MExpense expense);
         void DeleteExpense(int expenseId);
+        IEnumerable<MExpense> GetExpensesByCategoryId(int categoryId);
+        MExpense GetById(int expenseId);
     }
 }

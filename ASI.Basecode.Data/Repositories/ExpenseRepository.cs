@@ -12,9 +12,11 @@ namespace ASI.Basecode.Data.Repositories
 {
     public class ExpenseRepository : BaseRepository, IExpenseRepository
     {
+        private readonly IUnitOfWork _unitOfWork;
+
         public ExpenseRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-
+            _unitOfWork = unitOfWork;
         }
 
         public IQueryable<MExpense> GetExpenses()
@@ -69,8 +71,17 @@ namespace ASI.Basecode.Data.Repositories
             
         }
 
+        public IEnumerable<MExpense> GetExpensesByCategoryId(int categoryId)
+        {
+            return GetDbSet<MExpense>()
+                .Where(e => e.CategoryId == categoryId)
+                .ToList();
+        }
 
-
-
+        public MExpense GetById(int expenseId)
+        {
+            return this.GetDbSet<MExpense>()
+                .FirstOrDefault(e => e.ExpenseId == expenseId);
+        }
     }
 }

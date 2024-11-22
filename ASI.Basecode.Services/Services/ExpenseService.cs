@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -16,13 +17,14 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly IExpenseRepository _expenseRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public ExpenseService(IMapper mapper, IExpenseRepository expenseRepository)
+        public ExpenseService(IExpenseRepository expenseRepository, IMapper mapper, ILogger<ExpenseService> logger)
         {
-            _mapper = mapper;
             _expenseRepository = expenseRepository;
+            _mapper = mapper;
+            _logger = logger;
         }
-
 
         ///// <summary>
         ///// Retrieves all.
@@ -128,6 +130,32 @@ namespace ASI.Basecode.Services.Services
         public void Delete(int id)
         {
             _expenseRepository.DeleteExpense(id);
+        }
+
+        public void DeleteExpensesByCategoryId(int categoryId)
+        {
+            var expenses = _expenseRepository.GetExpensesByCategoryId(categoryId);
+            foreach (var expense in expenses)
+            {
+                _expenseRepository.DeleteExpense(expense.ExpenseId);
+            }
+        }
+
+        public ExpenseViewModel GetExpenseById(int expenseId)
+        {
+            try
+            {
+                var expense = _expenseRepository.GetById(expenseId);
+                if (expense == null)
+                    return null;
+
+                return _mapper.Map<ExpenseViewModel>(expense);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving expense with ID {ExpenseId}", expenseId);
+                throw;
+            }
         }
     }
 }

@@ -40,12 +40,14 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IEmailService, EmailService>();
             this._services.AddScoped<ICategoryService, CategoryService>();
             this._services.AddScoped<IExpenseService, ExpenseService>();
+            this._services.AddScoped<IWalletService, WalletService>();
 
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddScoped<IExpenseRepository, ExpenseRepository>();
             this._services.AddScoped<ICategoryRepository, CategoryRepository>();
+            this._services.AddScoped<IWalletRepository, WalletRepository>();
 
             // Manager Class
             this._services.AddScoped<SignInManager>();

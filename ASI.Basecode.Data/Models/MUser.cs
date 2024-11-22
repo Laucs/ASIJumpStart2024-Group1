@@ -9,6 +9,7 @@ namespace ASI.Basecode.Data.Models
         {
             MCategories = new HashSet<MCategory>();
             MExpenses = new HashSet<MExpense>();
+            MWallets = new HashSet<MWallet>();
         }
 
         public int UserId { get; set; }
@@ -36,5 +37,6 @@ namespace ASI.Basecode.Data.Models
 
         public virtual ICollection<MCategory> MCategories { get; set; }
         public virtual ICollection<MExpense> MExpenses { get; set; }
+        public virtual ICollection<MWallet> MWallets { get; set; }
     }
 }
