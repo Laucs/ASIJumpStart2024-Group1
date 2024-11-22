@@ -101,6 +101,14 @@ namespace ASI.Basecode.WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                // Check if the amount is valid
+                if (model.Amount <= 0)
+                {
+                    TempData["ErrorMessage"] = "Amount must be greater than ₱0.";
+                    model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
+                    return View("Details", model);
+                }
+
                 try
                 {
                     // Get category-specific balance
@@ -126,7 +134,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error adding expense");
-                    TempData["ErrorMessage"] = "An error occurred while adding the expense.";
+                    TempData["ErrorMessage"] = "An error occurred while adding the expense. Verify your wallet balance";
                     model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
                     return View("Details", model);
                 }
@@ -135,6 +143,7 @@ namespace ASI.Basecode.WebApp.Controllers
             model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
             return View("Details", model);
         }
+
 
         [HttpPost]
         public IActionResult DeleteExpense(int expenseId)

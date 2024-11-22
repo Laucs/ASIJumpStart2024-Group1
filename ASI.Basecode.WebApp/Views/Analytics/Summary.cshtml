@@ -123,6 +123,11 @@
                                placeholder="Enter amount"
                                onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
                                oninput="validateModalNumber(this)">
+                        <button type="button" 
+                                onclick="resetBudget()" 
+                                class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200">
+                            Reset Budget
+                        </button>
                     </div>
                 `,
                 showCancelButton: true,
@@ -214,7 +219,12 @@
         }
 
         function resetBudget() {
+
             const categorySelect = document.getElementById('categorySelect');
+            if (!categorySelect.value) {
+                toastr.error('Please select a category');
+                return;
+            }
             const categoryId = categorySelect.value ? parseInt(categorySelect.value) : null;
             const budgetType = categorySelect.options[categorySelect.selectedIndex].text;
 
@@ -239,18 +249,9 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            toastr.success(data.message);
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                        } else {
-                            toastr.error(data.message || 'Failed to reset budget');
-                        }
+                        toastr.success(`Sucessfully reset budget for  ${budgetType}`);
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        toastr.error('An error occurred while resetting the budget');
                     });
                 }
             });
