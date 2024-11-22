@@ -72,14 +72,33 @@ namespace ASI.Basecode.Data.Repositories
         {
             try
             {
-                var currentBalance = GetCurrentBalance(userId, categoryId);
-                var newBalance = currentBalance + amount;
-                UpdateBalance(userId, newBalance, categoryId);
+                var wallet = categoryId.HasValue ? 
+                    GetWalletByUserAndCategory(userId, categoryId.Value) : 
+                    GetWalletByUserId(userId);
+
+                if (wallet == null)
+                {
+                    wallet = new MWallet
+                    {
+                        UserId = userId,
+                        CategoryId = categoryId,
+                        Balance = amount,
+                        LastUpdated = DateTime.UtcNow
+                    };
+                    this.GetDbSet<MWallet>().Add(wallet);
+                }
+                else
+                {
+                    wallet.Balance += amount;
+                    wallet.LastUpdated = DateTime.UtcNow;
+                    this.GetDbSet<MWallet>().Update(wallet);
+                }
+
+                UnitOfWork.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Non-critical error in AddAmount: {ex.Message}");
-                throw;
+                throw new Exception($"Failed to add amount: {ex.Message}", ex);
             }
         }
 
