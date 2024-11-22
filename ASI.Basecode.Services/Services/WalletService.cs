@@ -32,14 +32,14 @@ public class WalletService : IWalletService
         try
         {
             _walletRepository.AddAmount(userId, amount, categoryId);
-            _logger.LogInformation("Added {Amount} to wallet for user {UserId} and category {CategoryId}", 
+            _logger.LogInformation("Successfully added {Amount} to wallet for user {UserId} and category {CategoryId}", 
                 amount, userId, categoryId);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding amount {Amount} for user {UserId} and category {CategoryId}", 
                 amount, userId, categoryId);
-            throw;
+            throw new Exception("Failed to add funds to wallet", ex);
         }
     }
 

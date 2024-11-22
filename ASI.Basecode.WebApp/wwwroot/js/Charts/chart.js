@@ -6,7 +6,7 @@ fetch('/api/chart-data')
             type: 'line',
             data: {
                 labels: chartData.labels,
-                datasets: chartData.datasets 
+                datasets: chartData.datasets
             },
             options: {
                 responsive: true,
@@ -17,6 +17,10 @@ fetch('/api/chart-data')
                 }
             }
         });
-        myLineChart;
+
+        if (chartData.previousWeekPercentage) {
+            const percentageLabel = document.getElementById('previousWeekPercentLabel');
+            percentageLabel.textContent = `${chartData.previousWeekPercentage}%`;
+        }
     })
     .catch(error => console.error('Error fetching chart data:', error));
