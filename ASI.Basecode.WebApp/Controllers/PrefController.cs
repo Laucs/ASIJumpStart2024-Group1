@@ -160,7 +160,7 @@ namespace ASI.Basecode.WebApp.Controllers
             // If ModelState is invalid, return the view with error messages
             if (!ModelState.IsValid)
             {
-                return View("Settings", model);
+                return RedirectToAction("Settings");
             }
 
 
