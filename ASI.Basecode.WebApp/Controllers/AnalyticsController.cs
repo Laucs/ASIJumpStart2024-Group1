@@ -369,6 +369,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 var newBalance = _walletService.GetBalance(userId, request.CategoryId);
                 var category = _categoryService.GetById(request.CategoryId.Value);
 
+
                 return Json(new
                 {
                     success = true,
