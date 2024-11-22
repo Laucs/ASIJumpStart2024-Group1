@@ -325,25 +325,21 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 int userId = Convert.ToInt32(claimsUserId);
                 
-                // Add amount with category support
                 _walletService.AddAmount(userId, request.Amount, request.CategoryId);
                 var newBalance = _walletService.GetBalance(userId, request.CategoryId);
-
-                string budgetType = request.CategoryId.HasValue ? 
-                    _categoryService.GetById(request.CategoryId.Value)?.CategoryTitle : 
-                    "overall budget";
+                var category = _categoryService.GetById(request.CategoryId.Value);
 
                 return Json(new { 
                     success = true, 
                     newBalance = newBalance,
                     categoryId = request.CategoryId,
-                    message = $"Successfully added ₱{request.Amount:N2} to {budgetType}" 
+                    message = $"Successfully added ₱{request.Amount:N2} to {category.CategoryTitle}" 
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding amount to wallet");
-                return Json(new { success = false, message = "An error occurred while adding funds" });
+                _logger.LogError(ex, "Error adding amount to wallet: {Message}", ex.Message);
+                return Json(new { success = false, message = "An error occurred while adding funds." });
             }
         }
 
