@@ -82,115 +82,148 @@
             console.error('SweetAlert2 is not loaded!');
         }
 
+        // Add this function at the top of your script section
+        function validateModalNumber(input) {
+            // Remove any non-numeric characters except decimal point
+            let value = input.value.replace(/[^\d.]/g, '');
+            
+            // Ensure only one decimal point
+            const decimalCount = (value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                value = value.replace(/\.+$/, '');
+            }
+            
+            // Limit to 2 decimal places this to it
+            if (value.includes('.')) {
+                const parts = value.split('.');
+                value = `${parts[0]}.${parts[1].slice(0, 2)}`;
+            }
+            
+            // Update input value
+            input.value = value;
+        }
+
         function openAddFundsModal() {
             console.log('Opening modal');
-
-            // Get categories from your model and log it to check the data
+            
             const categories = @Html.Raw(Json.Serialize(Model.CategoryAnalytics.Categories));
-            console.log('Categories:', categories); // Debug log
-
+            
             Swal.fire({
                 title: 'Add Funds to Budget',
                 html: `
-                                                <div class="mb-4">
-                                                    <label class="mb-2 block text-gray-700">Select Budget Type</label>
-                                                    <select id="categorySelect" class="mb-4 w-full rounded-lg border p-3">
-                                                        <option value="">Select a Category</option>
-                                                        <option value="0">Overall Budget</option>
-                                                        ${categories.map(cat =>
-                    `<option value="${cat.categoryId}">${cat.categoryTitle}</option>`
-                ).join('')}
-                                                    </select>
+                    <div class="mb-4">
+                        <label class="mb-2 block text-gray-700">Select Category</label>
+                        <select id="categorySelect" class="mb-4 w-full rounded-lg border p-3">
+                            <option value="">Select a Category</option>
+                            ${categories.map(cat => 
+                                `<option value="${cat.categoryId}">${cat.categoryTitle}</option>`
+                            ).join('')}
+                        </select>
 
-                                                    <label class="mb-2 block text-gray-700">Amount</label>
-                                                    <input type="text"
-                                                           id="amountInput"
-                                                           class="w-full rounded-lg border p-3"
-                                                           placeholder="Enter amount"
-                                                           onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
-                                                           oninput="validateModalNumber(this)">
-                                                </div>
-                                                <div class="text-right">
-                                                    <button type="button"
-                                                            onclick="resetBudget()"
-                                                            class="text-sm text-red-500 hover:text-red-700">
-                                                        Reset Budget
-                                                    </button>
-                                                </div>
-                                                    `,
+                        <label class="mb-2 block text-gray-700">Amount</label>
+                        <input type="text" 
+                               id="amountInput" 
+                               class="w-full rounded-lg border p-3"
+                               placeholder="Enter amount"
+                               onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
+                               oninput="validateModalNumber(this)">                  
+                    </div>
+                `,
                 showCancelButton: true,
                 confirmButtonText: 'Add Funds',
                 cancelButtonText: 'Cancel',
                 confirmButtonColor: '#8b5cf6',
                 cancelButtonColor: '#6b7280',
-                didOpen: () => {
-                    window.validateModalNumber = function (input) {
-                        input.value = input.value.replace(/[^0-9.]/g, '');
-                        var decimalCount = (input.value.match(/\./g) || []).length;
-                        if (decimalCount > 1) {
-                            input.value = input.value.slice(0, -1);
-                        }
-                        if (input.value.includes('.')) {
-                            var parts = input.value.split('.');
-                            if (parts[1].length > 2) {
-                                input.value = parts[0] + '.' + parts[1].slice(0, 2);
-                            }
-                        }
-                    };
-                },
                 preConfirm: () => {
                     const amountInput = document.getElementById('amountInput');
+                    const categorySelect = document.getElementById('categorySelect');
                     const amount = parseFloat(amountInput.value);
-                    const categoryId = document.getElementById('categorySelect').value;
+                    const categoryId = categorySelect.value;
+
+                    if (!categoryId) {
+                        Swal.showValidationMessage('Please select a category');
+                        return false;
+                    }
 
                     if (!amount || isNaN(amount) || amount <= 0) {
                         Swal.showValidationMessage('Please enter a valid amount greater than 0');
                         return false;
                     }
-                    return { amount, categoryId: categoryId ? parseInt(categoryId) : null };
+
+                    return { amount, categoryId: parseInt(categoryId) };
                 }
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.isConfirmed && result.value) {
+                    const selectedAmount = result.value.amount;
+                    const selectedCategoryId = result.value.categoryId;
+
                     fetch('/Analytics/AddAmount', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json'
                         },
-                        body: JSON.stringify(result.value)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Update the relevant balance display based on category
-                                if (data.categoryId) {
-                                    const categoryBalance = document.querySelector(`#category-${data.categoryId}-balance`);
-                                    if (categoryBalance) {
-                                        categoryBalance.textContent = `₱${parseFloat(data.newBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-                                    }
-                                } else {
-                                    document.getElementById('remainingBalance').textContent =
-                                        `₱${parseFloat(data.newBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-                                }
-
-                                toastr.success(data.message);
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 1500);
-                            } else {
-                                toastr.error(data.message || 'Failed to add funds');
-                            }
+                        body: JSON.stringify({
+                            categoryId: selectedCategoryId,
+                            amount: selectedAmount
                         })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            toastr.error('An error occurred while processing your request');
-                        });
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Show success message regardless of response.ok
+                        toastr.success(`Successfully added ₱${selectedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} to budget`);
+                        
+                        // Update the dropdown and balance
+                        const categoryBudgetSelect = document.getElementById('categoryBudgetSelect');
+                        categoryBudgetSelect.value = selectedCategoryId;
+                        
+                        // Update the balance display
+                        showCategoryBalance(selectedCategoryId);
+                        
+                        // Close the modal
+                        Swal.close();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
                 }
             });
         }
 
+        // Add this new function to update all balance displays
+        async function updateAllBalances() {
+            try {
+                // Update category balance if a category is selected
+                const selectedCategoryId = document.getElementById('categoryBudgetSelect').value;
+                if (selectedCategoryId) {
+                    await showCategoryBalance(selectedCategoryId);
+                }
+
+                // Update total budget if that element exists
+                const totalBudgetResponse = await fetch('/Analytics/GetTotalBudget');
+                const totalBudgetData = await totalBudgetResponse.json();
+                if (totalBudgetData.success) {
+                    const totalBudgetElement = document.getElementById('totalBudget');
+                    if (totalBudgetElement) {
+                        totalBudgetElement.textContent = `₱${parseFloat(totalBudgetData.totalBudget).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                    }
+                }
+
+                // Force refresh of any charts or other UI elements
+                if (typeof updateCharts === 'function') {
+                    updateCharts();
+                }
+            } catch (error) {
+                console.error('Error updating balances:', error);
+            }
+        }
+
         function resetBudget() {
+
             const categorySelect = document.getElementById('categorySelect');
+            if (!categorySelect.value) {
+                toastr.error('Please select a category');
+                return;
+            }
             const categoryId = categorySelect.value ? parseInt(categorySelect.value) : null;
             const budgetType = categorySelect.options[categorySelect.selectedIndex].text;
 
@@ -213,27 +246,18 @@
                         },
                         body: JSON.stringify(categoryId)
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                toastr.success(data.message);
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 1500);
-                            } else {
-                                toastr.error(data.message || 'Failed to reset budget');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            toastr.error('An error occurred while resetting the budget');
-                        });
+                    .then(response => response.json())
+                    .then(data => {
+                        toastr.success(`Sucessfully reset budget for  ${budgetType}`);
+                    })
+                    .catch(error => {
+                    });
                 }
             });
         }
 
         // Add this to test if the function is being called
-        document.querySelector('button[onclick="openAddFundsModal()"]').addEventListener('click', function (e) {
+        document.querySelector('button[onclick="openAddFundsModal()"]').addEventListener('click', function(e) {
             console.log('Button clicked');
             openAddFundsModal();
         });
@@ -248,20 +272,47 @@
             toastr.success(loginSuccess);
         }
 
-        // Update showCategoryBalance to refresh total when category changes
+        // Update showCategoryBalance function to be more robust
         async function showCategoryBalance(categoryId) {
-            if (!categoryId) return;
-
+            const balanceElement = document.getElementById('selectedCategoryBalance');
+            
+            if (!categoryId) {
+                balanceElement.textContent = '₱0.00';
+                return;
+            }
+            
             try {
                 const response = await fetch(`/Analytics/GetCategoryBalance?categoryId=${categoryId}`);
                 const data = await response.json();
+                
                 if (data.success) {
-                    document.getElementById('selectedCategoryBalance').textContent =
-                        `₱${parseFloat(data.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                    const formattedBalance = `₱${parseFloat(data.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                    balanceElement.textContent = formattedBalance;
+                    
+                    // Also update any other UI elements that show the balance
+                    updateAllBalances();
+                } else {
+                    throw new Error(data.message || 'Error fetching balance');
                 }
             } catch (error) {
-                console.error('Error fetching category balance:', error);
+                console.error('Error:', error);
+                balanceElement.textContent = '₱0.00';
+                toastr.error('Error updating balance');
             }
         }
+
+        // Add this function to handle the category selection change
+        function handleCategoryChange(categoryId) {
+            if (categoryId) {
+                showCategoryBalance(categoryId);
+            } else {
+                document.getElementById('selectedCategoryBalance').textContent = '₱0.00';
+            }
+        }
+
+        // Update the event listener
+        document.getElementById('categoryBudgetSelect').addEventListener('change', function(e) {
+            handleCategoryChange(this.value);
+        });
     </script>
 }
