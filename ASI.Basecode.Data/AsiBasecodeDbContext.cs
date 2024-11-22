@@ -19,7 +19,6 @@ namespace ASI.Basecode.Data
 
         public virtual DbSet<MCategory> MCategories { get; set; }
         public virtual DbSet<MExpense> MExpenses { get; set; }
-        public virtual DbSet<MRole> MRoles { get; set; }
         public virtual DbSet<MUser> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,7 +26,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Addr=(LocalDB)\\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
+                optionsBuilder.UseSqlServer("Addr=LAUCS\\MSSQLSERVER01;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True");
             }
         }
 
@@ -36,19 +35,14 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MCategory>(entity =>
             {
                 entity.HasKey(e => e.CategoryId)
-                    .HasName("PK__M_Catego__23CAF1D8481EAB43");
+                    .HasName("PK__M_Catego__19093A0BE0A0B2F5");
 
                 entity.ToTable("M_Category");
-
-                entity.Property(e => e.CategoryId).HasColumnName("categoryId");
 
                 entity.Property(e => e.CategoryTitle)
                     .IsRequired()
                     .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("categoryTitle");
-
-                entity.Property(e => e.UserId).HasColumnName("userId");
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.MCategories)
@@ -60,30 +54,19 @@ namespace ASI.Basecode.Data
             modelBuilder.Entity<MExpense>(entity =>
             {
                 entity.HasKey(e => e.ExpenseId)
-                    .HasName("PK__M_Expens__3672732E960DF9B3");
+                    .HasName("PK__M_Expens__1445CFD337435773");
 
                 entity.ToTable("M_Expenses");
 
-                entity.Property(e => e.ExpenseId).HasColumnName("expenseId");
-
-                entity.Property(e => e.Amount).HasColumnName("amount");
-
-                entity.Property(e => e.CategoryId).HasColumnName("categoryId");
-
-                entity.Property(e => e.DateCreated)
-                    .HasColumnType("date")
-                    .HasColumnName("dateCreated");
+                entity.Property(e => e.DateCreated).HasColumnType("date");
 
                 entity.Property(e => e.ExpenseDescription)
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("expenseDescription");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ExpenseName)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.UserId).HasColumnName("userId");
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.MExpenses)
@@ -96,20 +79,6 @@ namespace ASI.Basecode.Data
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User");
-            });
-
-            modelBuilder.Entity<MRole>(entity =>
-            {
-                entity.HasKey(e => e.RoleId);
-
-                entity.ToTable("M_ROLE");
-
-                entity.Property(e => e.RoleId).ValueGeneratedNever();
-
-                entity.Property(e => e.RoleName)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<MUser>(entity =>
@@ -151,11 +120,10 @@ namespace ASI.Basecode.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.ProfileImg)
-                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("ProfileIMG")
-                    .HasDefaultValueSql("('https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fvectors%2Fblank-profile-picture-mystery-man-973460%2F&psig=AOvVaw1UZH8X-c3I7U1UqI8-zIhv&ust=1729394874689000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKiz4afAmYkDFQAAAAAdAAAAABAE')");
+                    .HasDefaultValueSql("('www.sampleimg.com')");
 
                 entity.Property(e => e.Remarks).HasMaxLength(500);
 
