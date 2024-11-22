@@ -95,7 +95,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult PostExpense(ExpenseViewModel model)
+        public IActionResult PostExpense(ExpenseViewModel model) //modified this part
         {
             var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
