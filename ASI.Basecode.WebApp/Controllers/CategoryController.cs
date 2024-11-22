@@ -33,6 +33,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
+        private readonly IWalletService _walletService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -55,6 +56,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IUserService userService,
                             IExpenseService expenseService,
                             ICategoryService categoryService,
+                            IWalletService walletService,
                          
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
@@ -67,6 +69,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._userService = userService;
             this._categoryService = categoryService;
             this._expenseService = expenseService;
+            this._walletService = walletService;
         }
 
         /// <summary>
@@ -79,7 +82,8 @@ namespace ASI.Basecode.WebApp.Controllers
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
-            var profilePic = _userService.GetUserProfilePic(userId);
+            var userCode = HttpContext.User.FindFirst("UserCode")?.Value;
+            var profilePic = _userService.GetUserProfilePic(userCode);
             ViewBag.ProfilePic = profilePic;
 
             var categories = _categoryService.RetrieveAll(userId);
@@ -138,10 +142,30 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult DeleteExpense(int expenseId)
         {
-            _expenseService.Delete(expenseId);
-            TempData["DeleteSuccess"] = "Expense deleted successfully!";
-            return RedirectToAction("Details", "Category");
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var expense = _expenseService.RetrieveExpense(expenseId);
 
+                if (expense != null && expense.UserId == userId)
+                {
+                    // Restore the amount to the category budget
+                    _walletService.UpdateBalanceAfterExpenseRemoval(userId, expense.Amount, expense.CategoryId);
+                    _expenseService.Delete(expenseId);
+                    
+                    TempData["DeleteSuccess"] = "Expense deleted successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Expense not found or unauthorized";
+                }
+                return RedirectToAction("Details", "Category");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while deleting the expense";
+                return RedirectToAction("Details", "Category");
+            }
         }
 
 
@@ -182,17 +206,51 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult DeleteCategory(int categoryId)
+        public IActionResult DeleteCategory(int categoryId, bool checkExpenses = true, bool confirmed = false)
         {
             try
             {
-                _categoryService.Delete(categoryId);
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                if (checkExpenses)
+                {
+                    var hasExpenses = _categoryService.HasExpenses(categoryId);
+                    if (hasExpenses)
+                    {
+                        TempData["ConfirmDelete"] = categoryId;
+                        TempData["Message"] = "This category has expenses and a budget. Are you sure you want to delete everything?";
+                        return RedirectToAction("Details");
+                    }
+                    else if (confirmed)
+                    {
+                        // Delete wallet instance first
+                        _walletService.DeleteWalletForCategory(userId, categoryId);
+                        _categoryService.Delete(categoryId);
+                        TempData["AddSuccess"] = "Category deleted successfully.";
+                        return RedirectToAction("Details");
+                    }
+                }
+
+                // Handle confirmed deletion with expenses
+                if (TempData["ConfirmDelete"] != null || !checkExpenses)
+                {
+                    // Delete all related expenses first
+                    _expenseService.DeleteExpensesByCategoryId(categoryId);
+                    
+                    // Delete wallet instance
+                    _walletService.DeleteWalletForCategory(userId, categoryId);
+                    
+                    // Finally delete the category
+                    _categoryService.Delete(categoryId);
+                    TempData["AddSuccess"] = "Category and all related data deleted successfully.";
+                }
+
                 return RedirectToAction("Details");
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                return View("Details");
+                return RedirectToAction("Details");
             }
         }
 
@@ -204,68 +262,80 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 try
                 {
-                    // Retrieve the current logged-in user's ID
-                    var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    int userId = Convert.ToInt32(claimsUserId);
-
-                    // Fetch the existing expense based on the provided ExpenseId
+                    var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                     var existingExpense = _expenseService.RetrieveExpense(expenseDto.ExpenseId);
 
-                    // Check if the expense exists and is owned by the current user
                     if (existingExpense == null)
                     {
                         TempData["ErrorMessage"] = "Expense not found.";
-                        _logger.LogError($"Expense with ID {expenseDto.ExpenseId} not found for user ID {userId}.");
                         return RedirectToAction("Details", "Category");
                     }
 
                     if (existingExpense.UserId != userId)
                     {
                         TempData["ErrorMessage"] = "Unauthorized to edit this expense.";
-                        _logger.LogError($"Unauthorized access attempt: Expense UserId {existingExpense.UserId} vs. Current UserId {userId}");
                         return RedirectToAction("Details", "Category");
                     }
 
-                    // Update expense properties with the new values from the form
+                    // Calculate the difference in amount
+                    decimal amountDifference = expenseDto.Amount - existingExpense.Amount;
+
+                    // If category changed, handle both old and new category budgets
+                    if (existingExpense.CategoryId != expenseDto.CategoryId)
+                    {
+                        // Restore amount to old category
+                        _walletService.UpdateBalanceAfterExpenseRemoval(userId, existingExpense.Amount, existingExpense.CategoryId);
+
+                        // Check if new category has sufficient balance
+                        var newCategoryBalance = _walletService.GetBalance(userId, expenseDto.CategoryId);
+                        if (expenseDto.Amount > newCategoryBalance)
+                        {
+                            TempData["ErrorMessage"] = $"Insufficient budget in new category. Available: ₱{newCategoryBalance:N2}";
+                            return RedirectToAction("Details", "Category");
+                        }
+
+                        // Deduct from new category
+                        _walletService.DeductExpense(userId, expenseDto.Amount, expenseDto.CategoryId);
+                    }
+                    else if (amountDifference != 0) // Same category but amount changed
+                    {
+                        var categoryBalance = _walletService.GetBalance(userId, expenseDto.CategoryId);
+                        if (amountDifference > 0 && amountDifference > categoryBalance)
+                        {
+                            TempData["ErrorMessage"] = $"Insufficient budget for increase. Available: ₱{categoryBalance:N2}";
+                            return RedirectToAction("Details", "Category");
+                        }
+
+                        // Update the balance based on the difference
+                        if (amountDifference > 0)
+                        {
+                            _walletService.DeductExpense(userId, amountDifference, expenseDto.CategoryId);
+                        }
+                        else
+                        {
+                            _walletService.UpdateBalanceAfterExpenseRemoval(userId, Math.Abs(amountDifference), expenseDto.CategoryId);
+                        }
+                    }
+
+                    // Update expense properties
                     existingExpense.ExpenseName = expenseDto.ExpenseName;
                     existingExpense.Amount = expenseDto.Amount;
                     existingExpense.CategoryId = expenseDto.CategoryId;
                     existingExpense.CreatedDate = expenseDto.CreatedDate;
                     existingExpense.Description = expenseDto.Description;
 
-                    // Update the expense in the database
                     _expenseService.Update(existingExpense);
                     TempData["AddSuccess"] = "Expense updated successfully!";
-                    _logger.LogInformation($"Expense ID {expenseDto.ExpenseId} updated successfully by user ID {userId}.");
-
                     return RedirectToAction("Details", "Category");
                 }
                 catch (Exception ex)
                 {
                     TempData["ErrorMessage"] = "An unexpected error occurred: " + ex.Message;
-                    _logger.LogError($"Error updating expense ID {expenseDto.ExpenseId}: {ex.Message}");
                     return RedirectToAction("Details", "Category");
                 }
             }
-            else
-            {
-                // Capture model state errors to help with debugging
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                TempData["ErrorMessage"] = "Invalid data submitted: " + string.Join("; ", errors);
-                _logger.LogError("Model validation failed with errors: " + string.Join("; ", errors));
-
-                return RedirectToAction("Details", "Category");
-            }
+            return RedirectToAction("Details", "Category");
         }
-
-
-
-
-
-
-
-
-
     }
 
 }

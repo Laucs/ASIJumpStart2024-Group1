@@ -205,3 +205,6 @@ node_modules
 */src/*/Scripts/**/*.js.map
 /ASI.Basecode.WebApp/appsettings.json
 /ASI.Basecode.WebApp/wwwroot/img/profile
+/ASI.Basecode.WebApp/appsettings.json
+/ASI.Basecode.Data/AsiBasecodeDbContext.cs
+/ASI.Basecode.WebApp/appsettings.json

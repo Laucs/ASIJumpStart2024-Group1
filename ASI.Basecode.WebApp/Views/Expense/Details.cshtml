@@ -19,7 +19,7 @@
                 <form asp-action="PostExpense" asp-controller="Expense" method="post" class="mt-5 flex flex-col gap-3">
                     <!-- Category Dropdown -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">Category</label>
+                        <label class="text-lg font-bold text-black dark:text-white">Category <span class="text-red-500">*</span></label>
                         <select id="categoryInput" asp-for="CategoryId" class="rounded-lg border-zinc-600 px-4 py-2 text-black dark:bg-violet-950 dark:border-2 dark:text-white dark:placeholder:text-white" required>
                             <option value="">Select a Category</option>
                             @foreach (var category in Model.Categories)
@@ -35,28 +35,35 @@
 
                     <!-- Title/Name of Expense -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">Expense Name</label>
+                        <label class="text-lg font-bold text-black dark:text-white">Expense Name <span class="text-red-500">*</span></label>
                         <input id="expenseInput" asp-for="ExpenseName" type="text" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Title" required />
                         <span asp-validation-for="ExpenseName" class="text-red-500"></span>
                     </div>
 
                     <!-- Amount -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">Amount</label>
-                        <input id="amountInput" asp-for="Amount" type="number" step="0.01" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="10000" required min="0" />
+                        <label class="text-lg font-bold text-black dark:text-white">Amount <span class="text-red-500">*</span></label>
+                        <input id="amountInput" 
+                               asp-for="Amount" 
+                               type="text" 
+                               class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" 
+                               placeholder="10000" 
+                               required 
+                               onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
+                               oninput="validateNumber(this)" />
                         <span asp-validation-for="Amount" class="text-red-500"></span>
                     </div>
 
                     <!-- Date -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">Date</label>
-                        <input id="dateInput" asp-for="CreatedDate" type="date" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" required />
+                        <label class="text-lg font-bold text-black dark:text-white">Date <span class="text-red-500">*</span></label>
+                        <input id="dateInput" asp-for="CreatedDate" type="date" max="3000-12-31" value="@DateTime.Today" class="rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" required />
                         <span asp-validation-for="CreatedDate" class="text-red-500"></span>
                     </div>
 
                     <!-- Description -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-lg font-bold text-black dark:text-white">Description</label>
+                        <label class="text-lg font-bold text-black dark:text-white">Description <span class="text-red-500">*</span></label>
                         <textarea id="descriptionInput" asp-for="Description" class="min-h-32 resize-none rounded-lg border-zinc-600 px-4 py-2 dark:text-white dark:bg-violet-950 dark:border-2 dark:placeholder:text-white" placeholder="Expense Description" required></textarea>
                         <span asp-validation-for="Description" class="text-red-500"></span>
                     </div>
@@ -82,6 +89,25 @@
 
 @section Scripts {
     <script>
+        function validateNumber(input) {
+            // Remove any non-numeric characters except decimal point
+            input.value = input.value.replace(/[^0-9.]/g, '');
+            
+            // Ensure only one decimal point
+            var decimalCount = (input.value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                input.value = input.value.slice(0, -1);
+            }
+            
+            // Ensure only two decimal places
+            if (input.value.includes('.')) {
+                var parts = input.value.split('.');
+                if (parts[1].length > 2) {
+                    input.value = parts[0] + '.' + parts[1].slice(0, 2);
+                }
+            }
+        }
+
         var errMessage = '@TempData["ErrorMessage"]';
         var addSuccess = '@TempData["AddSuccess"]';
         if (errMessage) {
@@ -92,4 +118,3 @@
         }
     </script>
 }
-

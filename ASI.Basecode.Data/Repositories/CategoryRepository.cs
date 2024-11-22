@@ -13,9 +13,12 @@ namespace ASI.Basecode.Data.Repositories
 {
     public class CategoryRepository : BaseRepository, ICategoryRepository
     {
+
+        private readonly IUnitOfWork _unitOfWork;
+
         public CategoryRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-
+            _unitOfWork = unitOfWork;
         }
 
         public IEnumerable<MCategory> RetrieveAllCategories()
@@ -72,6 +75,22 @@ namespace ASI.Basecode.Data.Repositories
             }
         }
 
+        public bool HasExpenses(int categoryId)
+        {
+            return GetDbSet<MExpense>().Any(e => e.CategoryId == categoryId);
+        }
+
+        public MCategory GetCategoryWithExpenses(int categoryId)
+        {
+            return GetDbSet<MCategory>()
+                .Include(c => c.MExpenses)
+                .FirstOrDefault(c => c.CategoryId == categoryId);
+        }
+
+        public MCategory GetById(int categoryId)
+        {
+            return this.GetDbSet<MCategory>().FirstOrDefault(c => c.CategoryId == categoryId);
+        }
 
     }
 }

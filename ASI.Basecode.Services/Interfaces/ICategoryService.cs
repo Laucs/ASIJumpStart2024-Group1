@@ -15,8 +15,8 @@ namespace ASI.Basecode.Services.Interfaces
         void Add(CategoryPageViewModel model);
         void Update(CategoryPageViewModel model);
         void Delete(int categoryId);
-
-
+        bool HasExpenses(int categoryId);
+        CategoryViewModel GetById(int categoryId);
     }
 
   

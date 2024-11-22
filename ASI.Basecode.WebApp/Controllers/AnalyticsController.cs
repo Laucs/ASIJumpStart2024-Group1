@@ -34,6 +34,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
+        private readonly IWalletService _walletService;
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
@@ -46,6 +47,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="mapper">The mapper.</param>
         /// <param name="tokenValidationParametersFactory">The token validation parameters factory.</param>
         /// <param name="tokenProviderOptionsFactory">The token provider options factory.</param>
+        /// <param name="walletService">The wallet service.</param>
         public AnalyticsController(
                             SignInManager signInManager,
                             IHttpContextAccessor httpContextAccessor,
@@ -56,7 +58,8 @@ namespace ASI.Basecode.WebApp.Controllers
                             ICategoryService categoryService,
                             IExpenseService expenseService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
-                            TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+                            TokenProviderOptionsFactory tokenProviderOptionsFactory,
+                            IWalletService walletService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._sessionManager = new SessionManager(this._session);
             this._signInManager = signInManager;
@@ -66,6 +69,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._userService = userService;
             this._expenseService = expenseService;
             this._categoryService = categoryService;
+            this._walletService = walletService;
         }
 
         /// <summary>
@@ -78,7 +82,8 @@ namespace ASI.Basecode.WebApp.Controllers
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
 
-            var profilePic = _userService.GetUserProfilePic(userId);
+            var userCode = HttpContext.User.FindFirst("UserCode")?.Value;
+            var profilePic = _userService.GetUserProfilePic(userCode);
             ViewBag.ProfilePic = profilePic;
 
             var expenses = _expenseService.RetrieveAll(userId: userId);
@@ -160,6 +165,10 @@ namespace ASI.Basecode.WebApp.Controllers
                 ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
                 TotalExpenses = expenses.Sum(e => e.Amount)
             };
+
+            model.CurrentBalance = _walletService.GetBalance(userId);
+            model.TotalExpenseAmount = expenses.Sum(e => e.Amount);
+            model.RemainingBalance = model.CurrentBalance - model.TotalExpenseAmount;
 
             ViewData["ActivePage"] = "Analytics";
             return View(model);
@@ -290,6 +299,122 @@ namespace ASI.Basecode.WebApp.Controllers
             public string backgroundColor { get; set; }
             public bool fill { get; set; }
             public double tension { get; set; }
+        }
+
+        public class AddAmountRequest
+        {
+            public int? CategoryId { get; set; }
+            public decimal Amount { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult AddAmount([FromBody] AddAmountRequest request)
+        {
+            try
+            {
+                if (request.Amount <= 0)
+                {
+                    return Json(new { success = false, message = "Amount must be greater than 0" });
+                }
+
+                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(claimsUserId))
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+
+                int userId = Convert.ToInt32(claimsUserId);
+                
+                // Add amount with category support
+                _walletService.AddAmount(userId, request.Amount, request.CategoryId);
+                var newBalance = _walletService.GetBalance(userId, request.CategoryId);
+
+                string budgetType = request.CategoryId.HasValue ? 
+                    _categoryService.GetById(request.CategoryId.Value)?.CategoryTitle : 
+                    "overall budget";
+
+                return Json(new { 
+                    success = true, 
+                    newBalance = newBalance,
+                    categoryId = request.CategoryId,
+                    message = $"Successfully added ₱{request.Amount:N2} to {budgetType}" 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding amount to wallet");
+                return Json(new { success = false, message = "An error occurred while adding funds" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult ResetBudget([FromBody] int? categoryId)
+        {
+            try
+            {
+                var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(claimsUserId))
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+
+                int userId = Convert.ToInt32(claimsUserId);
+                _walletService.ResetBalance(userId, categoryId);
+
+                string budgetType = categoryId.HasValue ? 
+                    _categoryService.GetById(categoryId.Value)?.CategoryTitle : 
+                    "overall budget";
+
+                return Json(new { 
+                    success = true, 
+                    message = $"Successfully reset {budgetType}" 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting budget");
+                return Json(new { success = false, message = "An error occurred while resetting the budget" });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetCategoryBalance(int categoryId)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var balance = _walletService.GetBalance(userId, categoryId == 0 ? null : categoryId);
+                
+                return Json(new { success = true, balance = balance });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting category balance");
+                return Json(new { success = false, message = "Error retrieving balance" });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetTotalBudget()
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var categories = _categoryService.RetrieveAll(userId: userId);
+                decimal totalBudget = 0;
+
+                foreach (var category in categories)
+                {
+                    totalBudget += _walletService.GetBalance(userId, category.CategoryId);
+                }
+
+                return Json(new { success = true, totalBudget = totalBudget });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calculating total budget");
+                return Json(new { success = false, message = "Error retrieving total budget" });
+            }
         }
     }
 
