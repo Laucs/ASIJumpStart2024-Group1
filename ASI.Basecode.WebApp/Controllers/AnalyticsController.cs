@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// </summary>
         /// <returns>Analytics Dashboard</returns>
         [HttpGet]
-        public IActionResult Summary(string filter = "all", string categoryFilter = "all")
+        public IActionResult Summary(string filter = "all", string categoryFilter = "all", string startDateFilter = null, string endDateFilter = null)
         {
             var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = Convert.ToInt32(claimsUserId);
@@ -88,6 +89,15 @@ namespace ASI.Basecode.WebApp.Controllers
 
             var expenses = _expenseService.RetrieveAll(userId: userId);
             var categories = _categoryService.RetrieveAll(userId: userId);
+
+            if (!string.IsNullOrEmpty(startDateFilter) && !string.IsNullOrEmpty(endDateFilter))
+            {
+                if (DateTime.TryParse(startDateFilter, out var parsedStartDate) && DateTime.TryParse(endDateFilter, out var parsedEndDate))
+                {
+                    parsedEndDate = parsedEndDate.AddDays(1).AddTicks(-1); // Include the entire end date
+                    expenses = expenses.Where(e => e.CreatedDate >= parsedStartDate && e.CreatedDate <= parsedEndDate).ToList();
+                }
+            }
 
             DateTime? startDate = null;
             DateTime? endDate = null;
@@ -186,17 +196,47 @@ namespace ASI.Basecode.WebApp.Controllers
             var weeklyData = GetWeeklyCategoryData(expenses);
             var (labels, datasets) = PrepareChartData(weeklyData, categories);
 
+            var previousWeekPercentage = CalculatePreviousWeekPercentage(expenses);
+
             if (expenses == null || !expenses.Any())
             {
-                return Json(new { labels = new List<string>(), datasets = new List<ChartDataset>() });
+                return Json(new { labels = new List<string>(), datasets = new List<ChartDataset>(), previousWeekPercentage = "0" });
             }
 
-            if (categories == null || !categories.Any())
+            return Json(new { labels, datasets, previousWeekPercentage = previousWeekPercentage.ToString("F2") });
+        }
+
+        private static decimal CalculatePreviousWeekPercentage(IEnumerable<ExpenseViewModel> expenses)
+        {
+            if (expenses == null || !expenses.Any())
             {
-                return Json(new { labels = new List<string>(), datasets = new List<ChartDataset>() });
+                Debug.WriteLine("No expenses found. Returning 0% for previous week percentage.");
+                return 0;
             }
 
-            return Json(new { labels, datasets });
+            var today = DateTime.Today;
+            var previousWeekStart = today.AddDays(-(int)today.DayOfWeek - 7);
+            var previousWeekEnd = previousWeekStart.AddDays(7).AddTicks(-1);
+
+            Debug.WriteLine($"Previous week start: {previousWeekStart}, end: {previousWeekEnd}");
+
+            var previousWeekTotal = expenses
+                .Where(e => e.CreatedDate >= previousWeekStart && e.CreatedDate <= previousWeekEnd)
+                .Sum(e => e.Amount);
+
+            Debug.WriteLine($"Previous week total expenses: {previousWeekTotal}");
+
+            var totalExpenses = expenses.Sum(e => e.Amount);
+
+            Debug.WriteLine($"Total expenses: {totalExpenses}");
+
+            var percentage = totalExpenses > 0
+                ? ((decimal)previousWeekTotal / totalExpenses) * 100
+                : 0;
+
+            Debug.WriteLine($"Calculated previous week percentage: {percentage}%");
+
+            return percentage;
         }
 
         private List<WeeklyCategoryData> GetWeeklyCategoryData(IEnumerable<ExpenseViewModel> expenses)
@@ -324,16 +364,18 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
 
                 int userId = Convert.ToInt32(claimsUserId);
-                
+
                 _walletService.AddAmount(userId, request.Amount, request.CategoryId);
                 var newBalance = _walletService.GetBalance(userId, request.CategoryId);
                 var category = _categoryService.GetById(request.CategoryId.Value);
 
-                return Json(new { 
-                    success = true, 
+
+                return Json(new
+                {
+                    success = true,
                     newBalance = newBalance,
                     categoryId = request.CategoryId,
-                    message = $"Successfully added ₱{request.Amount:N2} to {category.CategoryTitle}" 
+                    message = $"Successfully added ₱{request.Amount:N2} to {category.CategoryTitle}"
                 });
             }
             catch (Exception ex)

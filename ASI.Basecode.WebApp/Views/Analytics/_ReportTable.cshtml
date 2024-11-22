@@ -13,18 +13,40 @@
 <div class="h-auto bg-gray-100 px-8 dark:bg-slate-950">
     <div class="flex flex-col gap-5 pt-5 md:pt-0">
         <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
-        <div class="flex flex-row gap-5">
-            <button id="allBtn" type="button" onclick="filterData('all')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
-            <button id="todayBtn" type="button" onclick="filterData('today')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
-            <button id="weekBtn" type="button" onclick="filterData('thisweek')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
-            <button id="monthBtn" type="button" onclick="filterData('thismonth')" class="filter-button rounded-full px-6 py-2 shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thismonth") ? "bg-violet-500 text-white" : "bg-white")">This Month</button>
-            <select id="categoryBtn" class="rounded-full bg-white px-6 py-2 shadow-black drop-shadow-md duration-300" id="categoryFilter" onchange="filterData('all', this.value)">
+        <div class="flex max-h-full flex-row gap-5">
+            <button id="allBtn" type="button" onclick="filterData('all')" class="filter-button h-10 w-20 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
+            <button id="todayBtn" type="button" onclick="filterData('today')" class="filter-button h-10 w-20 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
+            <button id="weekBtn" type="button" onclick="filterData('thisweek')" class="filter-button h-10 w-28 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
+            <button id="monthBtn" type="button" onclick="filterData('thismonth')" class="filter-button h-10 w-28 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thismonth") ? "bg-violet-500 text-white" : "bg-white")">This Month</button>
+            <select id="categoryBtn" class="h-10 rounded-full bg-white px-4 shadow-black drop-shadow-md duration-300" onchange="filterData('all', this.value)">
                 <!option value="all" @(selectedCategory == "all" ? "selected" : "")>All Categories</!option>
                 @foreach (var category in Model.Categories)
                 {
                     <!option value="@category.CategoryTitle" @(selectedCategory == category.CategoryTitle ? "selected" : "")>@category.CategoryTitle</!option>
                 }
             </select>
+            <div class="group relative">
+                <input id="startDate"
+                       type="date"
+                       class="rounded-full px-4 py-2 shadow-black drop-shadow-md" />
+                <div class="group-hover:block -translate-x-1/2 absolute -top-12 left-1/2 hidden w-24 transform rounded bg-gray-800 py-2 text-center text-sm text-white transition-all duration-300">
+                    Starting Date
+                </div>
+            </div>
+            <label class="mt-2 h-full text-lg">-</label>
+            <div class="group relative">
+                <input id="endDate"
+                       type="date"
+                       class="rounded-full px-4 py-2 shadow-black drop-shadow-md" />
+                <div class="group-hover:block -translate-x-1/2 absolute -top-12 left-1/2 hidden w-24 transform rounded bg-gray-800 py-2 text-center text-sm text-white transition-all duration-300">
+                    End Date
+                </div>
+            </div>
+            <button type="button"
+                    onclick="filterByDate()"
+                    class="rounded-full bg-violet-500 px-6 py-2 text-white shadow-black drop-shadow-md duration-300 hover:bg-violet-700">
+                Filter
+            </button>
         </div>
     </div>
     <div class="mt-5 h-3/6 overflow-x-auto shadow-black drop-shadow-md">
@@ -70,6 +92,19 @@
 <script>
     function filterData(timeFilter, categoryFilter = 'all') {
         const url = `@Url.Action("Summary", "Analytics")?filter=${timeFilter}&categoryFilter=${categoryFilter}`;
+        window.location.href = url;
+    }
+
+    function filterByDate() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            alert('Please select both a starting date and an ending date.');
+            return;
+        }
+
+        const url = `@Url.Action("Summary", "Analytics")?startDateFilter=${startDate}&endDateFilter=${endDate}`;
         window.location.href = url;
     }
 </script>

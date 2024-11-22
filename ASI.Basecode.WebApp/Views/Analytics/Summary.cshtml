@@ -18,39 +18,6 @@
     <div class="hidden h-full w-1/6 md:flex">
     </div>
     <div class="h-auto w-full md:w-5/6">
-                    <div class="p-8">
-                        <div class="wallet-section p-6 bg-white rounded-xl shadow-lg dark:bg-violet-950 mb-8 transition-all duration-300">
-                            <div class="flex justify-between items-center mb-6 gap-2">
-                <div class="flex-1">
-                    <h2 class="text-2xl font-bold text-violet-500 dark:text-white flex items-center gap-2"> 
-                        My Budget
-                    </h2>
-                </div>
-                <div>
-                    <button type="button" 
-                            onclick="openAddFundsModal()" 
-                            class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-600 transition-colors duration-200 text-sm font-medium whitespace-nowrap">
-                        + Add Funds
-                    </button>
-                </div>
-            </div>
-                <div class="bg-gray-50 dark:bg-violet-900 p-5 rounded-xl">
-                    <div class="flex flex-col">
-                        <p class="text-gray-600 dark:text-gray-300 text-sm font-medium mb-2">Category Budgets</p>
-                        <select id="categoryBudgetSelect" class="w-full p-3 border rounded-lg mb-2" onchange="showCategoryBalance(this.value)">
-                            <option value="">Select Category</option>
-                            @foreach (var category in Model.CategoryAnalytics.Categories)
-                            {
-                                <option value="@category.CategoryId">@category.CategoryTitle</option>
-                            }
-                        </select>
-                        <p class="text-2xl font-bold text-green-600" id="selectedCategoryBalance">
-                            ₱0.00
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="h-auto w-full rounded-t-lg bg-gray-100 from-violet-950 to-slate-950 dark:bg-gradient-to-b">
             <div class="flex h-full flex-col md:p-8">
                 <div class="credential-gradient flex h-full w-full flex-col rounded-lg py-8 shadow-sm shadow-black dark:shadow-lg md:flex-row">
@@ -58,6 +25,43 @@
                         @await Html.PartialAsync("_TotalExpense")
                     </div>
                     @await Html.PartialAsync("_CategorySummary", Model.SummaryAnalytics)
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-100 px-8 py-6 dark:bg-slate-950">
+            <div class="mb-6 flex items-center justify-between gap-2">
+                <div class="flex-1">
+                    <h2 class="flex items-center gap-2 text-2xl font-bold text-violet-500 dark:text-white">
+                        My Budget
+                    </h2>
+                </div>
+                <div>
+                    <button type="button"
+                            onclick="openAddFundsModal()"
+                            class="whitespace-nowrap rounded-lg bg-violet-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-violet-600">
+                        + Add Funds
+                    </button>
+                </div>
+            </div>
+            <div class="flex h-20 flex-row">
+                <div class="flex h-full w-1/2 flex-col justify-center">
+                    <p class="mb-2 text-lg font-medium dark:text-white">Category Budgets</p>
+                    <select id="categoryBudgetSelect" class="mb-2 w-full rounded-lg border p-3" onchange="showCategoryBalance(this.value)">
+                        <option value="">Select Category</option>
+                        @foreach (var category in Model.CategoryAnalytics.Categories)
+                        {
+                            <option value="@category.CategoryId">@category.CategoryTitle</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex h-full w-1/2 items-center justify-center">
+                    <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 text-green-600 shadow-md shadow-black">
+                        <label class="font-bold tracking-wide text-white">Wallet Budget</label>
+                        <p class="font-bold text-green-500" id="selectedCategoryBalance">
+                            ₱0.00
+                        </p>
+                        <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-green-500"></div>
+                    </div>
                 </div>
             </div>
         </div>
