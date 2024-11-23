@@ -356,7 +356,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private async Task SendVerificationEmail(string email, string token)
         {
             var verificationLink = Url.Action("VerifyEmail", "Credentials", new { token = token }, Request.Scheme);
-            var emailBody = $"Please verify your email by clicking <a href='{verificationLink}'>here</a>. You have 5 minutes to verify your account.";
+            var emailBody = $"Please verify your email by clicking <a href='{verificationLink}'>here</a>. If you did not make this request, please do not click this link. You have 5 minutes to verify your account.";
 
             await _emailService.SendEmailAsync(email, "EXTR - Email Verification", emailBody);
         }
@@ -367,7 +367,7 @@ namespace ASI.Basecode.WebApp.Controllers
             var resetLink = Url.Action("ResetPassword", "Credentials", new { token = resetToken }, Request.Scheme);
 
             // Send reset email
-            var emailBody = $"Please reset your password by clicking <a href='{resetLink}'>here</a>. If you did not make this request, please do not click this link.";
+            var emailBody = $"Please reset your password by clicking <a href='{resetLink}'>here</a>. If you did not make this request, please do not click this link. You have 1 hour to verify your account.";
             await _emailService.SendEmailAsync(email, "EXTR - Password Reset Verification", emailBody);
         }
 
@@ -397,7 +397,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             else
             {
-                TempData["TokenExpired"] = "Invalid or expired token.";
+                TempData["TokenExpired"] = "Invalid or expired registration token.";
                 return RedirectToAction("RegTokenExpired", "Credentials");
 
             }
