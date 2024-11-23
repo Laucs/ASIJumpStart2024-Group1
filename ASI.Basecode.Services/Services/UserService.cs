@@ -122,15 +122,26 @@ namespace ASI.Basecode.Services.Services
 
         public LoginResult AuthenticateUser(string userCode, string password, ref MUser user)
         {
-
-            user = new MUser();
             var passwordKey = PasswordManager.EncryptPassword(password.Trim());
-            user = _userRepository.GetUsers().Where(x => x.UserCode.Trim() == userCode.Trim() &&
-                                                          x.Password == passwordKey &&
-                                                          x.IsEmailVerified).FirstOrDefault();
+            var foundUser = _userRepository.GetUsers()
+                                           .FirstOrDefault(x => x.UserCode.Trim() == userCode.Trim() && x.Password == passwordKey);
 
-            return user != null ? LoginResult.Success : LoginResult.Failed;
+            if (foundUser != null)
+            {
+                if (!foundUser.IsEmailVerified)
+                {
+                    user = foundUser; // Assign found user for context in controller
+                    return LoginResult.EmailNotVerified;
+                }
+
+                user = foundUser; // Assign found user
+                return LoginResult.Success;
+            }
+
+            user = null; // Explicitly set to null for failed cases
+            return LoginResult.Failed;
         }
+
 
         public bool ValidatePassword(string username, string password)
         {

@@ -13,7 +13,6 @@ namespace ASI.Basecode.Data.Models
         public int CategoryId { get; set; }
         public string CategoryTitle { get; set; }
         public int UserId { get; set; }
-        public string ProfileImg { get; set; }
 
         public virtual MUser User { get; set; }
         public virtual ICollection<MExpense> MExpenses { get; set; }

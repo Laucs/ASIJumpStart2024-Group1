@@ -97,22 +97,21 @@ namespace ASI.Basecode.WebApp.Controllers
 
             if (loginResult == LoginResult.Success)
             {
-                // Check if the user's email is verified
-                if (!user.IsEmailVerified) // Assuming you have a property for email verification
-                {
-                    TempData["EmailNotVerified"] = "Your email address is not verified. Please check your inbox for the verification link.";
-                    return View(); // Return to the login view or wherever you want
-                }
-
                 await this._signInManager.SignInAsync(user);
                 TempData["LoginSuccess"] = $"Successfully logged in as {user.UserCode}";
                 return RedirectToAction("Summary", "Analytics");
+            }
+            else if (loginResult == LoginResult.EmailNotVerified)
+            {
+                TempData["EmailNotVerified"] = "Your email address is not verified. Please check your inbox for the verification link.";
+                return View(); // Return to the login view or appropriate view
             }
             else
             {
                 TempData["InvalidCred"] = "Incorrect Username or Password. Please Try Again!";
                 return View();
             }
+
         }
 
 
@@ -194,6 +193,7 @@ namespace ASI.Basecode.WebApp.Controllers
             return View();
         }
 
+       
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -224,12 +224,19 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 // Send reset password email
                 await SendResetPasswordEmail(model.Email, resetToken);
+
+                TempData["SendPassToken"] = "Please check your email. A password reset link has been sent.";
+            }
+            else
+            {
+                // Inform user that email is not registered
+                TempData["EmailNotFound"] = "The email address is not associated with any account.";
+                return View(model);
+
             }
 
-            TempData["SendPassToken"] = "Please check your email a password reset link will be sent.";
             return RedirectToAction("Login", "Credentials");
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -238,7 +245,15 @@ namespace ASI.Basecode.WebApp.Controllers
             if (string.IsNullOrEmpty(token))
             {
                 TempData["InvalidResetToken"] = "Invalid or expired password reset token.";
-                return View();
+                return RedirectToAction("RPTokenExpired");
+            }
+
+            // Check if the token exists and is valid
+            var user = _userService.GetUserByPasswordResetToken(token);
+            if (user == null || user.ResetTokenExpiration < DateTime.Now)
+            {
+                TempData["InvalidResetToken"] = "Invalid or expired password reset token.";
+                return RedirectToAction("RPTokenExpired");
             }
 
             // Initialize the ResetPasswordViewModel with the token
@@ -250,7 +265,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(model); // Pass the model with the token to the view
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         public IActionResult ResetPassword(ResetPasswordViewModel model)
@@ -261,21 +275,21 @@ namespace ASI.Basecode.WebApp.Controllers
                 var user = _userService.GetUserByPasswordResetToken(model.Token);
                 if (user == null || user.ResetTokenExpiration < DateTime.Now)
                 {
-                    TempData["InvalidResetToken"] = "Invalid or expired password reset token.";
-                    return View(model); // Pass the model back so the token is retained
+                    // If token is invalid or expired, redirect to TokenExpired view
+                    return RedirectToAction("RPTokenExpired");
                 }
 
                 // Update user's password
                 user.Password = PasswordManager.EncryptPassword(model.NewPassword);
                 user.PasswordResetToken = null; // Clear the reset token
-                user.ResetTokenExpiration = null;
+                user.ResetTokenExpiration = null; // Clear the expiration date
 
                 // Update user information in the database
                 _userService.Update(new UserViewModel
                 {
                     Id = user.UserId,
                     Password = user.Password,
-                   UserCode = user.UserCode
+                    UserCode = user.UserCode
                 });
 
                 TempData["ResetSuccess"] = "Password successfully reset. You can now log in with your new password.";
@@ -377,14 +391,30 @@ namespace ASI.Basecode.WebApp.Controllers
                     UserCode = user.UserCode,
                     IsEmailVerified = true
                 });
-                TempData["EmailVerified"] = "Email verified successfully! You can now log in.";
+                TempData["EmailVerified"] = "Email verified successfully! You can login.";
+                return RedirectToAction("Login", "Credentials");
+
             }
             else
             {
                 TempData["TokenExpired"] = "Invalid or expired token.";
+                return RedirectToAction("RegTokenExpired", "Credentials");
+
             }
 
-            return RedirectToAction("Login", "Credentials");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegTokenExpired() { 
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RPTokenExpired()
+        {
+            return View();
         }
 
     }
