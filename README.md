@@ -19,8 +19,8 @@
 ![Tailwind CSS](https://img.shields.io/badge/tailwind%20css-%2338B2D8.svg?style=for-the-badge&logo=tailwindcss&logoColor=white) 
 ![Microsoft SQL Server](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white)
 
-Basecode Repository Link ***[ASIBasecodeCSharp2024](https://github.com/GoodBoiDoggo/ASIBasecodeCSharp2024)***
+Basecode Repository Link: ***[ASIBasecodeCSharp2024](https://github.com/GoodBoiDoggo/ASIBasecodeCSharp2024)***
 
-EXTR: Expense Tracker C# Repository Link ***[EXTR C# repo](https://github.com/Laucs/ASIJumpStart2024-Group1)***
+EXTR: Expense Tracker C# Repository Link: ***[EXTR C# repo](https://github.com/Laucs/ASIJumpStart2024-Group1)***
 
 EXTR: Expense Tracker Automation Test Repository Link: ***[EXTR Automation Test repo](https://github.com/ajiwnl/ASIJumpStart2024-Group1_ASIBasecodeCSharp2024-AutomationTesting)***
