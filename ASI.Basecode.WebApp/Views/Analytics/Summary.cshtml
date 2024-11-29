@@ -105,9 +105,9 @@
 
         function openAddFundsModal() {
             console.log('Opening modal');
-            
+
             const categories = @Html.Raw(Json.Serialize(Model.CategoryAnalytics.Categories));
-            
+
             Swal.fire({
                 title: 'Add Funds to Budget',
                 html: `
@@ -115,18 +115,24 @@
                         <label class="block text-gray-700 mb-2">Select Category</label>
                         <select id="categorySelect" class="w-full p-3 border rounded-lg mb-4">
                             <option value="">Select a Category</option>
-                            ${categories.map(cat => 
+                            ${categories.map(cat =>
                                 `<option value="${cat.categoryId}">${cat.categoryTitle}</option>`
                             ).join('')}
                         </select>
 
                         <label class="block text-gray-700 mb-2">Amount</label>
-                        <input type="text" 
-                               id="amountInput" 
-                               class="w-full p-3 border rounded-lg"
+                        <input type="text"
+                               id="amountInput"
+                               class="w-full p-3 border rounded-lg mb-4"
                                placeholder="Enter amount"
                                onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
-                               oninput="validateModalNumber(this)">                  
+                               oninput="validateModalNumber(this)">
+
+                        <button type="button" 
+                                onclick="handleResetBudget()"
+                                class="w-full p-3 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                            Reset Budget
+                        </button>
                     </div>
                 `,
                 showCancelButton: true,
@@ -171,14 +177,14 @@
                     .then(data => {
                         // Show success message regardless of response.ok
                         toastr.success(`Successfully added ₱${selectedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} to budget`);
-                        
+
                         // Update the dropdown and balance
                         const categoryBudgetSelect = document.getElementById('categoryBudgetSelect');
                         categoryBudgetSelect.value = selectedCategoryId;
-                        
+
                         // Update the balance display
                         showCategoryBalance(selectedCategoryId);
-                        
+
                         // Close the modal
                         Swal.close();
                     })
@@ -187,6 +193,70 @@
                     });
                 }
             });
+        }
+
+        async function handleResetBudget() {
+            const categorySelect = document.getElementById('categorySelect');
+            if (!categorySelect.value) {
+                toastr.error('Please select a category');
+                return;
+            }
+
+            const categoryId = parseInt(categorySelect.value);
+            const categoryTitle = categorySelect.options[categorySelect.selectedIndex].text;
+
+            // First check if category has expenses
+            const response = await fetch(`/Analytics/CheckCategoryExpenses?categoryId=${categoryId}`);
+            const data = await response.json();
+
+            if (data.hasExpenses) {
+                // Show confirmation dialog for expense deletion
+                Swal.fire({
+                    title: 'Warning',
+                    html: `This category (${categoryTitle}) has existing expenses.<br>Do you want to delete all related expenses and reset the budget?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, reset everything',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        resetBudgetAndExpenses(categoryId, categoryTitle);
+                    }
+                });
+            } else {
+                // If no expenses, just reset the budget
+                resetBudget(categoryId, categoryTitle);
+            }
+        }
+
+        async function resetBudgetAndExpenses(categoryId, categoryTitle) {
+            try {
+                const response = await fetch('/Analytics/ResetBudgetAndExpenses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ categoryId: categoryId })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    toastr.success(`Successfully reset budget and expenses for ${categoryTitle}`);
+    
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    toastr.error(data.message || 'An error occurred');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                toastr.error('An error occurred while resetting budget and expenses');
+            }
         }
 
         // Add this new function to update all balance displays
