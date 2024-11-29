@@ -299,19 +299,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(model); // Return the view with validation errors if model is not valid
         }
 
-        [HttpPost]
-        public IActionResult ChangePassword(ChangePasswordViewModel changePasswordViewModel)
-        {
-
-
-            if (changePasswordViewModel == null)
-            {
-                return View("Error");
-            }
-            return View();
-        }
-
-
         /// <summary>
         /// Sign Out current account and return login view.
         /// </summary>
