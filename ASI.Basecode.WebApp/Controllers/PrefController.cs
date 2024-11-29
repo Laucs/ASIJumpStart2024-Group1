@@ -8,6 +8,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NuGet.Protocol;
@@ -68,23 +69,24 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Settings()
         {
-            var username = HttpContext.User.FindFirst("UserCode")?.Value;
-            var userData = _userService.RetrieveUserByUsername(username);
+            var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
+            var user = _userService.RetrieveUserByUsername(currentUsername);
 
-            var model = new ProfileViewModel()
+            var userData = new ProfileViewModel()
             {
-                UserCode = userData.UserCode,
-                Email = userData.Mail,
-                UpdateEmailOrUserName = new ChangeEmailOrUsernameViewModel(),
+                UserCode = user.UserCode ?? "",  // Default to empty string if UserCode is null
+                Email = user.Mail ?? "",  // Default to empty string if Mail is null
+                UpdateEmail = new ChangeEmailViewModel(),
                 UpdatePassword = new ChangePasswordViewModel(),
-                ProfilePicture = userData.ProfilePic
+                IsPasswordChangeRequired = false,
+                ProfilePicture = user.ProfilePic // Assuming ProfilePic can be null
             };
-
-
-
             ViewData["ActivePage"] = "Settings";
-            return View(model);
+            return View(userData);
         }
+
+        
+
 
         [HttpPost]
         public async Task<IActionResult> SaveImagePath(IFormFile ProfilePicture)
@@ -125,85 +127,116 @@ namespace ASI.Basecode.WebApp.Controllers
             return BadRequest(new { message = "File upload failed." });
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
+        public async Task<IActionResult> UpdateUsername(ProfileViewModel model)
         {
+            // Retrieve the current user's username from claims
             var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
+
+            // Get the user data by the current username
             var userData = _userService.RetrieveUserByUsername(currentUsername);
 
-            if (_userService.EmailAvailability(model.UpdateEmailOrUserName.NewEmail, userData.Id))
-            {
-                ModelState.AddModelError("UpdateEmailOrUserName.NewEmail", "This email is already registered.");
-            }
-
-            if (_userService.UsernameAvailability(model.UpdateEmailOrUserName.NewUsername, userData.Id))
+            // Check if the new username is already taken by another user
+            if (_userService.UsernameAvailability(model.UpdateUsername.NewUsername, userData.Id))
             {
                 ModelState.AddModelError("UpdateEmailOrUserName.NewUsername", "This username is already taken.");
+                return View("Settings"); // Return to the settings view with errors
             }
 
-            if (model.IsPasswordChangeRequired)
+            // Check if the new username is different from the current one
+            if (!model.UpdateUsername.NewUsername.Equals(userData.UserCode, StringComparison.OrdinalIgnoreCase))
             {
-                if (model.IsPasswordChangeRequired && !model.UpdatePassword.OldPassword.Equals(userData.Password))
-                {
-                    ModelState.AddModelError("UpdatePassword.OldPassword", "The old password does not match.");
-                }
-
-                if (model.UpdatePassword.NewPassword.Equals(model.UpdatePassword.OldPassword))
-                {
-                    ModelState.AddModelError("UpdatePassword.NewPassword", "The new password should be different from the old password.");
-                }
-            }
-
-            
-
-            // If ModelState is invalid, return the view with error messages
-            if (!ModelState.IsValid)
-            {
-
-                return RedirectToAction("Settings"); 
-            }
-
-
-            // Update username if it has changed
-            if (!model.UpdateEmailOrUserName.NewUsername.Equals(userData.UserCode))
-            {
-                userData.UserCode = model.UpdateEmailOrUserName.NewUsername;
-                var updatedUser = new MUser
-                {
-                    UserCode = userData.UserCode,
-                    Password = userData.Password,
-                };
+                // Update the username
+                userData.UserCode = model.UpdateUsername.NewUsername;
                 _userService.UpdateUsername(userData);
+
+                // Retrieve the updated user data
+                var updatedUser = _userService.RetrieveUserByUsername(userData.UserCode);
+
+                // Prepare user data for re-authentication
+                var data = new MUser
+                {
+                    UserId = updatedUser.Id,
+                    UserCode = updatedUser.UserCode,
+                    Password = updatedUser.Password // Assuming password is hashed
+                };
+
+                // Notify the user of the successful change
                 TempData["ChangeSuccess"] = "Username updated successfully!";
-                await _signInManager.SignInAsync(updatedUser);
+
+                // Re-sign the user in with updated claims
+                await _signInManager.SignInAsync(data);
+
+                // Redirect to prevent resubmission
+                return RedirectToAction("Settings");
             }
 
-            if (!model.UpdateEmailOrUserName.NewEmail.Trim().ToLower().Equals(userData.Mail.Trim().ToLower()))
+            // If no change, notify user and return to the view
+            TempData["InfoMessage"] = "No changes were made to the username.";
+            return RedirectToAction("Settings");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateEmail(ProfileViewModel model)
+        {
+            var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
+
+            var userData = _userService.RetrieveUserByUsername(currentUsername);
+
+            if (_userService.EmailAvailability(model.UpdateEmail.NewEmail, userData.Id))
             {
-                userData.Mail = model.UpdateEmailOrUserName.NewEmail;
+                ModelState.AddModelError("UpdateEmail.NewEmail", "This email is already registered.");
+                return View("Settings", PopulateData(userData));
+            }
+
+            if (!model.UpdateEmail.NewEmail.Equals(userData.Mail))
+            {
+                userData.Mail = model.UpdateEmail.NewEmail;
+
                 userData.EmailVerificationToken = Guid.NewGuid().ToString();
                 userData.VerificationTokenExpiration = DateTime.Now.AddMinutes(5);
 
                 _userService.UpdateEmail(userData);
-                await SendVerificationEmail(userData.Mail, userData.EmailVerificationToken);
 
+                await SendVerificationEmail(userData.Mail, userData.EmailVerificationToken);
                 TempData["RegSuccess"] = "Email changed successfully! Please verify your new email.";
+
                 return RedirectToAction("Login", "Credentials");
             }
 
-            // Update password if it has changed
-            if (model.IsPasswordChangeRequired && !string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword))
-            {
-                userData.Password = model.UpdatePassword.NewPassword;
-                _userService.UpdatePassword(userData);
-                TempData["ChangeSuccess"] = "Password updated successfully!";
-                return RedirectToAction("Settings");
-            }
-
-            return RedirectToAction("Settings");
+            TempData["InfoMessage"] = "No changes were made to the email.";
+            return View("Settings", PopulateData(userData));
         }
 
+        [HttpPost]
+        public IActionResult UpdatePassword(ProfileViewModel model)
+        {
+            var currentUsername = HttpContext.User.FindFirst("UserCode")?.Value;
+            var userData = _userService.RetrieveUserByUsername(currentUsername);
+
+
+            // Check if the old password matches the current password
+            if (!model.UpdatePassword.OldPassword.Equals(userData.Password))
+            {
+                ModelState.AddModelError("UpdatePassword.OldPassword", "The old password does not match.");
+                return View("Settings", model: PopulateData(userData));
+            }
+
+            // Proceed with the password change if validation is successful
+            if (!string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword) && ModelState.IsValid)
+            {
+                userData.Password = PasswordManager.EncryptPassword(model.UpdatePassword.NewPassword);
+
+                // Update password in the database
+                _userService.Update(userData);
+                TempData["ChangeSuccess"] = "Password updated successfully!";
+                return RedirectToAction("Settings", "Pref");
+            }
+            // If ModelState is not valid, then displays all validations
+            return View("Settings", model: PopulateData(userData));
+        }
+                       
       
         private async Task SendVerificationEmail(string email, string token)
         {
@@ -211,6 +244,18 @@ namespace ASI.Basecode.WebApp.Controllers
             var emailBody = $"Please verify your email by clicking <a href='{verificationLink}'>here</a>. You have 5 minutes to verify your account.";
 
             await _emailService.SendEmailAsync(email, "EXTR - Email Verification", emailBody);
+        }
+        public ProfileViewModel PopulateData(UserViewModel userData)
+        {
+            return new ProfileViewModel()
+            {
+                UserCode = userData.UserCode ?? "",  // Default to empty string if UserCode is null
+                Email = userData.Mail ?? "",  // Default to empty string if Mail is null
+                UpdateEmail = new ChangeEmailViewModel(),
+                UpdatePassword = new ChangePasswordViewModel(),
+                IsPasswordChangeRequired = false,
+                ProfilePicture = userData.ProfilePic // Assuming ProfilePic can be null
+            };
         }
     }
 }
