@@ -3,42 +3,95 @@
 @{
     ViewData["Title"] = "Settings";
     var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
+    
 }
 
 @await Html.PartialAsync("Sidebar")
 <script src="~/js/ImagePreview/imageprev.js" asp-append-version="true"></script>
-<script src="~/js/settings.js"></script>
+<script src="~/js/settings.js" asp-append-version="true"></script>
 <script src="~/js/DarkMode/darkmode.js" asp-append-version="true"></script>
 <div class="flex h-screen w-screen flex-row dark:bg-black">
     <div class="hidden h-full w-1/6 md:flex">
     </div>
     <div class="h-full w-full md:w-5/6">
         <div class="flex h-auto min-h-full w-full flex-col rounded-lg bg-gray-100 from-violet-950 to-slate-950 dark:bg-gradient-to-b md:flex-row">
-            <form asp-action="UpdateProfile" method="post" class="order-2 flex h-full w-full flex-col px-8 py-8 pb-20 md:w-1/2 md:order-1">
+            <div class="order-2 flex h-full w-full flex-col px-8 py-8 pb-20 md:w-1/2 md:order-1">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">@SettingsHeader</label>
 
                 <div class="mt-6 flex flex-col gap-6">
                     <label class="text-xl font-bold text-black dark:text-white" for="checkboxEmailUserName">@UserInfo</label>
-
-                    <div class="relative">
-                        <input id="userInput" asp-for="UpdateEmailOrUserName.NewUsername" type="text"
+                    <form asp-action="UpdateUsername" method="post" class="relative flex-col">
+                        <input asp-for="UpdateUsername.NewUsername" type="text" maxlength="50" id="usernameInput"
                                class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
-                               placeholder="Username" value=@Model.UserCode />
-                        <span asp-validation-for="UpdateEmailOrUserName.NewUsername"
+                               placeholder="Username" value=@(Model.UserCode) disabled readonly />
+                        <span asp-validation-for="UpdateUsername.NewUsername"
                               class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
-                    </div>
-                    <div class="relative">
-                        <input id="emailInput" asp-for="UpdateEmailOrUserName.NewEmail" type="email" class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
-                               placeholder="Email" value=@Model.Email />
-                        <span asp-validation-for="UpdateEmailOrUserName.NewEmail"
+                        <!--- Edit Button -->
+                        <button type="button" id="newUNEditButton"
+                                class="absolute transform -translate-y-1/2 text-violet-500" style="right:-5%; top: 50%">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                                <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                            </svg>
+                        </button>
+
+                        <div class="flex flex-row gap-2 absolute transform -translate-y-1/2" style="right:-10%; top: 50%">
+                            <!--- Submit Button -->
+                            <button type="submit" id="newUNSubmitButton"
+                                    class="text-violet-500" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <!--- Cancel Button -->
+                            <button type="button" id="newUNCancelButton"
+                                    class="text-violet-500" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                    <form asp-action="UpdateEmail" method="post" class="relative flex-col">
+                        <input asp-for="UpdateEmail.NewEmail" type="email" maxlength="50" id="emailInput" disabled readonly
+                               class="w-full rounded-lg border border-zinc-600 px-4 py-2 pr-12 dark:bg-violet-950 dark:text-white dark:border-2 dark:placeholder:text-white"
+                               placeholder="Email" value=@(Model.Email ?? "") />
+                        <span asp-validation-for="UpdateEmail.NewEmail"
                               class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
-                    </div>
+                        <!--- Edit Button -->
+                        <button type="button" id="newEmailEditButton"
+                                class="absolute transform -translate-y-1/2 text-violet-500" style="right:-5%; top: 50%">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                                <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                            </svg>
+                        </button>
+                        <div class="flex flex-row gap-2 absolute transform -translate-y-1/2" style="right:-10%; top: 50%">
+                            <!--- Submit Button -->
+                            <button type="submit" id="newEmailSubmitButton"
+                                    class="text-violet-500" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <!--- Cancel Button -->
+                            <button type="button" id="newEmailCancelButton"
+                                    class="text-violet-500" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="mt-6 flex flex-col gap-6">
+                <form asp-action="UpdatePassword" method="post" class="mt-6 flex flex-col gap-5">
                     <div class="inline-flex gap-2">
                         <label class="mr-5 text-xl font-bold text-black dark:text-white">@PassManagement</label>
-                        <input asp-for="IsPasswordChangeRequired" type="checkbox" id="togglePasswordChange" class="mt-2 rounded-lg border border-zinc-600" />
+                        <label class="inline-flex cursor-pointer items-center drop-shadow-sm">
+                            <input id="togglePasswordChange" type="checkbox" class="peer sr-only drop-shadow-sm">
+                            <div class="relative drop-shadow-sm w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-violet-500 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-violet-500 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
+                        </label>
                     </div>
 
                     <div class="flex flex-col gap-6" id="passwordFields">
@@ -64,23 +117,24 @@
                                   class="-translate-y-1/2 absolute right-5 transform text-xs text-red-500" style="top:35%"></span>
                         </div>
                     </div>
-                </div>
+                    <div class="mt-1 flex w-full items-center justify-center">
+                        <button id="submitBtn" type="submit" hidden
+                                class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
+                            @Submit
+                        </button>
+                    </div>
+                </form>
 
 
-                <div class="mt-6 flex w-full items-center justify-center">
-                    <button id="submitBtn" type="submit"
-                            class="w-32 rounded-full bg-violet-500 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
-                        @Submit
-                    </button>
-                </div>
-            </form>
+               
+            </div>
 
 
             <div class="order-1 flex h-full w-full flex-col px-8 pb-20 pt-8 md:w-1/2 md:order-2">
                 <div class="flex h-52 w-full flex-col items-center justify-center gap-3">
                     <label class="text-xl font-bold text-black dark:text-white">@ProfileHeader</label>
-                    <input asp-for=ProfilePicture type="file" accept="image/*" class="hidden" id="imgFile" onchange="setImagePreview(event)" value="@Model.ProfilePicture" />
-                    <img id="profileImage" src="@Model.ProfilePicture" class="h-32 w-32 rounded-full bg-transparent drop-shadow-lg" />
+                    <input asp-for=ProfilePicture type="file" accept="image/*" class="hidden" id="imgFile" onchange="setImagePreview(event)" value=@(Model.ProfilePicture ?? "") />
+                    <img id="profileImage" src=@(Model.ProfilePicture) class="h-32 w-32 rounded-full bg-transparent drop-shadow-lg" />
                     <label for="imgFile" class="mt-4 inline-block cursor-pointer rounded bg-violet-500 px-4 py-2 text-white duration-300 hover:bg-violet-800">
                         @Upload
                     </label>
@@ -107,7 +161,11 @@
         var changeSuccess = '@TempData["ChangeSuccess"]';
         var changeUserNSuccess = '@TempData["ChangeUsernameSuccess"]';
         var changeEmailSuccess = '@TempData["ChangeEmailSuccess"]';
-        var consoleDisplay = '@TempData["log"]'
+        var infoMessage = '@TempData["InfoMessage"]';
+        var info = '@TempData["ProfilePic"]';
+        if (info) {
+            toastr.info(info);
+        }
         if (errMessage) {
             toastr.error(errMessage);
         }
@@ -123,8 +181,8 @@
         if (changeEmailSuccess) {
             toastr.success(changeEmailSuccess);
         }
-        if (consoleDisplay) {
-            console.log(consoleDisplay);
+        if (infoMessage) {
+            toastr.info(infoMessage);
         }
     </script>
 }
