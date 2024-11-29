@@ -159,17 +159,16 @@ namespace ASI.Basecode.Services.Services
         public bool UsernameAvailability(string username, int id)
         {
             return _userRepository.GetUsers()
-                .Any(x => x.UserCode.ToUpper() == username.ToUpper() &&
-                            x.UserId != id &&
-                            x.Deleted != true);
+                            .Where(x => x.UserId != id && x.Deleted == false)
+                            .Any(x => x.UserCode == username);
+
         }
 
         public bool EmailAvailability(string email, int id)
         {
             return _userRepository.GetUsers()
-                .Any(x => x.Mail.ToLower() == email.ToLower() &&
-                            x.UserId != id &&
-                            x.Deleted != true);
+                .Where(x => x.UserId != id && x.Deleted == false)
+                .Any(x => x.Mail == email);
         }
 
         public bool IsUsernameTaken(string username)
