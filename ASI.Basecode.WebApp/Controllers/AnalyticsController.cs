@@ -399,13 +399,14 @@ namespace ASI.Basecode.WebApp.Controllers
                 int userId = Convert.ToInt32(claimsUserId);
                 _walletService.ResetBalance(userId, categoryId);
 
-                string budgetType = categoryId.HasValue ? 
-                    _categoryService.GetById(categoryId.Value)?.CategoryTitle : 
+                string budgetType = categoryId.HasValue ?
+                    _categoryService.GetById(categoryId.Value)?.CategoryTitle :
                     "overall budget";
 
-                return Json(new { 
-                    success = true, 
-                    message = $"Successfully reset {budgetType}" 
+                return Json(new
+                {
+                    success = true,
+                    message = $"Successfully reset {budgetType}"
                 });
             }
             catch (Exception ex)
@@ -422,7 +423,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var balance = _walletService.GetBalance(userId, categoryId == 0 ? null : categoryId);
-                
+
                 return Json(new { success = true, balance = balance });
             }
             catch (Exception ex)
@@ -453,6 +454,62 @@ namespace ASI.Basecode.WebApp.Controllers
                 _logger.LogError(ex, "Error calculating total budget");
                 return Json(new { success = false, message = "Error retrieving total budget" });
             }
+        }
+
+        [HttpGet]
+        public IActionResult CheckCategoryExpenses(int categoryId)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var expenses = _expenseService.RetrieveAll(userId: userId)
+                    .Where(e => e.CategoryId == categoryId);
+
+                return Json(new
+                {
+                    success = true,
+                    hasExpenses = expenses.Any()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking category expenses");
+                return Json(new { success = false, message = "Error checking expenses" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult ResetBudgetAndExpenses([FromBody] ResetBudgetRequest request)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                // Delete all expenses for this category
+                _expenseService.DeleteExpensesByCategoryId(request.CategoryId);
+
+                // Reset the budget for this category
+                _walletService.ResetBalance(userId, request.CategoryId);
+
+                // Delete the wallet entry for this category
+                _walletService.DeleteWalletForCategory(userId, request.CategoryId);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Successfully reset budget and deleted all related expenses"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting budget and expenses for category {CategoryId}", request.CategoryId);
+                return Json(new { success = false, message = "An error occurred while resetting the budget and expenses" });
+            }
+        }
+
+        public class ResetBudgetRequest
+        {
+            public int CategoryId { get; set; }
         }
     }
 
