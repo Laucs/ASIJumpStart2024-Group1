@@ -1,5 +1,0 @@
-Default Scaffold Command:
-Scaffold-DbContext {Addr=(LocalDB)\MSSQLLocalDB;database=AsiBasecodeDb;Integrated Security=False;Trusted_Connection=True} Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir . -F
-
-Scaffold Command Placeholder:
-Scaffold-DbContext "{connectionstring here}" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir . -F
