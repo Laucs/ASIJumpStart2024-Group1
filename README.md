@@ -1,13 +1,20 @@
 ## ASIBasecodeCSharp2024
 
-**Project Name: EXTR: Expense Tracker**
+## Project Name: EXTR: Expense Tracker
 
-Authors: 
+## Authors: 
 - [Yancy Louis Luceno - Project Manager/System Analyst](https://github.com/Laucs)
 - [Alvin John Araneta - Tech Lead/QA Tester/Developer](https://github.com/ajiwnl)
 - [Kenneth James Macas - UI/UX Designer/Developer](https://github.com/soliken1)
 - [Earl Brando Andrino - QA Tester/Developer](https://github.com/andrino25)
 - [Art James Narboada - QA Tester/Developer](https://github.com/artnarboada)
+
+## EXTR: Expense Tracker Repository Link
+[EXTR github](https://github.com/ajiwnl/ASIJumpStart2024-Group1_ASIBasecodeCSharp2024-AutomationTesting)
+
+## EXTR: Expense Tracker Automation Test Repository Link
+[EXTR github](https://github.com/ajiwnl/ASIJumpStart2024-Group1_ASIBasecodeCSharp2024-AutomationTesting)
+
 # Tech Stack
 ![C#](https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=csharp&logoColor=white) 
 ![.NET](https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white) 
