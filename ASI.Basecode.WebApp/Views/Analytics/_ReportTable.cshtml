@@ -33,7 +33,7 @@
                     Starting Date
                 </div>
             </div>
-            <label class="mt-2 h-full text-lg">-</label>
+            <label class="mt-2 h-full text-lg dark:text-white">-</label>
             <div class="group relative">
                 <input id="endDate"
                        type="date"
@@ -49,44 +49,54 @@
             </button>
         </div>
     </div>
-    <div class="mt-5 h-3/6 overflow-x-auto shadow-black drop-shadow-md">
-        <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
-            <thead>
-                <tr class="text-xs sm:text-base">
-                    <th class="w-1/5 rounded-s-md bg-violet-500 py-2 text-center font-bold text-white">
-                        @ExpenseName
-                    </th>
-                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                        @Amount
-                    </th>
-                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                        @Date
-                    </th>
-                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                        @Category
-                    </th>
-                    <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
-                        @Description
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in Model.Categories)
-                {
-                    @foreach(var expense in category.MExpenses)
+    <div class="mt-5 h-3/6 min-h-96 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md">
+        @if (Model.Categories != null && Model.Categories.Any(c => c.MExpenses != null && c.MExpenses.Any()))
+        {
+            <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
+                <thead>
+                    <tr class="text-xs sm:text-base">
+                        <th class="w-1/5 rounded-s-md bg-violet-500 py-2 text-center font-bold text-white">
+                            @ExpenseName
+                        </th>
+                        <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                            @Amount
+                        </th>
+                        <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                            @Date
+                        </th>
+                        <th class="w-1/5 bg-violet-500 py-2 text-center font-bold text-white">
+                            @Category
+                        </th>
+                        <th class="w-1/5 rounded-e-md bg-violet-500 py-2 text-center font-bold text-white">
+                            @Description
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
                     {
-                        <tr class="text-xs sm:text-base">
-                            <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
-                            <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
-                            <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
-                            <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
-                            <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
-                        </tr>
-                    } 
-                }
-            </tbody>
-        </table>
+                        @foreach (var expense in category.MExpenses)
+                        {
+                            <tr class="border-b border-gray-100 text-xs duration-300 dark:border-gray-900 sm:text-base dark:hover:bg-indigo-950">
+                                <td class="py-2 text-center dark:text-white">@expense.ExpenseName</td>
+                                <td class="py-2 text-center dark:text-white">₱@expense.Amount</td>
+                                <td class="py-2 text-center dark:text-white">@String.Format("{0:MM/dd/yyyy}", expense.DateCreated)</td>
+                                <td class="py-2 text-center dark:text-white">@category.CategoryTitle</td>
+                                <td class="py-2 text-center dark:text-white">@expense.ExpenseDescription</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="flex h-96 items-center justify-center rounded-md bg-white p-5 text-center text-gray-500 dark:bg-transparent dark:text-gray-300">
+                <p>No expenses found. Try adding some <a class="text-blue-500 underline" asp-area="" asp-controller="Expense" asp-action="Details">here!</a></p>
+            </div>
+        }
     </div>
+
 </div>
 
 <script>
