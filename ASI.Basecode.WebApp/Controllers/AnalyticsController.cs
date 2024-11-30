@@ -184,6 +184,75 @@ namespace ASI.Basecode.WebApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Wallet()
+        {
+            var claimsUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = Convert.ToInt32(claimsUserId);
+
+            var userCode = HttpContext.User.FindFirst("UserCode")?.Value;
+            var profilePic = _userService.GetUserProfilePic(userCode);
+            ViewBag.ProfilePic = profilePic;
+
+            var expenses = _expenseService.RetrieveAll(userId: userId);
+            var categories = _categoryService.RetrieveAll(userId: userId);
+
+            var groupedCategories = expenses
+                .Join(categories,
+                    expense => expense.CategoryId,
+                    category => category.CategoryId,
+                    (expense, category) => new { expense, category })
+                .GroupBy(ec => new { ec.category.CategoryId, ec.category.CategoryTitle })
+                .Select(g => new CategoryViewModel
+                {
+                    CategoryId = g.Key.CategoryId,
+                    CategoryTitle = g.Key.CategoryTitle,
+                    TotalAmount = g.Sum(ec => ec.expense.Amount)
+                })
+                .ToList();
+
+            foreach (var category in categories)
+            {
+                category.MExpenses = expenses.Where(e => e.CategoryId == category.CategoryId)
+                                              .Select(e => new MExpense
+                                              {
+                                                  ExpenseId = e.ExpenseId,
+                                                  Amount = e.Amount,
+                                                  DateCreated = e.CreatedDate,
+                                                  ExpenseDescription = e.Description,
+                                                  CategoryId = e.CategoryId,
+                                                  UserId = e.UserId,
+                                                  ExpenseName = e.ExpenseName
+                                              }).ToList();
+            }
+
+            var categorizedExpenses = new CategoryPageViewModel
+            {
+                Categories = categories.Select(c => new CategoryViewModel
+                {
+                    CategoryId = c.CategoryId,
+                    CategoryTitle = c.CategoryTitle,
+                    MExpenses = c.MExpenses,
+                }),
+                NewCategory = new CategoryViewModel()
+            };
+
+            var model = new SummaryViewModel
+            {
+                SummaryAnalytics = groupedCategories,
+                CategoryAnalytics = categorizedExpenses,
+                ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
+                TotalExpenses = expenses.Sum(e => e.Amount)
+            };
+
+            model.CurrentBalance = _walletService.GetBalance(userId);
+            model.TotalExpenseAmount = expenses.Sum(e => e.Amount);
+            model.RemainingBalance = model.CurrentBalance - model.TotalExpenseAmount;
+
+            ViewData["ActivePage"] = "Wallet";
+            return View(model);
+        }
+
         [HttpGet("api/chart-data")]
         public IActionResult GetChartData()
         {
