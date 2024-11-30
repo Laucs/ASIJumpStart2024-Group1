@@ -129,4 +129,7 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
 </root>
