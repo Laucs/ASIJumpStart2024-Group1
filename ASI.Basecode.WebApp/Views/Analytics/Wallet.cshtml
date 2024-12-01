@@ -5,7 +5,6 @@
 @{
     ViewData["Title"] = "Wallet";
     var isDarkMode = Context.Request.Cookies["darkMode"] == "true";
-
 }
 
 @await Html.PartialAsync("Sidebar")
@@ -14,42 +13,44 @@
 <div class="flex h-screen w-screen flex-row dark:bg-black">
     <div class="hidden h-full w-1/6 md:flex">
     </div>
-    <div class="h-full w-full md:w-5/6">
-        <div class="h-full w-full rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-4 dark:bg-gradient-to-b md:p-8">
-            <div class="bg-gray-100 px-8 py-6 dark:bg-slate-950">
-                <div class="mb-6 flex items-center justify-between gap-2">
-                    <div class="flex-1">
-                        <h2 class="flex items-center gap-2 text-2xl font-bold text-violet-500 dark:text-white">
-                            My Budget
-                        </h2>
+    <div class="h-screen w-full md:w-5/6">
+        <div class="h-screen w-full rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-4 dark:bg-gradient-to-b md:p-8">
+            <div class="rounded-md bg-gray-100 px-8 py-6 dark:bg-transparent">
+                <div class="flex-1">
+                    <h2 class="flex items-center gap-2 text-2xl font-bold text-violet-500 dark:text-white">
+                        My Budget
+                    </h2>
+                </div>
+                <div class="mb-6 mt-5 flex flex-col items-center justify-between gap-2">
+                    <div class="flex h-full w-full items-center justify-center md:w-1/2">
+                        <div class="relative flex h-52 w-96 flex-col gap-1 rounded-3xl bg-gradient-to-br from-slate-950 to-violet-950 p-6 text-green-600 shadow-md shadow-black duration-300 hover:scale-105">
+                            <label id="budgetlabel" class="text-xl font-bold tracking-wide text-white">Budget</label>
+                            <p class="text-lg font-bold text-green-500" id="selectedCategoryBalance">
+                                ₱0.00
+                            </p>
+                            <img class="absolute bottom-8 left-8 h-[23px] w-[30px]" src="/img/Subtract.png" />
+                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-green-500"></div>
+                            <div class="absolute bottom-4 right-6 h-4 w-4 rounded-full bg-violet-500"></div>
+                        </div>
                     </div>
+                </div>
+            </div>
+            <div class="mt-5 flex h-20 flex-col">
+                <p class="mb-2 text-lg font-medium dark:text-white">Category Budgets</p>
+                <div class="flex h-full flex-row items-center gap-5">
+                    <select id="categoryBudgetSelect" class="w-96 rounded-lg border px-4 py-2" onchange="showCategoryBalance(this.value)">
+                        <option value="">Select Category</option>
+                        @foreach (var category in Model.CategoryAnalytics.Categories)
+                        {
+                            <option value="@category.CategoryId|@category.CategoryTitle">@category.CategoryTitle</option>
+                        }
+                    </select>
                     <div>
                         <button type="button"
                                 onclick="openAddFundsModal()"
-                                class="whitespace-nowrap rounded-lg bg-violet-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-violet-600">
+                                class="h-10 whitespace-nowrap rounded-full bg-violet-500 px-8 py-2 font-bold text-white drop-shadow-lg duration-300 hover:bg-violet-800">
                             + Add Funds
                         </button>
-                    </div>
-                </div>
-                <div class="flex h-20 flex-row">
-                    <div class="flex h-full w-1/2 flex-col justify-center">
-                        <p class="mb-2 text-lg font-medium dark:text-white">Category Budgets</p>
-                        <select id="categoryBudgetSelect" class="mb-2 w-full rounded-lg border p-3" onchange="showCategoryBalance(this.value)">
-                            <option value="">Select Category</option>
-                            @foreach (var category in Model.CategoryAnalytics.Categories)
-                            {
-                                <option value="@category.CategoryId">@category.CategoryTitle</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="flex h-full w-1/2 items-center justify-center">
-                        <div class="relative flex h-24 w-48 flex-col gap-1 rounded-md bg-slate-950 p-3 text-green-600 shadow-md shadow-black">
-                            <label class="font-bold tracking-wide text-white">Wallet Budget</label>
-                            <p class="font-bold text-green-500" id="selectedCategoryBalance">
-                                ₱0.00
-                            </p>
-                            <div class="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-green-500"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -58,6 +59,7 @@
 </div>
 
 @section Scripts {
+
     <script>
         // Add this check to ensure Swal is available
         if (typeof Swal === 'undefined') {
@@ -321,8 +323,10 @@
         }
 
         // Update showCategoryBalance function to be more robust
-        async function showCategoryBalance(categoryId) {
+        async function showCategoryBalance(selectedValue) {
             const balanceElement = document.getElementById('selectedCategoryBalance');
+
+            var [categoryId, categoryTitle] = selectedValue.split('|');
 
             if (!categoryId) {
                 balanceElement.textContent = '₱0.00';
@@ -337,8 +341,19 @@
                     const formattedBalance = `₱${parseFloat(data.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
                     balanceElement.textContent = formattedBalance;
 
+                    const budgetLabel = document.getElementById('budgetlabel');
+
+                    if (categoryId) {
+                        categoryTitle = `${categoryTitle}`; // Update the variable
+                    } else {
+                        categoryTitle = "Budget"; // Reset to default
+                    }
+
+                    // Dynamically update the label
+                    budgetLabel.textContent = categoryTitle;
                     // Also update any other UI elements that show the balance
                     updateAllBalances();
+
                 } else {
                     throw new Error(data.message || 'Error fetching balance');
                 }

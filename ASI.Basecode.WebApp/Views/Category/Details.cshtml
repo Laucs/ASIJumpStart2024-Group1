@@ -20,7 +20,7 @@
         <div class="h-full w-full rounded-lg bg-gray-100 from-violet-950 to-slate-950 p-4 dark:bg-gradient-to-b md:p-8">
             <div class="flex h-full w-full flex-col">
                 <label class="text-2xl font-bold text-violet-500 dark:text-white">Category Management</label>
-                <div class="mt-5 h-3/6 min-h-96 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md">
+                <div class="mt-5 h-3/6 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md md:min-h-96">
                     @if (Model.Categories != null && Model.Categories.Any(c => c.MExpenses != null && c.MExpenses.Any()))
                     {
                         <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
