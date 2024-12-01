@@ -316,12 +316,8 @@
 
         // Success messages
         var successMessage = '@TempData["SuccessMessage"]';
-        var loginSuccess = '@TempData["LoginSuccess"]';
         if (successMessage) {
             toastr.success(successMessage);
-        }
-        if (loginSuccess) {
-            toastr.success(loginSuccess);
         }
 
         // Update showCategoryBalance function to be more robust

@@ -15,7 +15,7 @@
             </svg>
             <label class="hidden cursor-pointer font-bold md:block @(ViewData["ActivePage"] as string == "Analytics" ? "text-violet-500" : "text-gray-500")">@Analytics</label>
         </a>
-        <a asp-area="" asp-controller="Analytics" asp-action="Wallet" id="catdetails" class="flex w-16 cursor-pointer flex-row items-center justify-center gap-3 md:w-full md:border-s-4 md:hover:border-s-violet-500 @(ViewData["ActivePage"] as string == "Wallet" ? "border-s-violet-500" : isDarkMode ? "border-black" : "border-white")">
+        <a asp-area="" asp-controller="Analytics" asp-action="Wallet" id="walletdetails" class="flex w-16 cursor-pointer flex-row items-center justify-center gap-3 md:w-full md:border-s-4 md:hover:border-s-violet-500 @(ViewData["ActivePage"] as string == "Wallet" ? "border-s-violet-500" : isDarkMode ? "border-black" : "border-white")">
             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16.25 21.25H11.25V24.5885C11.25 24.7554 11.0577 24.8489 10.9264 24.7458L2.5 18.125L10.9264 11.5042C11.0577 11.4011 11.25 11.4946 11.25 11.6615V15H18.75" stroke="@(ViewData["ActivePage"] as string == "Wallet" ? "#8C52FF" : "#DADADA")" stroke-width="2" />
                 <path d="M13.75 8.75H18.75V5.41149C18.75 5.24461 18.9423 5.15112 19.0736 5.25423L27.5 11.875L19.0736 18.4958C18.9423 18.5989 18.75 18.5054 18.75 18.3385V15H11.25" stroke="@(ViewData["ActivePage"] as string == "Wallet" ? "#8C52FF" : "#DADADA")" stroke-width="2" />
