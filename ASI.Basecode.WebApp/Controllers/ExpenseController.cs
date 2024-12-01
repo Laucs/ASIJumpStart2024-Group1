@@ -95,12 +95,18 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult PostExpense(ExpenseViewModel model) //modified this part
+        public IActionResult PostExpense(ExpenseViewModel model)
         {
             var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             if (ModelState.IsValid)
             {
+                // Set default description if not provided
+                if (string.IsNullOrWhiteSpace(model.Description))
+                {
+                    model.Description = "--";
+                }
+
                 // Check if the amount is valid
                 if (model.Amount <= 0)
                 {
@@ -143,6 +149,7 @@ namespace ASI.Basecode.WebApp.Controllers
             model.Categories = _categoryService.RetrieveAll(userId: userId).ToList();
             return View("Details", model);
         }
+
 
 
         [HttpPost]
