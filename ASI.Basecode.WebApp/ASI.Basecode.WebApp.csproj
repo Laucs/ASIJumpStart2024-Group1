@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\js\ImagePreview\" />
     <Folder Include="wwwroot\js\DarkMode\" />
     <Folder Include="wwwroot\js\ToggleHidden\" />

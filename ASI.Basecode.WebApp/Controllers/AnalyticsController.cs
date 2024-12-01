@@ -265,7 +265,7 @@ namespace ASI.Basecode.WebApp.Controllers
             var weeklyData = GetWeeklyCategoryData(expenses);
             var (labels, datasets) = PrepareChartData(weeklyData, categories);
 
-            var previousWeekPercentage = CalculatePreviousWeekPercentage(expenses);
+            var previousWeekPercentage = CompareWeeklyExpenses(expenses);
 
             if (expenses == null || !expenses.Any())
             {
@@ -275,37 +275,34 @@ namespace ASI.Basecode.WebApp.Controllers
             return Json(new { labels, datasets, previousWeekPercentage = previousWeekPercentage.ToString("F2") });
         }
 
-        private static decimal CalculatePreviousWeekPercentage(IEnumerable<ExpenseViewModel> expenses)
+        private static decimal CompareWeeklyExpenses(IEnumerable<ExpenseViewModel> expenses)
         {
             if (expenses == null || !expenses.Any())
             {
-                Debug.WriteLine("No expenses found. Returning 0% for previous week percentage.");
-                return 0;
+                return 0.02m;
             }
 
             var today = DateTime.Today;
-            var previousWeekStart = today.AddDays(-(int)today.DayOfWeek - 7);
-            var previousWeekEnd = previousWeekStart.AddDays(7).AddTicks(-1);
 
-            Debug.WriteLine($"Previous week start: {previousWeekStart}, end: {previousWeekEnd}");
+            var currentWeekStart = today.AddDays(-(int)today.DayOfWeek);
+            var currentWeekEnd = currentWeekStart.AddDays(7).AddTicks(-1);
+
+            var previousWeekStart = currentWeekStart.AddDays(-7);
+            var previousWeekEnd = currentWeekStart.AddTicks(-1);
 
             var previousWeekTotal = expenses
                 .Where(e => e.CreatedDate >= previousWeekStart && e.CreatedDate <= previousWeekEnd)
                 .Sum(e => e.Amount);
 
-            Debug.WriteLine($"Previous week total expenses: {previousWeekTotal}");
+            var currentWeekTotal = expenses
+                .Where(e => e.CreatedDate >= currentWeekStart && e.CreatedDate <= currentWeekEnd)
+                .Sum(e => e.Amount);
 
-            var totalExpenses = expenses.Sum(e => e.Amount);
+            decimal percentageIncrease = previousWeekTotal > 0
+                ? ((decimal)(currentWeekTotal - previousWeekTotal) / previousWeekTotal) * 100
+                : (currentWeekTotal > 0 ? 100 : 0);
 
-            Debug.WriteLine($"Total expenses: {totalExpenses}");
-
-            var percentage = totalExpenses > 0
-                ? ((decimal)previousWeekTotal / totalExpenses) * 100
-                : 0;
-
-            Debug.WriteLine($"Calculated previous week percentage: {percentage}%");
-
-            return percentage;
+            return percentageIncrease;
         }
 
         private List<WeeklyCategoryData> GetWeeklyCategoryData(IEnumerable<ExpenseViewModel> expenses)
