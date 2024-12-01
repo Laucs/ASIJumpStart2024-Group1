@@ -23,7 +23,8 @@ namespace ASI.Basecode.Services.ServiceModels
 
             [DataType(DataType.Date)]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-            public DateTime CreatedDate { get; set; }
+            [Required(ErrorMessage = "Date is required.")]
+        public DateTime CreatedDate { get; set; }
 
             public IEnumerable<CategoryViewModel> Categories { get; set; }
             public int UserId { get; set; }
