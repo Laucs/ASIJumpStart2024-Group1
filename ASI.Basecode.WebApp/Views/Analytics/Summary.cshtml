@@ -38,3 +38,11 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        var loginSuccess = '@TempData["LoginSuccess"]';
+        if (loginSuccess) {
+            toastr.success(loginSuccess);
+        }
+    </script>
+}
