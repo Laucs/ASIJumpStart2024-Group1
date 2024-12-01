@@ -13,7 +13,7 @@
 <div class="h-auto bg-gray-100 px-8 dark:bg-slate-950">
     <div class="flex flex-col gap-5 pt-5 md:pt-0">
         <label class="text-2xl font-bold text-violet-500 dark:text-white">@ReportGeneration</label>
-        <div class="flex max-h-full flex-row gap-5">
+        <div class="hidden max-h-full flex-row gap-5 md:flex">
             <button id="allBtn" type="button" onclick="filterData('all')" class="filter-button h-10 w-20 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "all") ? "bg-violet-500 text-white" : "bg-white")">All</button>
             <button id="todayBtn" type="button" onclick="filterData('today')" class="filter-button h-10 w-20 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "today") ? "bg-violet-500 text-white" : "bg-white")">Today</button>
             <button id="weekBtn" type="button" onclick="filterData('thisweek')" class="filter-button h-10 w-28 rounded-full shadow-black drop-shadow-md duration-300 hover:bg-violet-500 hover:text-white @((selectedTimeFilter == "thisweek") ? "bg-violet-500 text-white" : "bg-white")">This Week</button>
@@ -49,7 +49,7 @@
             </button>
         </div>
     </div>
-    <div class="mt-5 h-3/6 min-h-96 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md">
+    <div class="mt-5 h-3/6 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md md:min-h-96">
         @if (Model.Categories != null && Model.Categories.Any(c => c.MExpenses != null && c.MExpenses.Any()))
         {
             <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
