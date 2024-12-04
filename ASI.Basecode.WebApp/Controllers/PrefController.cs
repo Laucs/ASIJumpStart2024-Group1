@@ -226,10 +226,9 @@ namespace ASI.Basecode.WebApp.Controllers
             // Proceed with the password change if validation is successful
             if (!string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword) && ModelState.IsValid)
             {
-                userData.Password = PasswordManager.EncryptPassword(model.UpdatePassword.NewPassword);
-
+                userData.Password = model.UpdatePassword.NewPassword;
                 // Update password in the database
-                _userService.Update(userData);
+                _userService.UpdatePassword(userData);
                 TempData["ChangeSuccess"] = "Password updated successfully!";
                 return RedirectToAction("Settings", "Pref");
             }
