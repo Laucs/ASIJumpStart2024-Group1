@@ -24,17 +24,28 @@
 
 <script>
     let isHidden = false;
+    let savePercent = null;
 
     function toggleExpenses() {
         const totalExpensesLabel = document.getElementById("totalExpensesLabel");
         const toggleButton = document.getElementById("toggleButton");
+        const togglePercent = document.getElementById("previousWeekPercentLabel");
+        const svgIcon = document.getElementById("svgIcons");
+        
+        if (savePercent === null) {
+            savePercent = togglePercent.textContent;
+        }
 
         if (isHidden) {
             totalExpensesLabel.innerHTML = `₱@Model.TotalExpenses.ToString("N2")`;
             toggleButton.innerHTML = '<img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" />';
+            togglePercent.innerHTML = `${savePercent}`;
+            svgIcon.classList.remove("hidden");
         } else {
             totalExpensesLabel.innerHTML = '₱**********';
+            togglePercent.innerHTML = '------'
             toggleButton.innerHTML = '<img class="mt-1 h-4 w-4" src="/img/EyeIcon.png" />';
+            svgIcon.classList.add("hidden");
         }
 
         isHidden = !isHidden;
