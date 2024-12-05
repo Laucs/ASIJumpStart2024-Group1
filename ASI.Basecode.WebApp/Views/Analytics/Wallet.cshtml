@@ -56,19 +56,19 @@
                     </div>
                 </div>
             </div>
-            <div class="px-5 max-h-[300px] overflow-y-auto">
+            <div class="overflow-x mt-5 max-h-[350px] overflow-y-auto rounded-lg">
                     @if (Model.TransactionAnalytics != null && Model.TransactionAnalytics.Any())
                     {
                         <div class="space-y-2">
                             @foreach (var transaction in Model.TransactionAnalytics.OrderByDescending(t => t.TransDate).Take(50))
                             {
-                                <div class="flex h-20 flex-row items-center justify-between rounded-md bg-white px-8 py-4 mb-2 duration-300 hover:scale-105 dark:shadow-md dark:bg-transparent">
+                            <div class="flex h-20 flex-row items-center justify-between rounded-md bg-white px-8 py-4 dark:bg-transparent">
                                     <div class="flex flex-col">
                                         <div class="flex items-center">
-                                            <span class="dark:text-white font-medium mr-2">@transaction.CategoryName</span>
+                                            <span class="mr-2 font-medium dark:text-white">@transaction.CategoryName</span>
                                             @if (!string.IsNullOrEmpty(transaction.TransDescription))
                                             {
-                                                <span class="text-sm text-gray-500">(@transaction.TransDescription)</span>
+                                            <span class="text-sm @(transaction.AmountValue?.Trim().StartsWith("-") == true ? "text-red-600" : "text-green-400")">(@transaction.TransDescription)</span>
                                             }
                                         </div>
                                         <label class="text-sm text-gray-400">
@@ -85,7 +85,7 @@
                     }
                     else
                     {
-                        <div class="text-center text-gray-500 py-4">No transactions found</div>
+                    <div class="flex h-44 items-center justify-center bg-white p-5 text-gray-500 dark:bg-transparent dark:text-gray-300"><label>No Transactions Found, Try Adding Some Budgets!</label></div>
                     }
              </div>
         </div>
