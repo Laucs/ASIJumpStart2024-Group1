@@ -2,16 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using ASI.Basecode.Services.Interfaces;
 using System;
 using System.Security.Claims;
+using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
     public class WalletController : Controller
     {
         private readonly IWalletService _walletService;
+        private readonly ITranscationService _transactionService;
 
-        public WalletController(IWalletService walletService)
+        public WalletController(IWalletService walletService, ITranscationService transactionService)
         {
             _walletService = walletService;
+            _transactionService = transactionService;
         }
 
         [HttpPost]
