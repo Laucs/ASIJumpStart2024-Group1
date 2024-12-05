@@ -41,6 +41,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ICategoryService, CategoryService>();
             this._services.AddScoped<IExpenseService, ExpenseService>();
             this._services.AddScoped<IWalletService, WalletService>();
+            this._services.AddScoped<ITranscationService, TransactionService>();
 
 
             // Repositories
@@ -48,6 +49,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IExpenseRepository, ExpenseRepository>();
             this._services.AddScoped<ICategoryRepository, CategoryRepository>();
             this._services.AddScoped<IWalletRepository, WalletRepository>();
+            this._services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             // Manager Class
             this._services.AddScoped<SignInManager>();

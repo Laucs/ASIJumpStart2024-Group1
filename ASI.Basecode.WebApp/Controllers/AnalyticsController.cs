@@ -36,6 +36,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IExpenseService _expenseService;
         private readonly ICategoryService _categoryService;
         private readonly IWalletService _walletService;
+        private readonly ITranscationService _transactionService;
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
@@ -58,6 +59,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IUserService userService,
                             ICategoryService categoryService,
                             IExpenseService expenseService,
+                            ITranscationService transcationService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory,
                             IWalletService walletService) : base(httpContextAccessor, loggerFactory, configuration, mapper)
@@ -69,6 +71,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._appConfiguration = configuration;
             this._userService = userService;
             this._expenseService = expenseService;
+            this._transactionService = transcationService;
             this._categoryService = categoryService;
             this._walletService = walletService;
         }
@@ -87,6 +90,8 @@ namespace ASI.Basecode.WebApp.Controllers
             var profilePic = _userService.GetUserProfilePic(userCode);
             ViewBag.ProfilePic = profilePic;
 
+            var transactions = _transactionService.RetrieveAll(userId: userId);
+            Debug.WriteLine( "TRANSACTIONS COOUUNTTT" + transactions.Count());
             var expenses = _expenseService.RetrieveAll(userId: userId);
             var categories = _categoryService.RetrieveAll(userId: userId);
 
@@ -173,7 +178,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 SummaryAnalytics = groupedCategories,
                 CategoryAnalytics = categorizedExpenses,
                 ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
+                TransactionAnalytics = transactions.ToList(),
                 TotalExpenses = expenses.Sum(e => e.Amount)
+
             };
 
             model.CurrentBalance = _walletService.GetBalance(userId);
@@ -196,6 +203,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
             var expenses = _expenseService.RetrieveAll(userId: userId);
             var categories = _categoryService.RetrieveAll(userId: userId);
+            var transactions = _transactionService.RetrieveAll(userId: userId);
 
             var groupedCategories = expenses
                 .Join(categories,
@@ -242,6 +250,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 SummaryAnalytics = groupedCategories,
                 CategoryAnalytics = categorizedExpenses,
                 ExpenseAnalytics = expenses.Select(e => new ExpenseViewModel { }).ToList(),
+                TransactionAnalytics = transactions.ToList(),
                 TotalExpenses = expenses.Sum(e => e.Amount)
             };
 
@@ -409,7 +418,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         public class AddAmountRequest
         {
-            public int? CategoryId { get; set; }
+            public int CategoryId { get; set; }
             public decimal Amount { get; set; }
         }
 
@@ -431,10 +440,23 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 int userId = Convert.ToInt32(claimsUserId);
 
-                _walletService.AddAmount(userId, request.Amount, request.CategoryId);
-                var newBalance = _walletService.GetBalance(userId, request.CategoryId);
-                var category = _categoryService.GetById(request.CategoryId.Value);
+                // Get current balance before adding amount
+                var currentBalance = _walletService.GetBalance(userId, request.CategoryId);
 
+                // Add amount to wallet
+                _walletService.AddAmount(userId, request.Amount, request.CategoryId);
+
+                _transactionService.AddTransaction(
+                    userId,
+                    request.CategoryId,
+                    request.Amount,
+                    isAddition: true,
+                    description: "Budget Increased"
+                );
+
+
+                var newBalance = _walletService.GetBalance(userId, request.CategoryId);
+                var category = _categoryService.GetById(request.CategoryId);
 
                 return Json(new
                 {
@@ -482,6 +504,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+
         [HttpGet]
         public IActionResult GetCategoryBalance(int categoryId)
         {
@@ -521,6 +544,8 @@ namespace ASI.Basecode.WebApp.Controllers
                 return Json(new { success = false, message = "Error retrieving total budget" });
             }
         }
+
+
 
         [HttpGet]
         public IActionResult CheckCategoryExpenses(int categoryId)

@@ -10,10 +10,9 @@ namespace ASI.Basecode.Services.ServiceModels
     {
         public List<CategoryViewModel> SummaryAnalytics { get; set; }
         public CategoryPageViewModel CategoryAnalytics { get; set; }
-
         public List<ExpenseViewModel> ExpenseAnalytics { get; set; }
+        public List<TransactionViewModel> TransactionAnalytics { get; set; } 
         public int TotalExpenses { get; set; }
-
         public decimal CurrentBalance { get; set; }
         public decimal TotalExpenseAmount { get; set; }
         public decimal RemainingBalance { get; set; }
