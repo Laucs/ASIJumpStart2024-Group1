@@ -134,8 +134,9 @@
                 <div class="flex h-52 w-full flex-col items-center justify-center gap-3">
                     <label class="text-xl font-bold text-black dark:text-white">@ProfileHeader</label>
                     <input asp-for=ProfilePicture type="file" accept="image/*" class="hidden" id="imgFile" onchange="setImagePreview(event)" value=@(Model.ProfilePicture ?? "") />
-                    <img id="profileImage" src=@(Model.ProfilePicture) class="h-32 w-32 rounded-full bg-transparent drop-shadow-lg" />
+                    <img id="profileImage" src="@(!string.IsNullOrEmpty(Model.ProfilePicture) ? Model.ProfilePicture : Url.Content("~/img/SampleProfile.png"))" class="h-32 w-32 rounded-full bg-transparent drop-shadow-lg" />
                     <label for="imgFile" class="mt-4 inline-block cursor-pointer rounded bg-violet-500 px-4 py-2 text-white duration-300 hover:bg-violet-800">
+                        
                         @Upload
                     </label>
                 </div>

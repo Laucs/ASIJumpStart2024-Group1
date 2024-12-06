@@ -227,7 +227,6 @@ namespace ASI.Basecode.WebApp.Controllers
             if (!string.IsNullOrWhiteSpace(model.UpdatePassword.NewPassword) && ModelState.IsValid)
             {
                 userData.Password = model.UpdatePassword.NewPassword;
-
                 // Update password in the database
                 _userService.UpdatePassword(userData);
                 TempData["ChangeSuccess"] = "Password updated successfully!";
