@@ -50,7 +50,7 @@
             </button>
         </div>
     </div>
-    <div class="mt-5 h-3/6 overflow-x-auto rounded-b-md bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md md:min-h-96">
+    <div class="mt-5 h-3/6 overflow-x-auto rounded-lg bg-white shadow-black drop-shadow-md dark:bg-transparent dark:shadow-md md:min-h-96">
         @if (Model.Categories != null && Model.Categories.Any(c => c.MExpenses != null && c.MExpenses.Any()))
         {
             <table class="w-full min-w-full table-fixed bg-white dark:bg-transparent">
@@ -92,7 +92,7 @@
         }
         else
         {
-            <div class="flex h-96 items-center justify-center rounded-md bg-white p-5 text-center text-gray-500 dark:bg-transparent dark:text-gray-300">
+            <div class="flex h-96 items-center justify-center p-5 text-gray-500 dark:bg-transparent dark:text-gray-300">
                 <p>No expenses found. Try adding some <a class="text-blue-500 underline" asp-area="" asp-controller="Expense" asp-action="Details">here!</a></p>
             </div>
         }

@@ -1,16 +1,20 @@
 using ASI.Basecode.Data.Interfaces;
+using ASI.Basecode.Data.Repositories;
 using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.Services;
 using Microsoft.Extensions.Logging;
 using System;
 
 public class WalletService : IWalletService
 {
     private readonly IWalletRepository _walletRepository;
+    private readonly ITranscationService _transactionService;
     private readonly ILogger _logger;
 
-    public WalletService(IWalletRepository walletRepository, ILogger<WalletService> logger)
+    public WalletService(IWalletRepository walletRepository, ILogger<WalletService> logger, ITranscationService transactionService)
     {
         _walletRepository = walletRepository;
+        _transactionService = transactionService;
         _logger = logger;
     }
 
@@ -49,15 +53,36 @@ public class WalletService : IWalletService
         if (currentBalance >= expenseAmount)
         {
             _walletRepository.UpdateBalance(userId, currentBalance - expenseAmount, categoryId);
+
+            _transactionService.AddTransaction(
+                userId,
+                categoryId.Value,
+                expenseAmount,
+                isAddition: false,
+                description: "Budget Deducted"
+            );
+
             return true;
+
         }
         return false;
+
+
     }
 
     public void UpdateBalanceAfterExpenseRemoval(int userId, decimal expenseAmount, int? categoryId = null)
     {
         var currentBalance = _walletRepository.GetCurrentBalance(userId, categoryId);
         _walletRepository.UpdateBalance(userId, currentBalance + expenseAmount, categoryId);
+
+        _transactionService.AddTransaction(
+            userId,
+            categoryId.Value,
+            expenseAmount,
+            isAddition: true,
+            description: "Budget Reverted"
+
+        );
     }
 
     public void ResetBalance(int userId, int? categoryId = null)
